@@ -499,10 +499,3 @@ Before submitting PRs, please ensure:
 
 For new features, please open an issue for discussion before submitting a PR. PRs for features that are not a good fit for the project may be closed.
 
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=farion1231/cc-switch&type=Date)](https://www.star-history.com/#farion1231/cc-switch&Date)
-
-## License
-
-MIT © Jason Young
