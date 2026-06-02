@@ -19,8 +19,26 @@ export const useAddProviderMutation = (appId: AppId) => {
       providerInput: Omit<Provider, "id"> & {
         providerKey?: string;
         addToLive?: boolean;
+        ensureClaudeDesktopOfficialSeed?: boolean;
       },
     ) => {
+      const {
+        providerKey: _providerKey,
+        addToLive,
+        ensureClaudeDesktopOfficialSeed,
+        ...rest
+      } = providerInput;
+
+      if (appId === "claude-desktop" && ensureClaudeDesktopOfficialSeed) {
+        await providersApi.ensureClaudeDesktopOfficialProvider();
+        const providers = await providersApi.getAll(appId);
+        const officialProvider = providers["claude-desktop-official"];
+        if (!officialProvider) {
+          throw new Error("Claude Desktop official provider was not created");
+        }
+        return officialProvider;
+      }
+
       let id: string;
 
       if (appId === "opencode" || appId === "openclaw" || appId === "hermes") {
@@ -39,8 +57,6 @@ export const useAddProviderMutation = (appId: AppId) => {
       } else {
         id = generateUUID();
       }
-
-      const { providerKey: _providerKey, addToLive, ...rest } = providerInput;
 
       const newProvider: Provider = {
         ...rest,
@@ -232,6 +248,12 @@ export const useSwitchProviderMutation = (appId: AppId) => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["providers", appId] });
+      if (appId === "claude-desktop") {
+        await queryClient.invalidateQueries({ queryKey: ["proxyStatus"] });
+        await queryClient.invalidateQueries({
+          queryKey: ["claudeDesktopStatus"],
+        });
+      }
 
       // OpenCode/OpenClaw: also invalidate live provider IDs cache to update button state
       if (appId === "opencode") {

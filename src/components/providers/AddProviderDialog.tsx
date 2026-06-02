@@ -17,6 +17,7 @@ import { UniversalProviderPanel } from "@/components/universal";
 import { providerPresets } from "@/config/claudeProviderPresets";
 import { codexProviderPresets } from "@/config/codexProviderPresets";
 import { geminiProviderPresets } from "@/config/geminiProviderPresets";
+import { claudeDesktopProviderPresets } from "@/config/claudeDesktopProviderPresets";
 import { extractCodexBaseUrl } from "@/utils/providerConfigUtils";
 import type { OpenClawSuggestedDefaults } from "@/config/openclawProviderPresets";
 import type { UniversalProviderPreset } from "@/config/universalProviderPresets";
@@ -29,6 +30,7 @@ interface AddProviderDialogProps {
     provider: Omit<Provider, "id"> & {
       providerKey?: string;
       suggestedDefaults?: OpenClawSuggestedDefaults;
+      ensureClaudeDesktopOfficialSeed?: boolean;
     },
   ) => Promise<void> | void;
 }
@@ -42,7 +44,10 @@ export function AddProviderDialog({
   const { t } = useTranslation();
   // OpenCode and OpenClaw don't support universal providers
   const showUniversalTab =
-    appId !== "opencode" && appId !== "openclaw" && appId !== "hermes";
+    appId !== "opencode" &&
+    appId !== "openclaw" &&
+    appId !== "hermes" &&
+    appId !== "claude-desktop";
   const [activeTab, setActiveTab] = useState<"app-specific" | "universal">(
     "app-specific",
   );
@@ -94,6 +99,7 @@ export function AddProviderDialog({
       const providerData: Omit<Provider, "id"> & {
         providerKey?: string;
         suggestedDefaults?: OpenClawSuggestedDefaults;
+        ensureClaudeDesktopOfficialSeed?: boolean;
       } = {
         name: values.name.trim(),
         notes: values.notes?.trim() || undefined,
@@ -104,6 +110,16 @@ export function AddProviderDialog({
         ...(values.presetCategory ? { category: values.presetCategory } : {}),
         ...(values.meta ? { meta: values.meta } : {}),
       };
+
+      if (appId === "claude-desktop" && values.presetId) {
+        const presetIndex = parseInt(
+          values.presetId.replace("claude-desktop-", ""),
+        );
+        const preset = claudeDesktopProviderPresets[presetIndex];
+        providerData.ensureClaudeDesktopOfficialSeed =
+          values.presetCategory === "official" &&
+          preset?.category === "official";
+      }
 
       // OpenCode/OpenClaw: pass providerKey for ID generation
       if (
@@ -171,10 +187,31 @@ export function AddProviderDialog({
                 preset.endpointCandidates.forEach(addUrl);
               }
             }
+          } else if (appId === "claude-desktop") {
+            const presets = claudeDesktopProviderPresets;
+            const presetIndex = parseInt(
+              values.presetId.replace("claude-desktop-", ""),
+            );
+            if (
+              !isNaN(presetIndex) &&
+              presetIndex >= 0 &&
+              presetIndex < presets.length
+            ) {
+              const preset = presets[presetIndex];
+              if (Array.isArray(preset.endpointCandidates)) {
+                preset.endpointCandidates.forEach(addUrl);
+              }
+              addUrl(preset.baseUrl);
+            }
           }
         }
 
         if (appId === "claude") {
+          const env = parsedConfig.env as Record<string, any> | undefined;
+          if (env?.ANTHROPIC_BASE_URL) {
+            addUrl(env.ANTHROPIC_BASE_URL);
+          }
+        } else if (appId === "claude-desktop") {
           const env = parsedConfig.env as Record<string, any> | undefined;
           if (env?.ANTHROPIC_BASE_URL) {
             addUrl(env.ANTHROPIC_BASE_URL);

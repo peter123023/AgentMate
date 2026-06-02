@@ -44,6 +44,7 @@ import { ModelTestConfigPanel } from "@/components/usage/ModelTestConfigPanel";
 import { UsageDashboard } from "@/components/usage/UsageDashboard";
 import { LogConfigPanel } from "@/components/settings/LogConfigPanel";
 import { AuthCenterPanel } from "@/components/settings/AuthCenterPanel";
+import { CodexAuthSettings } from "@/components/settings/CodexAuthSettings";
 import { useInstalledSkills } from "@/hooks/useSkills";
 import { useSettings } from "@/hooks/useSettings";
 import { useImportExport } from "@/hooks/useImportExport";
@@ -240,6 +241,10 @@ export function SettingsPage({
                       onChange={(method) =>
                         handleAutoSave({ skillSyncMethod: method })
                       }
+                    />
+                    <CodexAuthSettings
+                      settings={settings}
+                      onChange={handleAutoSave}
                     />
                     <WindowSettings
                       settings={settings}
@@ -475,7 +480,7 @@ export function SettingsPage({
 
             {activeTab === "advanced" && settings && (
               <div
-                className="flex-shrink-0 py-4 border-t border-border-default"
+                className="flex-shrink-0 pt-4 border-t border-border-default"
                 style={{ backgroundColor: "hsl(var(--background))" }}
               >
                 <div className="px-6 flex items-center justify-end gap-3">

@@ -28,6 +28,13 @@ fn default_true() -> bool {
 pub struct VisibleApps {
     #[serde(default = "default_true")]
     pub claude: bool,
+    #[serde(
+        rename = "claude-desktop",
+        alias = "claudeDesktop",
+        alias = "claude_desktop",
+        default = "default_true"
+    )]
+    pub claude_desktop: bool,
     #[serde(default = "default_true")]
     pub codex: bool,
     #[serde(default = "default_true")]
@@ -44,6 +51,7 @@ impl Default for VisibleApps {
     fn default() -> Self {
         Self {
             claude: true,
+            claude_desktop: true,
             codex: true,
             gemini: true,
             opencode: true,
@@ -58,6 +66,7 @@ impl VisibleApps {
     pub fn is_visible(&self, app: &AppType) -> bool {
         match app {
             AppType::Claude => self.claude,
+            AppType::ClaudeDesktop => self.claude_desktop,
             AppType::Codex => self.codex,
             AppType::Gemini => self.gemini,
             AppType::OpenCode => self.opencode,
@@ -167,6 +176,42 @@ impl WebDavSyncSettings {
     }
 }
 
+/// 本机自动迁移状态。
+///
+/// 这里记录的是本机启动时执行过的一次性迁移；标记不随数据库同步。
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct LocalMigrations {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub codex_third_party_history_provider_bucket_v1:
+        Option<CodexThirdPartyHistoryProviderBucketMigration>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub codex_provider_template_v1: Option<CodexProviderTemplateMigration>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CodexThirdPartyHistoryProviderBucketMigration {
+    pub completed_at: String,
+    pub target_provider_id: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub source_provider_ids: Vec<String>,
+    #[serde(default)]
+    pub migrated_jsonl_files: usize,
+    #[serde(default)]
+    pub migrated_state_rows: usize,
+    #[serde(default)]
+    pub scanned_history_files: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CodexProviderTemplateMigration {
+    pub completed_at: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub migrated_provider_ids: Vec<String>,
+}
+
 /// 应用设置结构
 ///
 /// 存储设备级别设置，保存在本地 `~/.cc-switch/settings.json`，不随数据库同步。
@@ -208,6 +253,10 @@ pub struct AppSettings {
     /// Whether to show the failover toggle independently on the main page
     #[serde(default)]
     pub enable_failover_toggle: bool,
+    /// Keep Codex ChatGPT login material in auth.json when switching to third-party providers.
+    /// Opt-in: defaults to false so third-party switches cleanly overwrite auth.json.
+    #[serde(default)]
+    pub preserve_codex_official_auth_on_switch: bool,
     /// User has confirmed the failover toggle first-run notice
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub failover_confirmed: Option<bool>,
@@ -242,6 +291,9 @@ pub struct AppSettings {
     /// 当前 Claude 供应商 ID（本地存储，优先于数据库 is_current）
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub current_provider_claude: Option<String>,
+    /// 当前 Claude Desktop 供应商 ID（本地存储，优先于数据库 is_current）
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub current_provider_claude_desktop: Option<String>,
     /// 当前 Codex 供应商 ID（本地存储，优先于数据库 is_current）
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub current_provider_codex: Option<String>,
@@ -289,6 +341,10 @@ pub struct AppSettings {
     /// - Linux: "gnome-terminal" | "konsole" | "xfce4-terminal" | "alacritty" | "kitty" | "ghostty"
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub preferred_terminal: Option<String>,
+
+    // ===== 本机自动迁移状态 =====
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub local_migrations: Option<LocalMigrations>,
 }
 
 fn default_show_in_tray() -> bool {
@@ -314,6 +370,7 @@ impl Default for AppSettings {
             usage_confirmed: None,
             stream_check_confirmed: None,
             enable_failover_toggle: false,
+            preserve_codex_official_auth_on_switch: false,
             failover_confirmed: None,
             first_run_notice_confirmed: None,
             common_config_confirmed: None,
@@ -326,6 +383,7 @@ impl Default for AppSettings {
             openclaw_config_dir: None,
             hermes_config_dir: None,
             current_provider_claude: None,
+            current_provider_claude_desktop: None,
             current_provider_codex: None,
             current_provider_gemini: None,
             current_provider_opencode: None,
@@ -338,6 +396,7 @@ impl Default for AppSettings {
             backup_interval_hours: None,
             backup_retain_count: None,
             preferred_terminal: None,
+            local_migrations: None,
         }
     }
 }
@@ -399,7 +458,7 @@ impl AppSettings {
             .language
             .as_ref()
             .map(|s| s.trim())
-            .filter(|s| matches!(*s, "en" | "zh" | "ja"))
+            .filter(|s| matches!(*s, "en" | "zh" | "zh-TW" | "ja"))
             .map(|s| s.to_string());
 
         if let Some(sync) = &mut self.webdav_sync {
@@ -543,6 +602,48 @@ where
     Ok(())
 }
 
+pub fn is_codex_third_party_history_provider_bucket_migrated() -> bool {
+    get_settings()
+        .local_migrations
+        .as_ref()
+        .and_then(|migrations| {
+            migrations
+                .codex_third_party_history_provider_bucket_v1
+                .as_ref()
+        })
+        .is_some_and(|m| m.scanned_history_files)
+}
+
+pub fn mark_codex_third_party_history_provider_bucket_migrated(
+    migration: CodexThirdPartyHistoryProviderBucketMigration,
+) -> Result<(), AppError> {
+    mutate_settings(|settings| {
+        let migrations = settings
+            .local_migrations
+            .get_or_insert_with(Default::default);
+        migrations.codex_third_party_history_provider_bucket_v1 = Some(migration);
+    })
+}
+
+pub fn is_codex_provider_template_migrated() -> bool {
+    get_settings()
+        .local_migrations
+        .as_ref()
+        .and_then(|migrations| migrations.codex_provider_template_v1.as_ref())
+        .is_some()
+}
+
+pub fn mark_codex_provider_template_migrated(
+    migration: CodexProviderTemplateMigration,
+) -> Result<(), AppError> {
+    mutate_settings(|settings| {
+        let migrations = settings
+            .local_migrations
+            .get_or_insert_with(Default::default);
+        migrations.codex_provider_template_v1 = Some(migration);
+    })
+}
+
 /// 从文件重新加载设置到内存缓存
 /// 用于导入配置等场景，确保内存缓存与文件同步
 pub fn reload_settings() -> Result<(), AppError> {
@@ -603,6 +704,16 @@ pub fn get_hermes_override_dir() -> Option<PathBuf> {
         .map(|p| resolve_override_path(p))
 }
 
+pub fn preserve_codex_official_auth_on_switch() -> bool {
+    settings_store()
+        .read()
+        .unwrap_or_else(|e| {
+            log::warn!("设置锁已毒化，使用恢复值: {e}");
+            e.into_inner()
+        })
+        .preserve_codex_official_auth_on_switch
+}
+
 // ===== 当前供应商管理函数 =====
 
 /// 获取指定应用类型的当前供应商 ID（从本地 settings 读取）
@@ -613,6 +724,7 @@ pub fn get_current_provider(app_type: &AppType) -> Option<String> {
     let settings = settings_store().read().ok()?;
     match app_type {
         AppType::Claude => settings.current_provider_claude.clone(),
+        AppType::ClaudeDesktop => settings.current_provider_claude_desktop.clone(),
         AppType::Codex => settings.current_provider_codex.clone(),
         AppType::Gemini => settings.current_provider_gemini.clone(),
         AppType::OpenCode => settings.current_provider_opencode.clone(),
@@ -629,6 +741,7 @@ pub fn set_current_provider(app_type: &AppType, id: Option<&str>) -> Result<(), 
     let id_owned = id.map(|s| s.to_string());
     mutate_settings(|settings| match app_type {
         AppType::Claude => settings.current_provider_claude = id_owned.clone(),
+        AppType::ClaudeDesktop => settings.current_provider_claude_desktop = id_owned.clone(),
         AppType::Codex => settings.current_provider_codex = id_owned.clone(),
         AppType::Gemini => settings.current_provider_gemini = id_owned.clone(),
         AppType::OpenCode => settings.current_provider_opencode = id_owned.clone(),
@@ -767,4 +880,41 @@ pub fn update_webdav_sync_status(status: WebDavSyncStatus) -> Result<(), AppErro
             sync.status = status;
         }
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::app_config::AppType;
+
+    #[test]
+    fn visible_apps_old_settings_default_claude_desktop_visible() {
+        let visible: VisibleApps = serde_json::from_value(serde_json::json!({
+            "claude": true,
+            "codex": true,
+            "gemini": true,
+            "opencode": true,
+            "openclaw": true,
+            "hermes": true
+        }))
+        .expect("visible apps");
+
+        assert!(visible.is_visible(&AppType::ClaudeDesktop));
+    }
+
+    #[test]
+    fn visible_apps_accepts_claude_desktop_aliases() {
+        let visible: VisibleApps = serde_json::from_value(serde_json::json!({
+            "claude": true,
+            "claudeDesktop": false,
+            "codex": true,
+            "gemini": true,
+            "opencode": true,
+            "openclaw": true,
+            "hermes": true
+        }))
+        .expect("visible apps");
+
+        assert!(!visible.is_visible(&AppType::ClaudeDesktop));
+    }
 }
