@@ -61,6 +61,29 @@ export function OpenClawIcon({ size = 16, className = "" }: IconProps) {
   );
 }
 
+// WorkBuddy icon: inline SVG (briefcase glyph) with currentColor support
+export function WorkBuddyIcon({ size = 16, className = "" }: IconProps) {
+  return (
+    <svg
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect x="3" y="7.5" width="18" height="13" rx="2.5" />
+      <path d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5" />
+      <path d="M3 12.5h18" />
+      <path d="M12 12.5v2.5" />
+    </svg>
+  );
+}
+
 // MCP icon uses inline SVG to support currentColor for hover effects
 export function McpIcon({ size = 16, className = "" }: IconProps) {
   return (

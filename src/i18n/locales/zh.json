@@ -912,7 +912,8 @@
     "opencode": "OpenCode",
     "openclaw": "OpenClaw",
     "hermes": "Hermes",
-    "pi": "Pi"
+    "pi": "Pi",
+    "workbuddy": "WorkBuddy"
   },
   "sidebar": {
     "collapse": "收起侧边栏",
@@ -2791,6 +2792,8 @@
     }
   },
   "proxy": {
+    "routingStatusActive": "已接管（路由生效中）",
+    "routingStatusIdle": "直连模式",
     "panel": {
       "serviceAddress": "服务地址",
       "addressCopied": "地址已复制",

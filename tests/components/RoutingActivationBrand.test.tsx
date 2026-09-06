@@ -22,8 +22,8 @@ describe("RoutingActivationBrand", () => {
     expect(
       screen.getByTestId("routing-activation-particles"),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "ModelBoard" })).toHaveClass(
-      "text-emerald-500",
+    expect(screen.getByTestId("routing-activation-status")).toHaveClass(
+      "bg-emerald-500",
     );
 
     act(() => {

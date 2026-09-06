@@ -912,7 +912,8 @@
     "opencode": "OpenCode",
     "openclaw": "OpenClaw",
     "hermes": "Hermes",
-    "pi": "Pi"
+    "pi": "Pi",
+    "workbuddy": "WorkBuddy"
   },
   "sidebar": {
     "collapse": "Collapse sidebar",
@@ -2791,6 +2792,8 @@
     }
   },
   "proxy": {
+    "routingStatusActive": "Routing active",
+    "routingStatusIdle": "Direct mode",
     "panel": {
       "serviceAddress": "Service Address",
       "addressCopied": "Address copied",

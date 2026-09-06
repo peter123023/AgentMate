@@ -531,7 +531,8 @@ fn settings_contain_common_config(app_type: &AppType, settings: &Value, snippet:
         | AppType::OpenClaw
         | AppType::Hermes
         | AppType::Pi
-        | AppType::ClaudeDesktop => false,
+        | AppType::ClaudeDesktop
+        | AppType::WorkBuddy => false,
     }
 }
 
@@ -606,7 +607,8 @@ pub(crate) fn remove_common_config_from_settings(
         | AppType::OpenClaw
         | AppType::Hermes
         | AppType::Pi
-        | AppType::ClaudeDesktop => Ok(settings.clone()),
+        | AppType::ClaudeDesktop
+        | AppType::WorkBuddy => Ok(settings.clone()),
     }
 }
 
@@ -666,7 +668,8 @@ fn apply_common_config_to_settings(
         | AppType::OpenClaw
         | AppType::Hermes
         | AppType::Pi
-        | AppType::ClaudeDesktop => Ok(settings.clone()),
+        | AppType::ClaudeDesktop
+        | AppType::WorkBuddy => Ok(settings.clone()),
     }
 }
 
@@ -1430,6 +1433,16 @@ pub(crate) fn write_live_snapshot(app_type: &AppType, provider: &Provider) -> Re
             crate::hermes_config::set_provider(&provider.id, provider.settings_config.clone())?;
             log::debug!("Hermes provider '{}' written to live config", provider.id);
         }
+        AppType::WorkBuddy => {
+            // Keep the entry's `name` in sync with the ModelBoard provider
+            // name — WorkBuddy renders the entry `name` in its model picker.
+            let mut config = provider.settings_config.clone();
+            if let Some(obj) = config.as_object_mut() {
+                obj.insert("name".to_string(), serde_json::json!(provider.name));
+            }
+            crate::workbuddy_config::set_provider(&provider.id, config)?;
+            log::debug!("WorkBuddy model '{}' written to live config", provider.id);
+        }
         AppType::Pi => {
             return Err(AppError::InvalidInput(
                 "Pi providers use the Pi provider service".to_string(),
@@ -1818,6 +1831,11 @@ pub fn read_live_settings(app_type: AppType) -> Result<Value, AppError> {
         AppType::Pi => Err(AppError::InvalidInput(
             "Pi providers are read from Pi's native models file".to_string(),
         )),
+        AppType::WorkBuddy => {
+            // models.json may not exist on first run; surface an empty array
+            // instead of an error so the edit dialog stays usable.
+            crate::workbuddy_config::read_live_settings()
+        }
     }
 }
 
@@ -1927,7 +1945,8 @@ pub fn import_default_config(state: &AppState, app_type: AppType) -> Result<bool
             })
         }
         // OpenCode, OpenClaw and Hermes use additive mode and are handled by early return above
-        AppType::OpenCode | AppType::OpenClaw | AppType::Hermes | AppType::Pi => {
+        AppType::OpenCode | AppType::OpenClaw | AppType::Hermes | AppType::Pi
+        | AppType::WorkBuddy => {
             unreachable!("additive mode apps are handled by early return")
         }
     };
@@ -2336,7 +2355,77 @@ pub fn import_hermes_providers_from_live(state: &AppState) -> Result<usize, AppE
     Ok(imported + updated)
 }
 
-/// Remove a Hermes provider from live config
+/// Import all models from WorkBuddy live config to database
+///
+/// WorkBuddy stores models as a JSON array in ~/.workbuddy/models.json. Each
+/// entry becomes one ModelBoard provider keyed by the entry's `id`; the entry
+/// object itself is stored as settings_config.
+pub fn import_workbuddy_providers_from_live(state: &AppState) -> Result<usize, AppError> {
+    let entries = crate::workbuddy_config::get_providers()?;
+    if entries.is_empty() {
+        return Ok(0);
+    }
+
+    let mut imported = 0;
+    let mut updated = 0;
+    let existing_ids = state.db.get_provider_ids("workbuddy")?;
+
+    for (id, config) in entries {
+        if id.trim().is_empty() {
+            log::warn!("Skipping WorkBuddy model entry with empty id");
+            continue;
+        }
+
+        if existing_ids.contains(&id) {
+            match state.db.get_provider_by_id(&id, "workbuddy") {
+                Ok(Some(existing)) => {
+                    if existing.settings_config != config {
+                        let mut provider = existing;
+                        provider.settings_config = config;
+                        if let Err(e) = state.db.save_provider("workbuddy", &provider) {
+                            log::warn!(
+                                "Failed to update WorkBuddy model '{id}' from live config: {e}"
+                            );
+                        } else {
+                            updated += 1;
+                            log::info!("Updated WorkBuddy model '{id}' from live config");
+                        }
+                    }
+                }
+                Ok(None) => {
+                    log::warn!("WorkBuddy model '{id}' disappeared while importing live config")
+                }
+                Err(e) => log::warn!("Failed to look up WorkBuddy model '{id}': {e}"),
+            }
+            continue;
+        }
+
+        let display_name = config
+            .get("name")
+            .and_then(|v| v.as_str())
+            .filter(|s| !s.trim().is_empty())
+            .unwrap_or(&id)
+            .to_string();
+
+        let mut provider = Provider::with_id(id.clone(), display_name, config, None);
+        provider.meta = Some(crate::provider::ProviderMeta {
+            live_config_managed: Some(true),
+            ..Default::default()
+        });
+
+        if let Err(e) = state.db.save_provider("workbuddy", &provider) {
+            log::warn!("Failed to import WorkBuddy model '{id}': {e}");
+            continue;
+        }
+
+        imported += 1;
+        log::info!("Imported WorkBuddy model '{id}' from live config");
+    }
+
+    Ok(imported + updated)
+}
+
+/// Remove a WorkBuddy model from live config
 ///
 /// This removes a specific provider from ~/.hermes/config.yaml
 /// without affecting other providers in the file.
@@ -2351,6 +2440,25 @@ pub fn remove_hermes_provider_from_live(provider_id: &str) -> Result<(), AppErro
 
     hermes_config::remove_provider(provider_id)?;
     log::info!("Hermes provider '{provider_id}' removed from live config");
+
+    Ok(())
+}
+
+/// Remove a WorkBuddy model from live config
+///
+/// This removes a specific entry from ~/.workbuddy/models.json
+/// without affecting other models in the file.
+pub fn remove_workbuddy_provider_from_live(provider_id: &str) -> Result<(), AppError> {
+    // Missing file/dir is a no-op: nothing to remove.
+    if !crate::workbuddy_config::get_workbuddy_models_path().exists() {
+        log::debug!(
+            "WorkBuddy models.json doesn't exist, skipping removal of '{provider_id}'"
+        );
+        return Ok(());
+    }
+
+    crate::workbuddy_config::remove_provider(provider_id)?;
+    log::info!("WorkBuddy model '{provider_id}' removed from live config");
 
     Ok(())
 }

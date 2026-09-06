@@ -38,6 +38,7 @@ mod store;
 mod tray;
 mod usage_events;
 mod usage_script;
+mod workbuddy_config;
 
 pub use app_config::{AppType, InstalledSkill, McpApps, McpServer, MultiAppConfig, SkillApps};
 pub use codex_config::{
@@ -866,6 +867,13 @@ pub fn run() {
                 Ok(_) => log::debug!("○ No Hermes provider changes from live config"),
                 Err(e) => log::warn!("✗ Failed to import Hermes providers: {e}"),
             }
+            match crate::services::provider::import_workbuddy_providers_from_live(&app_state) {
+                Ok(count) if count > 0 => {
+                    log::info!("✓ Synced {count} WorkBuddy model(s) from live config");
+                }
+                Ok(_) => log::debug!("○ No WorkBuddy model changes from live config"),
+                Err(e) => log::warn!("✗ Failed to import WorkBuddy models: {e}"),
+            }
             match crate::services::provider::import_pi_providers_from_live(&app_state) {
                 Ok(count) if count > 0 => {
                     log::info!("✓ Synced {count} Pi provider(s) from native config");
@@ -1654,6 +1662,10 @@ pub fn run() {
             commands::import_hermes_providers_from_live,
             commands::get_hermes_live_provider_ids,
             commands::get_hermes_live_provider,
+            // WorkBuddy specific
+            commands::import_workbuddy_providers_from_live,
+            commands::get_workbuddy_live_provider_ids,
+            commands::get_workbuddy_live_provider,
             commands::get_hermes_model_config,
             commands::open_hermes_web_ui,
             commands::launch_hermes_dashboard,

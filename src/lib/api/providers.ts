@@ -204,6 +204,22 @@ export const providersApi = {
   async importHermesFromLive(): Promise<number> {
     return await invoke("import_hermes_providers_from_live");
   },
+
+  /**
+   * 获取 WorkBuddy live 配置（models.json）中的模型 ID 列表
+   * 用于前端判断模型是否已写入 WorkBuddy 配置
+   */
+  async getWorkBuddyLiveProviderIds(): Promise<string[]> {
+    return await invoke("get_workbuddy_live_provider_ids");
+  },
+
+  /**
+   * 从 WorkBuddy live 配置导入模型到数据库
+   * WorkBuddy 特有功能：由于累加模式，用户可能已在 models.json 中配置模型
+   */
+  async importWorkBuddyFromLive(): Promise<number> {
+    return await invoke("import_workbuddy_providers_from_live");
+  },
 };
 
 // ============================================================================

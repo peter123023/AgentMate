@@ -135,6 +135,9 @@ impl ConfigService {
                 // OpenClaw uses additive mode, no live sync needed
                 // OpenClaw providers are managed directly in the config file
             }
+            AppType::WorkBuddy => {
+                // WorkBuddy uses additive mode (models.json), no live sync needed here.
+            }
             AppType::Hermes => {
                 // Hermes uses additive mode, no live sync needed
             }

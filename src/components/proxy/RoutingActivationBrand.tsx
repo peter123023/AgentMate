@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +36,7 @@ export function RoutingActivationBrand({
   contextKey,
   ready,
 }: RoutingActivationBrandProps) {
+  const { t } = useTranslation();
   const prefersReducedMotion = useReducedMotion();
   const previousState = useRef({ active, contextKey, ready });
   const [burstSequence, setBurstSequence] = useState(0);
@@ -84,15 +86,18 @@ export function RoutingActivationBrand({
         />
       )}
 
-      <motion.a
-        href="https://modelboard.io"
-        target="_blank"
-        rel="noreferrer"
-        className={cn(
-          "relative z-10 text-xl font-semibold transition-colors duration-500",
+      <motion.span
+        data-testid="routing-activation-status"
+        title={
           active
-            ? "text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 dark:hover:text-emerald-300"
-            : "text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300",
+            ? t("proxy.routingStatusActive")
+            : t("proxy.routingStatusIdle")
+        }
+        className={cn(
+          "relative z-10 block h-2.5 w-2.5 rounded-full transition-colors duration-500",
+          active
+            ? "bg-emerald-500 shadow-[0_0_6px_rgba(52,211,153,0.6)]"
+            : "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.4)]",
         )}
         animate={
           showBurst
@@ -121,9 +126,7 @@ export function RoutingActivationBrand({
               }
             : { duration: 0.28, ease: [0.22, 1, 0.36, 1] }
         }
-      >
-        ModelBoard
-      </motion.a>
+      />
 
       {showBurst && (
         <motion.span

@@ -912,7 +912,8 @@
     "opencode": "OpenCode",
     "openclaw": "OpenClaw",
     "hermes": "Hermes",
-    "pi": "Pi"
+    "pi": "Pi",
+    "workbuddy": "WorkBuddy"
   },
   "sidebar": {
     "collapse": "サイドバーを折りたたむ",
@@ -2791,6 +2792,8 @@
     }
   },
   "proxy": {
+    "routingStatusActive": "ルーティング有効",
+    "routingStatusIdle": "ダイレクトモード",
     "panel": {
       "serviceAddress": "サービスアドレス",
       "addressCopied": "アドレスをコピーしました",

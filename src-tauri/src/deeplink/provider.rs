@@ -157,6 +157,11 @@ pub(crate) fn build_provider_from_request(
                 "Pi providers must be added from the Pi provider page".to_string(),
             ));
         }
+        AppType::WorkBuddy => {
+            return Err(AppError::InvalidInput(
+                "WorkBuddy models must be added from the WorkBuddy provider page".to_string(),
+            ));
+        }
     };
 
     // Build usage script configuration if provided

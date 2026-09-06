@@ -24,7 +24,7 @@ use crate::store::AppState;
 // Re-export sub-module functions for external access
 pub use live::{
     import_default_config, import_hermes_providers_from_live, import_openclaw_providers_from_live,
-    import_opencode_providers_from_live, read_live_settings,
+    import_opencode_providers_from_live, import_workbuddy_providers_from_live, read_live_settings,
     should_import_default_config_on_startup, sync_current_to_live,
     update_toml_common_config_snippet,
 };
@@ -46,7 +46,7 @@ pub(crate) use live::{
 // Internal re-exports
 use live::{
     remove_hermes_provider_from_live, remove_openclaw_provider_from_live,
-    remove_opencode_provider_from_live, write_gemini_live,
+    remove_opencode_provider_from_live, remove_workbuddy_provider_from_live, write_gemini_live,
 };
 use usage::validate_usage_script;
 
@@ -4980,6 +4980,7 @@ impl ProviderService {
                     AppType::OpenCode => remove_opencode_provider_from_live(id)?,
                     AppType::OpenClaw => remove_openclaw_provider_from_live(id)?,
                     AppType::Hermes => remove_hermes_provider_from_live(id)?,
+                    AppType::WorkBuddy => remove_workbuddy_provider_from_live(id)?,
                     _ => {}
                 }
             }
@@ -5048,6 +5049,9 @@ impl ProviderService {
             }
             AppType::Hermes => {
                 remove_hermes_provider_from_live(id)?;
+            }
+            AppType::WorkBuddy => {
+                remove_workbuddy_provider_from_live(id)?;
             }
             _ => {
                 return Err(AppError::Message(format!(
@@ -5417,6 +5421,7 @@ impl ProviderService {
                     AppType::OpenCode => remove_opencode_provider_from_live(&provider.id),
                     AppType::OpenClaw => remove_openclaw_provider_from_live(&provider.id),
                     AppType::Hermes => remove_hermes_provider_from_live(&provider.id),
+                    AppType::WorkBuddy => remove_workbuddy_provider_from_live(&provider.id),
                     _ => Ok(()),
                 };
 
@@ -5682,6 +5687,7 @@ impl ProviderService {
             AppType::OpenClaw => Self::extract_openclaw_common_config(&provider.settings_config),
             AppType::Hermes => Ok(String::new()), // Hermes doesn't use common config snippets
             AppType::Pi => Ok(String::new()),
+            AppType::WorkBuddy => Ok(String::new()),
         }
     }
 
@@ -5700,6 +5706,7 @@ impl ProviderService {
             AppType::OpenClaw => Self::extract_openclaw_common_config(settings_config),
             AppType::Hermes => Ok(String::new()), // Hermes doesn't use common config snippets
             AppType::Pi => Ok(String::new()),
+            AppType::WorkBuddy => Ok(String::new()),
         }
     }
 
@@ -6468,6 +6475,16 @@ impl ProviderService {
             AppType::Pi => {
                 crate::pi_config::validate_provider_node(&provider.id, &provider.settings_config)?;
             }
+            AppType::WorkBuddy => {
+                // WorkBuddy model entry: must be a JSON object.
+                if !provider.settings_config.is_object() {
+                    return Err(AppError::localized(
+                        "provider.workbuddy.settings.not_object",
+                        "WorkBuddy 模型配置必须是 JSON 对象",
+                        "WorkBuddy model configuration must be a JSON object",
+                    ));
+                }
+            }
         }
 
         // Validate and clean UsageScript configuration (common for all app types)
@@ -6492,6 +6509,21 @@ impl ProviderService {
         app_type: &AppType,
     ) -> Result<(String, String), AppError> {
         match app_type {
+            AppType::WorkBuddy => {
+                let api_key = provider
+                    .settings_config
+                    .get("apiKey")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .to_string();
+                let base_url = provider
+                    .settings_config
+                    .get("url")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .to_string();
+                Ok((api_key, base_url))
+            }
             AppType::Claude => {
                 let env = provider
                     .settings_config

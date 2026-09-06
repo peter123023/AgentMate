@@ -55,6 +55,7 @@ import {
   hermesProviderPresets,
   type HermesProviderPreset,
 } from "@/config/hermesProviderPresets";
+import { workbuddyProviderPresets } from "@/config/workbuddyProviderPresets";
 import { OpenCodeFormFields } from "./OpenCodeFormFields";
 import { OpenClawFormFields } from "./OpenClawFormFields";
 import { HermesFormFields } from "./HermesFormFields";
@@ -772,6 +773,11 @@ function ProviderFormFull({
     } else if (appId === "hermes") {
       return hermesProviderPresets.map<PresetEntry>((preset, index) => ({
         id: `hermes-${index}`,
+        preset,
+      }));
+    } else if (appId === "workbuddy") {
+      return workbuddyProviderPresets.map<PresetEntry>((preset, index) => ({
+        id: `workbuddy-${index}`,
         preset,
       }));
     }

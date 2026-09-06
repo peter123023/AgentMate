@@ -6,6 +6,7 @@ import type { VisibleApps } from "@/types";
 import { cn } from "@/lib/utils";
 import { AppGlyph } from "@/components/AppSwitcher";
 import { APP_IDS } from "@/config/appConfig";
+import appIcon from "@/assets/icons/app-icon.png";
 
 const COLLAPSE_STORAGE_KEY = "model-board-sidebar-collapsed";
 
@@ -48,8 +49,27 @@ export function AppSidebar({
         collapsed ? "w-16" : "w-[200px]",
       )}
     >
-      {/* 顶部：收起按钮（仅图标，位于左侧顶部） */}
-      <div className="flex h-12 shrink-0 items-center justify-start border-b border-border px-2">
+      {/* 顶部：品牌（logo + ModelBoard）；收起时仅显示 logo */}
+      <div
+        className={cn(
+          "flex shrink-0 items-center border-b border-border",
+          collapsed
+            ? "flex-col justify-center gap-1 px-1 py-2"
+            : "h-12 justify-between px-3",
+        )}
+      >
+        <div className="flex min-w-0 items-center gap-2">
+          <img
+            src={appIcon}
+            alt="ModelBoard"
+            className="h-7 w-7 shrink-0 rounded-md"
+          />
+          {!collapsed && (
+            <span className="truncate text-sm font-semibold">
+              {t("app.title")}
+            </span>
+          )}
+        </div>
         <button
           type="button"
           onClick={handleToggle}
@@ -57,7 +77,7 @@ export function AppSidebar({
           title={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
           aria-label={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
           className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground",
+            "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground",
             "transition-colors duration-150 hover:bg-muted/50 hover:text-foreground",
           )}
         >
