@@ -9,7 +9,7 @@
 //! instead of the parent schema`). Codex Desktop's built-in tool set
 //! (`automation_update`, schemars-generated `$defs.__schemaN` entries) carries
 //! exactly that shape, so every Codex Desktop turn against Kimi failed
-//! (farion1231/cc-switch#6867). Codex CLI's own tools never emit it.
+//! (farion1231/model-board#6867). Codex CLI's own tools never emit it.
 //!
 //! The rewrite is the draft-07 idiom for the same constraint: move the `$ref`
 //! into `allOf` and leave every sibling where it is,

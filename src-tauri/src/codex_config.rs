@@ -17,11 +17,11 @@ use toml_edit::DocumentMut;
 
 pub const CC_SWITCH_CODEX_MODEL_PROVIDER_ID: &str = "custom";
 /// Temporary model-provider id used while the built-in `codex-official`
-/// provider is routed through CC Switch.  A dedicated id is an ownership
+/// provider is routed through ModelBoard.  A dedicated id is an ownership
 /// marker: unlike a generic localhost `base_url`, it can be detected and
 /// cleaned up without mistaking a user's own local provider for takeover.
-pub const CC_SWITCH_CODEX_OFFICIAL_PROXY_PROVIDER_ID: &str = "cc-switch-official";
-pub const CC_SWITCH_CODEX_MODEL_CATALOG_FILENAME: &str = "cc-switch-model-catalog.json";
+pub const CC_SWITCH_CODEX_OFFICIAL_PROXY_PROVIDER_ID: &str = "model-board-official";
+pub const CC_SWITCH_CODEX_MODEL_CATALOG_FILENAME: &str = "model-board-model-catalog.json";
 const CODEX_PROXY_AUTH_PLACEHOLDER: &str = "PROXY_MANAGED";
 
 #[cfg(target_os = "windows")]
@@ -40,7 +40,7 @@ pub(crate) const CODEX_WEB_SEARCH_FIELD: &str = "web_search";
 /// Value that disables the web-search tool. Some native `/responses` gateways
 /// reject a `web_search` tool with `responses_feature_not_supported` ("tool type
 /// 'web_search' is not supported by this gateway phase"), so for those we write
-/// this per the vendors' official Codex docs. Also doubles as cc-switch's
+/// this per the vendors' official Codex docs. Also doubles as model-board's
 /// ownership sentinel: we only ever remove a `web_search` key whose value equals
 /// this string, never a user's own setting.
 pub(crate) const CODEX_WEB_SEARCH_DISABLED: &str = "disabled";
@@ -157,7 +157,7 @@ const CODEX_MANAGED_OAUTH_LIVE_AUTH_MARKER_FILENAME: &str = "codex_managed_oauth
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct CodexManagedOAuthLiveAuthMarker {
     version: u32,
-    /// cc-switch 本地托管账号 ID，用于区分同一 ChatGPT workspace 下的登录。
+    /// model-board 本地托管账号 ID，用于区分同一 ChatGPT workspace 下的登录。
     account_id: String,
     /// 原生 auth.json 的 `tokens.account_id`，即 ChatGPT workspace ID。
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -230,7 +230,7 @@ impl CodexLiveFileState {
     }
 }
 
-/// Rollback point for the cc-switch-owned model catalog. Catalog projection
+/// Rollback point for the model-board-owned model catalog. Catalog projection
 /// writes this file before the caller commits `config.toml`, so guarded restore
 /// paths use this snapshot when a concurrently changing `auth.json` cancels the
 /// commit.
@@ -392,7 +392,7 @@ impl CodexLiveStateSnapshot {
 
 /// Which Codex tool surface the generated model catalog should target.
 ///
-/// - `ProxyChat`: cc-switch's proxy takes over and converts Responses<->Chat,
+/// - `ProxyChat`: model-board's proxy takes over and converts Responses<->Chat,
 ///   so the catalog keeps Codex's default tool set (incl. the freeform
 ///   `apply_patch` custom tool, which the proxy rewrites to a function tool).
 /// - `NativeResponses`: Codex talks directly to a provider's native
@@ -403,7 +403,7 @@ impl CodexLiveStateSnapshot {
 pub enum CodexCatalogToolProfile {
     ProxyChat,
     NativeResponses,
-    /// Codex talks (through cc-switch's proxy) to a native Anthropic Messages
+    /// Codex talks (through model-board's proxy) to a native Anthropic Messages
     /// gateway. Like `NativeResponses` it must suppress Codex's freeform custom
     /// tools — the Responses→Anthropic transform keeps only `function` tools.
     /// Additionally the Codex `web_search` hosted tool is unusable on this path
@@ -472,7 +472,7 @@ pub(crate) fn codex_managed_oauth_live_auth_marker_exists() -> bool {
 /// 仅接受 ChatGPT 登录形状（`auth_mode == "chatgpt"`、`OPENAI_API_KEY` 可清空）。
 /// 托管账号写入的完整 bundle 会额外带 `tokens.refresh_token` 与顶层 `last_refresh`，
 /// 这里一并容忍。Codex CLI 自刷新会轮换 access_token，因此短期 token 指纹不能
-/// 作为稳定的所有权谓词；cc-switch 的本地账号 ID 单独记录在 marker 中。
+/// 作为稳定的所有权谓词；model-board 的本地账号 ID 单独记录在 marker 中。
 fn extract_codex_managed_oauth_account_id(auth: &Value) -> Option<String> {
     let auth_obj = auth.as_object()?;
 
@@ -569,7 +569,7 @@ pub(crate) fn test_codex_id_token(subject: &str) -> String {
     format!("{header}.{payload}.")
 }
 
-/// Build the native-shaped ChatGPT auth bundle shared by cc-switch and Codex CLI.
+/// Build the native-shaped ChatGPT auth bundle shared by model-board and Codex CLI.
 pub fn codex_managed_oauth_auth_value(
     account_id: &str,
     access_token: &str,
@@ -767,7 +767,7 @@ fn clear_codex_managed_oauth_live_auth_marker_for_account(
 /// 切走托管 provider 或从认证中心删除账号时，清理其残留在
 /// `~/.codex/auth.json` 的 ChatGPT 登录。
 ///
-/// 删除谓词同时校验 cc-switch marker 中的本地账号 ID 与原生 auth.json 中的
+/// 删除谓词同时校验 model-board marker 中的本地账号 ID 与原生 auth.json 中的
 /// workspace ID，不依赖会被 Codex CLI 自刷新破坏的 access-token 指纹。切换路径必须
 /// 先把盘上轮换后的 refresh token 采纳回 manager，再调用本函数。
 pub fn clear_codex_live_auth_for_managed_account(account_id: &str) -> Result<(), AppError> {
@@ -837,10 +837,10 @@ pub fn clear_codex_live_auth_for_managed_account_if_unchanged(
     Ok(())
 }
 
-/// 判断给定的 Codex `auth` 是否属于指定的 cc-switch 本地托管账号。
+/// 判断给定的 Codex `auth` 是否属于指定的 model-board 本地托管账号。
 ///
 /// 原生 `tokens.account_id` 是 workspace ID，可能被多个本地账号共享；因此必须同时
-/// 命中 cc-switch marker 中的本地账号 ID，不能只按 auth.json 内容判断。
+/// 命中 model-board marker 中的本地账号 ID，不能只按 auth.json 内容判断。
 ///
 /// 用于 Live 备份剥离：避免把托管账号的可刷新 token 持久化进备份配置。
 pub fn codex_live_auth_is_managed_chatgpt_login(auth: &Value, account_id: &str) -> bool {
@@ -927,7 +927,7 @@ pub(crate) fn read_codex_live_auth_refresh_for_managed_account(
 ///
 /// The write is compare-and-swap-like: immediately before replacing auth.json,
 /// it verifies that the file still contains the refresh token used for the
-/// network request. Codex CLI does not share cc-switch's process lock, so this
+/// network request. Codex CLI does not share model-board's process lock, so this
 /// is a best-effort guard that narrows (but cannot make atomic) the cross-process
 /// check-to-replace window.
 /// Ownership is local-account scoped through the marker, while auth.json keeps
@@ -1902,7 +1902,7 @@ fn load_codex_native_responses_template() -> Value {
 }
 
 /// Hosts whose native `/responses` gateway publishes an OFFICIAL Codex model
-/// catalog (models.json) that cc-switch mirrors verbatim. Matched against
+/// catalog (models.json) that model-board mirrors verbatim. Matched against
 /// `base_url` ONLY — deliberately NOT by model brand, unlike
 /// `CODEX_WEB_SEARCH_REJECT_MODEL_PREFIXES`: the official entries GRANT
 /// capabilities (freeform `apply_patch`, vendor harness), and an aggregator
@@ -1930,7 +1930,7 @@ fn load_codex_deepseek_official_catalog_models() -> Vec<Value> {
 
 /// Official vendor catalog entries for the provider in `config_text`, if its
 /// gateway ships one. Only the `NativeResponses` profile qualifies: ProxyChat
-/// runs through cc-switch's converter (gpt-5.5 template contract) and the
+/// runs through model-board's converter (gpt-5.5 template contract) and the
 /// Anthropic transform drops custom tools, so both must keep their existing
 /// templates. Host-driven like the web_search blacklist, so existing providers
 /// pick it up on their next switch without a re-save.
@@ -2182,7 +2182,7 @@ fn set_codex_model_catalog_json_field(
 
     match catalog_path {
         Some(_) => {
-            // Only claim the pointer when it is absent or already cc-switch-owned.
+            // Only claim the pointer when it is absent or already model-board-owned.
             // A user-managed external catalog file (custom filename or path) is
             // left untouched, mirroring the None arm's ownership rule that
             // `resolve_cc_switch_catalog_path` relies on.
@@ -2221,12 +2221,12 @@ fn set_codex_model_catalog_json_field(
 /// web-search tool off. When `disable` is true we write `web_search = "disabled"`
 /// (the catalog's `supports_search_tool` does NOT gate this — the request-time
 /// tool comes from the config, defaulting on). When false we *remove* the field,
-/// but only when it carries cc-switch's own `"disabled"` sentinel, so switching
+/// but only when it carries model-board's own `"disabled"` sentinel, so switching
 /// back to a web-search-capable provider re-enables it without clobbering a
 /// user's manual setting.
 ///
 /// The caller decides `disable` (see `codex_native_gateway_rejects_web_search`);
-/// lifecycle is bound to the cc-switch catalog pointer so the field is set/cleaned
+/// lifecycle is bound to the model-board catalog pointer so the field is set/cleaned
 /// up wherever the native catalog is written/removed.
 fn set_codex_native_web_search_field(config_text: &str, disable: bool) -> Result<String, AppError> {
     let mut doc = config_text
@@ -2286,13 +2286,13 @@ pub fn prepare_codex_config_text_with_model_catalog(
 }
 
 /// Reverse of `prepare_codex_config_text_with_model_catalog`: read the
-/// cc-switch–maintained catalog file referenced by `~/.codex/config.toml` and
+/// model-board–maintained catalog file referenced by `~/.codex/config.toml` and
 /// convert it back into the simplified shape the frontend table uses:
 /// `{ "models": [{ "model", "displayName"?, "contextWindow"?, hidden overrides... }, ...] }`.
 ///
 /// We only reverse-parse catalogs whose `model_catalog_json` path is the
-/// cc-switch–generated file (identified by filename
-/// `cc-switch-model-catalog.json`). A user-managed external catalog file is
+/// model-board–generated file (identified by filename
+/// `model-board-model-catalog.json`). A user-managed external catalog file is
 /// left alone — surfacing its richer structure as the simplified table would
 /// be a downgrade we can't safely round-trip.
 ///
@@ -2350,12 +2350,12 @@ pub(crate) fn read_limited_string(path: &Path, max_bytes: u64) -> Result<String,
     fs::read_to_string(path).map_err(|error| AppError::io(path, error))
 }
 
-/// Read the cc-switch Codex model catalog file with a size cap.
+/// Read the model-board Codex model catalog file with a size cap.
 pub(crate) fn read_codex_model_catalog_text(path: &Path) -> Result<String, AppError> {
     read_limited_string(path, MAX_CODEX_CATALOG_BYTES)
 }
 
-/// Given `config.toml` text, resolve the on-disk path of the cc-switch–owned
+/// Given `config.toml` text, resolve the on-disk path of the model-board–owned
 /// catalog file (returns `None` if `model_catalog_json` is absent or points at
 /// a file we don't own). Relative paths are resolved under `base_dir`;
 /// absolute paths must still be inside `base_dir`.
@@ -2402,7 +2402,7 @@ pub(crate) fn resolve_cc_switch_catalog_path(
     }
 
     // 词法包含不等于运行时包含：配置目录内的符号链接（如 ~/.codex/link ->
-    // /etc）能让 `link/cc-switch-model-catalog.json` 通过上面的检查，读取却
+    // /etc）能让 `link/model-board-model-catalog.json` 通过上面的检查，读取却
     // 落到目录外。文件存在时把真实路径 canonicalize 出来再校验一次，并把
     // canonical 路径返回给调用方——后续读取不再经过 symlink 组件。
     if resolved.exists() {
@@ -2668,7 +2668,7 @@ fn codex_provider_table_declares_auth(table: &dyn toml_edit::TableLike) -> bool 
 /// switch the preserved `auth.json` credentials would be sent to the
 /// third-party endpoint. Configs without any routing directive are fine:
 /// they leave Codex on the official provider, and the top-level token is
-/// cc-switch's own record (extract/backfill), never read by Codex.
+/// model-board's own record (extract/backfill), never read by Codex.
 fn codex_config_routes_third_party_without_token_slot(config_text: &str) -> bool {
     let Ok(doc) = config_text.parse::<DocumentMut>() else {
         // Syntactically invalid TOML is rejected later by the write validators.
@@ -2727,12 +2727,12 @@ fn codex_config_falls_back_to_official_auth_for_third_party(config_text: &str) -
     }
 }
 
-/// cc-switch-owned provider id used by the legacy-shape normalization below.
+/// model-board-owned provider id used by the legacy-shape normalization below.
 /// Not a Codex reserved id, so an injected token lands inside the table.
-const CODEX_MIGRATED_PROVIDER_ID: &str = "cc-switch";
+const CODEX_MIGRATED_PROVIDER_ID: &str = "model-board";
 
-/// Pick the first free cc-switch-owned provider id (`cc-switch`,
-/// `cc-switch-2`, …) so migrations never overwrite a user-authored table.
+/// Pick the first free model-board-owned provider id (`model-board`,
+/// `model-board-2`, …) so migrations never overwrite a user-authored table.
 fn first_free_cc_switch_provider_id(model_providers: Option<&dyn toml_edit::TableLike>) -> String {
     let mut candidate = CODEX_MIGRATED_PROVIDER_ID.to_string();
     let mut suffix = 2usize;
@@ -2751,12 +2751,12 @@ const CODEX_STALE_RESERVED_TABLE_IDS: &[&str] = &["openai", "ollama", "lmstudio"
 /// Migrate stale reserved provider tables (`[model_providers.openai]`,
 /// `.ollama`, `.lmstudio`). Codex rejects the WHOLE config at load when one
 /// of these reserved built-in ids is overridden, so any surviving table
-/// means "switch reports success, Codex refuses to start" — older cc-switch
+/// means "switch reports success, Codex refuses to start" — older model-board
 /// takeover projections created exactly these shapes.
 ///
 /// The reserved-id match is EXACT, mirroring upstream: `OpenAI` and other
 /// case variants are legitimate custom ids and must not be touched. Each
-/// table is renamed losslessly to the first free cc-switch id (nothing
+/// table is renamed losslessly to the first free model-board id (nothing
 /// proves which of its keys the user cares about), with
 /// `wire_api = "responses"` defaulted in — all three built-ins speak
 /// Responses on 0.149.
@@ -2868,7 +2868,7 @@ fn migrate_stale_reserved_provider_tables(
 
 /// Codex 0.149 rejects the WHOLE config at deserialization when any
 /// non-Bedrock provider table has an empty/missing `name` — active or not
-/// ("provider name must not be empty"). Historic cc-switch updates and
+/// ("provider name must not be empty"). Historic model-board updates and
 /// hand-written configs created tables carrying only `base_url`, so every
 /// live write normalizes custom tables into a loadable shape; the name is
 /// cosmetic, so the table id is as good a value as any. Bedrock tables are
@@ -2991,7 +2991,7 @@ fn preflight_codex_provider_table_conflicts(config_text: &str) -> Result<(), App
 
 /// Rewrite the legacy "reroute the built-in openai provider" shape —
 /// `model_provider` unset/"openai" plus a top-level `openai_base_url` — into
-/// a custom provider table named `cc-switch`. Before Codex 0.149 this shape
+/// a custom provider table named `model-board`. Before Codex 0.149 this shape
 /// worked because the built-in provider read the third-party key from
 /// auth.json (ambient auth); auth.json no longer carries third-party keys,
 /// so the key needs a provider-scoped slot. The built-in `openai` provider
@@ -3388,7 +3388,7 @@ pub fn apply_codex_official_proxy_route(
         }
     };
 
-    // Clean only CC Switch's placeholder from every stale provider table. Real
+    // Clean only ModelBoard's placeholder from every stale provider table. Real
     // user bearer tokens are preserved, as are all unrelated provider fields.
     remove_codex_proxy_placeholders_from_providers(&mut providers);
 
@@ -3403,7 +3403,7 @@ pub fn apply_codex_official_proxy_route(
     Ok(doc.to_string())
 }
 
-/// Whether a live Codex config is the official route projected by CC Switch.
+/// Whether a live Codex config is the official route projected by ModelBoard.
 pub fn codex_config_has_official_proxy_route(config_text: &str) -> bool {
     if !config_text.contains(CC_SWITCH_CODEX_OFFICIAL_PROXY_PROVIDER_ID) {
         return false;
@@ -3420,7 +3420,7 @@ pub fn codex_config_has_official_proxy_route(config_text: &str) -> bool {
         == Some(CC_SWITCH_CODEX_OFFICIAL_PROXY_PROVIDER_ID)
 }
 
-/// Remove only the official takeover route owned by CC Switch. This is a
+/// Remove only the official takeover route owned by ModelBoard. This is a
 /// last-resort crash cleanup when no live backup or provider SSOT is usable.
 pub fn remove_codex_official_proxy_route(config_text: &str) -> Result<String, AppError> {
     let mut doc = config_text
@@ -3675,7 +3675,7 @@ fn plan_codex_live_write(
         preflight_codex_provider_table_conflicts(text)?;
     }
     if category == Some("official") {
-        // Official configs seeded by older cc-switch versions can carry
+        // Official configs seeded by older model-board versions can carry
         // stale reserved tables too — Codex refuses those at load, so
         // migrate on every write path, not only third-party. Official
         // context: the route never follows the renamed table.
@@ -3687,7 +3687,7 @@ fn plan_codex_live_write(
         // Official writes never go through prepare_codex_provider_live_config,
         // so normalize name-less custom tables here too — 0.149 validates
         // EVERY provider table at load, and an official config can carry
-        // idle leftovers from older cc-switch versions.
+        // idle leftovers from older model-board versions.
         let named = match config_text {
             Some(text) => backfill_codex_custom_provider_names(text)?,
             None => None,
@@ -3737,7 +3737,7 @@ fn plan_codex_live_write(
 
     // The legacy reroute shape (built-in `openai` provider + top-level
     // `openai_base_url`) has no provider table to carry the key — rewrite it
-    // into a cc-switch-owned custom table before the safety gates run.
+    // into a model-board-owned custom table before the safety gates run.
     // prepare_codex_provider_live_config normalizes again internally
     // (idempotent); the gates need the normalized text here.
     let normalized = match config_text {
@@ -4245,7 +4245,7 @@ mod tests {
         crate::config::write_json_file(&get_codex_auth_path(), &auth).expect("seed live auth R1");
         crate::config::write_text_file(
             &get_codex_config_path(),
-            "# cas-guard-sentinel\nmodel = \"gpt-5.5\"\nmodel_catalog_json = \"cc-switch-model-catalog.json\"\n",
+            "# cas-guard-sentinel\nmodel = \"gpt-5.5\"\nmodel_catalog_json = \"model-board-model-catalog.json\"\n",
         )
         .expect("seed live config");
         crate::config::write_json_file(
@@ -4425,7 +4425,7 @@ model_providers = { rightcode = { name = "RightCode", experimental_bearer_token 
 
     #[test]
     fn unified_session_bucket_preserves_other_keys_and_explicit_routing() {
-        let with_catalog = "model_catalog_json = \"cc-switch-model-catalog.json\"\n";
+        let with_catalog = "model_catalog_json = \"model-board-model-catalog.json\"\n";
         let injected = inject_codex_unified_session_bucket(with_catalog).expect("inject");
         assert!(injected.contains("model_catalog_json"));
         assert!(injected.contains("model_provider = \"custom\""));
@@ -4459,7 +4459,7 @@ base_url = "https://relay.example/v1"
         let stripped = strip_codex_unified_session_bucket(&injected).expect("strip");
         assert_eq!(stripped.trim(), "");
 
-        let with_catalog = "model_catalog_json = \"cc-switch-model-catalog.json\"\n";
+        let with_catalog = "model_catalog_json = \"model-board-model-catalog.json\"\n";
         let injected = inject_codex_unified_session_bucket(with_catalog).expect("inject");
         let stripped = strip_codex_unified_session_bucket(&injected).expect("strip");
         assert_eq!(stripped, with_catalog);
@@ -4980,7 +4980,7 @@ http_headers = { x-api-version = "2026-01-01" }
 
         // Safe shapes: either the token has a landing spot, or nothing
         // reroutes requests away from the official provider (top-level token
-        // stays a cc-switch-only record).
+        // stays a model-board-only record).
         let custom_with_table = r#"model_provider = "aihubmix"
 
 [model_providers.aihubmix]
@@ -5124,11 +5124,11 @@ openai_base_url = "https://relay.example/v1"
             "the top-level reroute must be removed; got:\n{normalized}"
         );
         assert!(
-            normalized.contains("model_provider = \"cc-switch\""),
-            "routing must move to the cc-switch table; got:\n{normalized}"
+            normalized.contains("model_provider = \"model-board\""),
+            "routing must move to the model-board table; got:\n{normalized}"
         );
         assert!(
-            normalized.contains("[model_providers.cc-switch]"),
+            normalized.contains("[model_providers.model-board]"),
             "a custom provider table must be created; got:\n{normalized}"
         );
         assert!(
@@ -5158,7 +5158,7 @@ openai_base_url = "https://relay.example/v1"
                 .expect("prepare live config");
         assert!(
             injected.contains("experimental_bearer_token = \"sk-test\""),
-            "token must land inside the cc-switch table; got:\n{injected}"
+            "token must land inside the model-board table; got:\n{injected}"
         );
         assert_eq!(
             extract_codex_experimental_bearer_token(&injected).as_deref(),
@@ -5201,7 +5201,7 @@ openai_base_url = "https://relay.example/v1"
 
     #[test]
     fn legacy_reroute_normalization_never_overwrites_a_user_cc_switch_table() {
-        // A user-authored [model_providers.cc-switch] proves nothing about
+        // A user-authored [model_providers.model-board] proves nothing about
         // ownership — overwriting it would drop their headers/query params
         // and backfill the loss into the DB. Migration continues under the
         // first free suffixed id instead: refusing outright would let proxy
@@ -5210,7 +5210,7 @@ openai_base_url = "https://relay.example/v1"
         let conflicted = r#"model_provider = "openai"
 openai_base_url = "https://relay.example/v1"
 
-[model_providers.cc-switch]
+[model_providers.model-board]
 name = "Mine"
 base_url = "https://mine.example/v1"
 http_headers = { x-team = "42" }
@@ -5219,8 +5219,8 @@ http_headers = { x-team = "42" }
             .expect("normalize")
             .expect("conflicted shape must still migrate");
         assert!(
-            normalized.contains("model_provider = \"cc-switch-2\"")
-                && normalized.contains("[model_providers.cc-switch-2]"),
+            normalized.contains("model_provider = \"model-board-2\"")
+                && normalized.contains("[model_providers.model-board-2]"),
             "migration must pick the first free suffixed id; got:\n{normalized}"
         );
         assert!(
@@ -5237,7 +5237,7 @@ http_headers = { x-team = "42" }
 
     #[test]
     fn stale_reserved_tables_are_renamed_with_fallback_aware_routing() {
-        // Older cc-switch takeover projections created reserved
+        // Older model-board takeover projections created reserved
         // [model_providers.openai]/[.ollama]/[.lmstudio] tables; Codex 0.148+
         // rejects the whole config at load. Tables are renamed and made
         // loadable; the route follows unless the table would resolve
@@ -5259,13 +5259,13 @@ http_headers = { x-team = "42" }
                 .expect("prepare live config");
         assert!(
             !prepared.contains("[model_providers.openai]")
-                && prepared.contains("[model_providers.cc-switch]")
+                && prepared.contains("[model_providers.model-board]")
                 && prepared.contains("x-team")
                 && prepared.contains("wire_api = \"responses\""),
             "the table must be renamed losslessly (wire_api defaulted); got:\n{prepared}"
         );
         assert!(
-            prepared.contains("model_provider = \"cc-switch\""),
+            prepared.contains("model_provider = \"model-board\""),
             "with a key the route must follow the renamed table; got:\n{prepared}"
         );
         assert_eq!(
@@ -5287,7 +5287,7 @@ http_headers = { Authorization = "Bearer own-key" }
         let keyless = prepare_codex_provider_live_config(&json!({}), header_auth_stale)
             .expect("prepare live config without token");
         assert!(
-            keyless.contains("model_provider = \"cc-switch\"") && keyless.contains("own-key"),
+            keyless.contains("model_provider = \"model-board\"") && keyless.contains("own-key"),
             "self-authenticating tables must keep their route; got:\n{keyless}"
         );
         assert!(
@@ -5311,7 +5311,7 @@ wire_api = "chat"
         let local = prepare_codex_provider_live_config(&json!({}), unauthenticated_stale)
             .expect("prepare live config without token");
         assert!(
-            local.contains("model_provider = \"cc-switch\"")
+            local.contains("model_provider = \"model-board\"")
                 && local.contains("wire_api = \"responses\"")
                 && !local.contains("wire_api = \"chat\""),
             "unauthenticated tables keep their route and chat wire_api is normalized; got:\n{local}"
@@ -5330,7 +5330,7 @@ experimental_bearer_token = "own-scoped-token"
         let scoped = prepare_codex_provider_live_config(&json!({}), scoped_token_stale)
             .expect("prepare live config without token");
         assert!(
-            scoped.contains("model_provider = \"cc-switch\"")
+            scoped.contains("model_provider = \"model-board\"")
                 && scoped.contains("own-scoped-token"),
             "tables with a scoped token must keep their route; got:\n{scoped}"
         );
@@ -5350,7 +5350,7 @@ requires_openai_auth = true
         assert!(
             snapped.contains("model_provider = \"openai\"")
                 && !snapped.contains("[model_providers.openai]")
-                && snapped.contains("[model_providers.cc-switch]"),
+                && snapped.contains("[model_providers.model-board]"),
             "credential-less tables are renamed but the route snaps back; got:\n{snapped}"
         );
 
@@ -5360,7 +5360,7 @@ requires_openai_auth = true
             .expect("stale table must still be renamed");
         assert!(
             official.contains("model_provider = \"openai\"")
-                && official.contains("[model_providers.cc-switch]"),
+                && official.contains("[model_providers.model-board]"),
             "official routes never follow a renamed table; got:\n{official}"
         );
 
@@ -5383,8 +5383,8 @@ base_url = "http://127.0.0.1:1234/v1"
         assert!(
             !cleaned.contains("[model_providers.ollama]")
                 && !cleaned.contains("[model_providers.lmstudio]")
-                && cleaned.contains("[model_providers.cc-switch]")
-                && cleaned.contains("[model_providers.cc-switch-2]")
+                && cleaned.contains("[model_providers.model-board]")
+                && cleaned.contains("[model_providers.model-board-2]")
                 && cleaned.contains("model_provider = \"third\""),
             "every reserved table is renamed, the active route stays; got:\n{cleaned}"
         );
@@ -5500,8 +5500,8 @@ model_providers = { mine = { name = "Mine", base_url = "https://mine.example/v1"
             "the reroute must be rewritten away; got:\n{prepared}"
         );
         assert!(
-            prepared.contains("model_provider = \"cc-switch\"")
-                && prepared.contains("cc-switch = {"),
+            prepared.contains("model_provider = \"model-board\"")
+                && prepared.contains("model-board = {"),
             "migration must add an inline member matching the container style; got:\n{prepared}"
         );
         assert!(
@@ -5633,7 +5633,7 @@ openai_base_url = "https://relay.example/v1"
                 .expect("prepare live config");
         assert!(
             !prepared.contains("openai_base_url")
-                && prepared.contains("[model_providers.cc-switch]"),
+                && prepared.contains("[model_providers.model-board]"),
             "prepare must rewrite the legacy reroute shape; got:\n{prepared}"
         );
         assert_eq!(
@@ -7162,7 +7162,7 @@ wire_api = "responses"
 [model_providers.any]
 name = "any"
 "#;
-        let catalog_path = Path::new("/tmp/cc-switch-model-catalog.json");
+        let catalog_path = Path::new("/tmp/model-board-model-catalog.json");
 
         let result = set_codex_model_catalog_json_field(input, Some(catalog_path)).unwrap();
         let parsed: toml::Value = toml::from_str(&result).unwrap();
@@ -7211,7 +7211,7 @@ name = "xiaomi_mimo"
     #[test]
     fn native_web_search_field_removes_own_sentinel_when_not_disabled() {
         // Switching away from a native provider must re-enable web search by
-        // removing cc-switch's own "disabled" sentinel.
+        // removing model-board's own "disabled" sentinel.
         let input = r#"model = "gpt-5.5"
 web_search = "disabled"
 "#;
@@ -7219,14 +7219,14 @@ web_search = "disabled"
         let parsed: toml::Value = toml::from_str(&result).unwrap();
         assert!(
             parsed.get("web_search").is_none(),
-            "cc-switch's disabled sentinel should be removed when not native"
+            "model-board's disabled sentinel should be removed when not native"
         );
     }
 
     #[test]
     fn native_web_search_field_preserves_user_value() {
         // A user's own web_search value must never be clobbered by cleanup,
-        // only cc-switch's "disabled" sentinel is owned/removable.
+        // only model-board's "disabled" sentinel is owned/removable.
         let input = r#"web_search = "enabled"
 "#;
         let result = set_codex_native_web_search_field(input, false).unwrap();
@@ -7393,7 +7393,7 @@ web_search = "disabled"
     #[test]
     fn resolve_catalog_path_accepts_cc_switch_owned_file() {
         let base = PathBuf::from("/tmp/.codex");
-        let config = r#"model_catalog_json = "/tmp/.codex/cc-switch-model-catalog.json"
+        let config = r#"model_catalog_json = "/tmp/.codex/model-board-model-catalog.json"
 "#;
         let resolved = resolve_cc_switch_catalog_path(config, &base).expect("path resolves");
         assert_eq!(resolved, base.join(CC_SWITCH_CODEX_MODEL_CATALOG_FILENAME));
@@ -7687,10 +7687,10 @@ web_search = "disabled"
         let input = r#"model_provider = "custom"
 model = "glm-5"
 "#;
-        // Simulate a WSL UNC path as cc-switch would see it on Windows;
+        // Simulate a WSL UNC path as model-board would see it on Windows;
         // the function now writes just the relative filename.
         let unc_path =
-            Path::new(r"\\wsl.localhost\Ubuntu\home\user\.codex\cc-switch-model-catalog.json");
+            Path::new(r"\\wsl.localhost\Ubuntu\home\user\.codex\model-board-model-catalog.json");
 
         let result = set_codex_model_catalog_json_field(input, Some(unc_path)).unwrap();
         let parsed: toml::Value = toml::from_str(&result).unwrap();
@@ -7710,7 +7710,7 @@ model = "glm-5"
         let input = r#"model_provider = "custom"
 model = "glm-5"
 "#;
-        let regular_path = Path::new("/home/user/.codex/cc-switch-model-catalog.json");
+        let regular_path = Path::new("/home/user/.codex/model-board-model-catalog.json");
 
         let result = set_codex_model_catalog_json_field(input, Some(regular_path)).unwrap();
         let parsed: toml::Value = toml::from_str(&result).unwrap();
@@ -7726,13 +7726,13 @@ model = "glm-5"
     fn set_catalog_json_none_removes_cc_switch_owned_by_filename() {
         // After the WSL fix, TOML may contain a Linux-style path.
         // The None arm must still remove it (file_name match catches any format).
-        let input = r#"model_catalog_json = "/home/user/.codex/cc-switch-model-catalog.json"
+        let input = r#"model_catalog_json = "/home/user/.codex/model-board-model-catalog.json"
 "#;
         let result = set_codex_model_catalog_json_field(input, None).unwrap();
         let parsed: toml::Value = toml::from_str(&result).unwrap();
         assert!(
             parsed.get("model_catalog_json").is_none(),
-            "None arm should remove cc-switch-owned field regardless of path format"
+            "None arm should remove model-board-owned field regardless of path format"
         );
     }
 
@@ -7751,15 +7751,15 @@ model = "glm-5"
 
     #[test]
     fn set_catalog_json_some_preserves_user_owned_catalog() {
-        // When CC Switch generates a catalog (Some arm), it must still respect a
+        // When ModelBoard generates a catalog (Some arm), it must still respect a
         // user-managed external catalog file instead of clobbering it with the
-        // cc-switch-owned filename. Only an absent or cc-switch-owned pointer is
+        // model-board-owned filename. Only an absent or model-board-owned pointer is
         // claimed; this mirrors the None arm's ownership rule.
         let input = r#"model_provider = "custom"
 model = "glm-5"
 model_catalog_json = "/Users/me/.codex/my-custom-catalog.json"
 "#;
-        let catalog_path = Path::new("/tmp/cc-switch-model-catalog.json");
+        let catalog_path = Path::new("/tmp/model-board-model-catalog.json");
         let result = set_codex_model_catalog_json_field(input, Some(catalog_path)).unwrap();
         let parsed: toml::Value = toml::from_str(&result).unwrap();
         assert_eq!(
@@ -7777,7 +7777,7 @@ model_catalog_json = "/Users/me/.codex/my-custom-catalog.json"
 model = "glm-5"
 model_catalog_json = "my-custom-catalog.json"
 "#;
-        let catalog_path = Path::new("/tmp/cc-switch-model-catalog.json");
+        let catalog_path = Path::new("/tmp/model-board-model-catalog.json");
         let result = set_codex_model_catalog_json_field(input, Some(catalog_path)).unwrap();
         let parsed: toml::Value = toml::from_str(&result).unwrap();
         assert_eq!(
@@ -7790,7 +7790,7 @@ model_catalog_json = "my-custom-catalog.json"
     #[test]
     fn resolve_catalog_finds_relative_filename() {
         let config_text = r#"model_provider = "custom"
-model_catalog_json = "cc-switch-model-catalog.json"
+model_catalog_json = "model-board-model-catalog.json"
 "#;
         let base_dir = PathBuf::from("/home/user/.codex");
         let result = resolve_cc_switch_catalog_path(config_text, &base_dir);
@@ -7803,7 +7803,7 @@ model_catalog_json = "cc-switch-model-catalog.json"
 
     #[test]
     fn resolve_catalog_rejects_absolute_path_outside_config_dir() {
-        let config_text = r#"model_catalog_json = "/tmp/secret/cc-switch-model-catalog.json"
+        let config_text = r#"model_catalog_json = "/tmp/secret/model-board-model-catalog.json"
 "#;
         let base_dir = PathBuf::from("/home/user/.codex");
         let result = resolve_cc_switch_catalog_path(config_text, &base_dir);
@@ -7815,7 +7815,7 @@ model_catalog_json = "cc-switch-model-catalog.json"
 
     #[test]
     fn resolve_catalog_accepts_absolute_path_inside_config_dir() {
-        let config_text = r#"model_catalog_json = "/home/user/.codex/cc-switch-model-catalog.json"
+        let config_text = r#"model_catalog_json = "/home/user/.codex/model-board-model-catalog.json"
 "#;
         let base_dir = PathBuf::from("/home/user/.codex");
         let result = resolve_cc_switch_catalog_path(config_text, &base_dir);
@@ -7828,7 +7828,7 @@ model_catalog_json = "cc-switch-model-catalog.json"
 
     #[test]
     fn resolve_catalog_rejects_traversal_to_parent_directory() {
-        let config_text = r#"model_catalog_json = "../cc-switch-model-catalog.json"
+        let config_text = r#"model_catalog_json = "../model-board-model-catalog.json"
 "#;
         let base_dir = PathBuf::from("/home/user/.codex");
         let result = resolve_cc_switch_catalog_path(config_text, &base_dir);
@@ -7841,7 +7841,7 @@ model_catalog_json = "cc-switch-model-catalog.json"
     #[test]
     fn resolve_catalog_rejects_symlink_escaping_config_dir() {
         // 词法包含可被符号链接绕过：~/.codex/link -> 外部目录，
-        // "link/cc-switch-model-catalog.json" 词法上在 base 内，真实读取却落到
+        // "link/model-board-model-catalog.json" 词法上在 base 内，真实读取却落到
         // base 外。canonicalize 之后的二次校验必须拒绝。
         let temp = tempfile::tempdir().expect("tempdir");
         let base_dir = temp.path().join("codex");
@@ -7856,7 +7856,7 @@ model_catalog_json = "cc-switch-model-catalog.json"
         #[cfg(windows)]
         std::os::windows::fs::symlink_dir(&outside_dir, base_dir.join("link")).expect("symlink");
 
-        let config_text = r#"model_catalog_json = "link/cc-switch-model-catalog.json"
+        let config_text = r#"model_catalog_json = "link/model-board-model-catalog.json"
 "#;
         let result = resolve_cc_switch_catalog_path(config_text, &base_dir);
         assert_eq!(
@@ -7874,7 +7874,7 @@ model_catalog_json = "cc-switch-model-catalog.json"
         let catalog_file = base_dir.join(CC_SWITCH_CODEX_MODEL_CATALOG_FILENAME);
         fs::write(&catalog_file, r#"{"models":[]}"#).expect("write catalog");
 
-        let config_text = r#"model_catalog_json = "cc-switch-model-catalog.json"
+        let config_text = r#"model_catalog_json = "model-board-model-catalog.json"
 "#;
         let result = resolve_cc_switch_catalog_path(config_text, &base_dir);
         let resolved = result.expect("real file inside config dir should be accepted");

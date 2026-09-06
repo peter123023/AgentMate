@@ -25,7 +25,9 @@ use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use serde_json::{json, Value};
 use std::collections::{BTreeMap, HashSet};
 
-pub(crate) const ANTHROPIC_THINKING_ENCRYPTED_PREFIX: &str = "ccswitch-anthropic-thinking-v1:";
+pub(crate) const ANTHROPIC_THINKING_ENCRYPTED_PREFIX: &str = "modelboard-anthropic-thinking-v1:";
+// 兼容改名前（cc-switch 时代）已持久化到数据库的旧前缀 thinking 内容
+pub(crate) const ANTHROPIC_THINKING_ENCRYPTED_PREFIX_LEGACY: &str = "ccswitch-anthropic-thinking-v1:";
 const TOOL_SEARCH_PROXY_NAME: &str = "tool_search";
 
 /// Maps Codex's reasoning.effort to the token budget for Anthropic thinking.
@@ -90,7 +92,9 @@ pub(crate) fn encode_anthropic_thinking_block(block: &Value) -> Option<String> {
 }
 
 pub(crate) fn decode_anthropic_thinking_block(encrypted_content: &str) -> Option<Value> {
-    let encoded = encrypted_content.strip_prefix(ANTHROPIC_THINKING_ENCRYPTED_PREFIX)?;
+    let encoded = encrypted_content
+        .strip_prefix(ANTHROPIC_THINKING_ENCRYPTED_PREFIX)
+        .or_else(|| encrypted_content.strip_prefix(ANTHROPIC_THINKING_ENCRYPTED_PREFIX_LEGACY))?;
     let bytes = URL_SAFE_NO_PAD.decode(encoded).ok()?;
     let block: Value = serde_json::from_slice(&bytes).ok()?;
     // Reuse the encoder's validation so legacy/malformed bridge envelopes cannot
@@ -1283,7 +1287,7 @@ pub(crate) fn anthropic_response_to_responses_with_context(
 
     let id = body.get("id").and_then(|i| i.as_str()).unwrap_or("");
     let response_id = if id.is_empty() {
-        "resp_ccswitch".to_string()
+        "resp_modelboard".to_string()
     } else if id.starts_with("resp_") {
         id.to_string()
     } else {
@@ -2808,7 +2812,7 @@ mod tests {
             .filter_map(|block| block.get("text").and_then(Value::as_str))
             .all(|text| !text.contains("STRING_IMAGE_SENTINEL")));
         let serialized = response.to_string();
-        assert!(serialized.contains("[cc-switch: omitted 20000 bytes]"));
+        assert!(serialized.contains("[model-board: omitted 20000 bytes]"));
         assert!(!serialized.contains(&"A".repeat(64)));
     }
 

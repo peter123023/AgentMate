@@ -921,7 +921,7 @@ fn create_backup_skips_missing_file() {
     let _guard = test_mutex().lock().expect("acquire test mutex");
     reset_test_fs();
     let home = ensure_test_home();
-    let config_path = home.join(".cc-switch").join("config.json");
+    let config_path = home.join(".model-board").join("config.json");
 
     // 未创建文件时应返回空字符串，不报错
     let result = ConfigService::create_backup(&config_path).expect("create backup");
@@ -936,7 +936,7 @@ fn create_backup_generates_snapshot_file() {
     let _guard = test_mutex().lock().expect("acquire test mutex");
     reset_test_fs();
     let home = ensure_test_home();
-    let config_dir = home.join(".cc-switch");
+    let config_dir = home.join(".model-board");
     let config_path = config_dir.join("config.json");
     fs::create_dir_all(&config_dir).expect("prepare config dir");
     fs::write(&config_path, r#"{"version":2}"#).expect("write config file");
@@ -966,7 +966,7 @@ fn create_backup_retains_only_latest_entries() {
     let _guard = test_mutex().lock().expect("acquire test mutex");
     reset_test_fs();
     let home = ensure_test_home();
-    let config_dir = home.join(".cc-switch");
+    let config_dir = home.join(".model-board");
     let config_path = config_dir.join("config.json");
     fs::create_dir_all(&config_dir).expect("prepare config dir");
     fs::write(&config_path, r#"{"version":3}"#).expect("write config file");
@@ -1046,7 +1046,7 @@ fn sync_gemini_packycode_sets_security_selected_type() {
     ConfigService::sync_current_providers_to_live(&mut config)
         .expect("syncing gemini live should succeed");
 
-    // security field is written to ~/.gemini/settings.json, not ~/.cc-switch/settings.json
+    // security field is written to ~/.gemini/settings.json, not ~/.model-board/settings.json
     let gemini_settings = home.join(".gemini").join("settings.json");
     assert!(
         gemini_settings.exists(),
@@ -1097,7 +1097,7 @@ fn sync_gemini_google_official_sets_oauth_security() {
     ConfigService::sync_current_providers_to_live(&mut config)
         .expect("syncing google official gemini should succeed");
 
-    // security field is written to ~/.gemini/settings.json, not ~/.cc-switch/settings.json
+    // security field is written to ~/.gemini/settings.json, not ~/.model-board/settings.json
     let gemini_settings = home.join(".gemini").join("settings.json");
     assert!(
         gemini_settings.exists(),
@@ -1172,7 +1172,7 @@ fn export_sql_returns_error_for_invalid_path() {
 
     // Try to export to an invalid path (nonexistent parent or invalid name on Windows)
     let invalid_parent = if cfg!(windows) {
-        std::env::temp_dir().join("cc-switch-test-invalid<>dir")
+        std::env::temp_dir().join("model-board-test-invalid<>dir")
     } else {
         PathBuf::from("/nonexistent/directory")
     };
@@ -1209,13 +1209,13 @@ fn import_sql_rejects_non_cc_switch_backup() {
 
     let state = create_test_state().expect("create test state");
 
-    let import_path = home.join("not-cc-switch.sql");
+    let import_path = home.join("not-model-board.sql");
     fs::write(&import_path, "CREATE TABLE x (id INTEGER);").expect("write import sql");
 
     let err = state
         .db
         .import_sql(&import_path)
-        .expect_err("non-cc-switch sql should be rejected");
+        .expect_err("non-model-board sql should be rejected");
 
     match err {
         AppError::Localized { key, .. } => {
@@ -1250,7 +1250,7 @@ fn import_sql_accepts_cc_switch_exported_backup() {
     }
 
     let state = create_test_state_with_config(&config).expect("create test state");
-    let export_path = home.join("cc-switch-export.sql");
+    let export_path = home.join("model-board-export.sql");
     state
         .db
         .export_sql(&export_path)

@@ -14,13 +14,14 @@ GEMINI.md
 /.codex
 /.gemini
 /.cc-switch
+/.model-board
 /.idea
 /.vscode
 vitest-report.json
 nul
 
 # Flatpak build artifacts
-flatpak/cc-switch.deb
+flatpak/*.flatpak
 flatpak-build/
 flatpak-repo/
 .worktrees/
@@ -29,3 +30,9 @@ copilot-api
 .history
 CODEBUDDY.md
 mainWindow.js
+
+# Tauri updater private key — NEVER commit to git
+src-tauri/keys/*.key
+
+# CodeBuddy agent working directory
+.codebuddy/

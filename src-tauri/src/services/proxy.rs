@@ -26,7 +26,7 @@ const PROXY_TOKEN_PLACEHOLDER: &str = "PROXY_MANAGED";
 
 /// 代理接管模式下需要从 Claude Live 配置中移除的"模型覆盖"字段。
 ///
-/// 原因：接管模式下 `*_MODEL` 必须由 CC Switch 写成稳定的 Claude 角色别名，
+/// 原因：接管模式下 `*_MODEL` 必须由 ModelBoard 写成稳定的 Claude 角色别名，
 /// 再由本地代理映射到当前供应商真实模型；`*_MODEL_NAME` 也需要同步接管，
 /// 否则 Claude Code 模型菜单会残留上一个供应商的显示名称。
 const CLAUDE_MODEL_OVERRIDE_ENV_KEYS: [&str; 12] = [
@@ -365,7 +365,7 @@ impl CodexAuthFileTransaction {
             .and_then(|name| name.to_str())
             .unwrap_or("auth.json");
         Ok(parent.join(format!(
-            ".{file_name}.cc-switch-{label}-{}",
+            ".{file_name}.model-board-{label}-{}",
             uuid::Uuid::new_v4()
         )))
     }
@@ -7557,8 +7557,8 @@ base_url = "https://codex.example/v1"
         crate::codex_config::write_codex_live_atomic(
             &rotated_live_auth,
             Some(
-                r#"model_provider = "cc-switch"
-[model_providers.cc-switch]
+                r#"model_provider = "model-board"
+[model_providers.model-board]
 base_url = "http://127.0.0.1:15721/v1"
 wire_api = "responses"
 "#,
@@ -8331,7 +8331,7 @@ requires_openai_auth = true
         let catalog_path = crate::codex_config::get_codex_model_catalog_path();
         assert!(
             catalog_path.exists(),
-            "cc-switch-model-catalog.json must be created on provider switch"
+            "model-board-model-catalog.json must be created on provider switch"
         );
         let catalog_text = std::fs::read_to_string(&catalog_path).expect("read catalog json");
         let catalog: serde_json::Value =
@@ -8475,7 +8475,7 @@ requires_openai_auth = true
             message.contains("写入 Codex 配置失败")
                 || message.contains("原子替换失败")
                 || (message.contains("捕获 Codex 热切换前状态失败")
-                    && message.contains("cc-switch-model-catalog.json")),
+                    && message.contains("model-board-model-catalog.json")),
             "switch should surface catalog write failure, got: {message}"
         );
     }
@@ -8703,7 +8703,7 @@ requires_openai_auth = true
         let db = Arc::new(Database::memory().expect("init db"));
         let service = ProxyService::new(db.clone());
 
-        // Pre-takeover Live state: config.toml points at the cc-switch generated
+        // Pre-takeover Live state: config.toml points at the model-board generated
         // catalog file, and that file exists on disk (takeover never touches it).
         let catalog_path = crate::codex_config::get_codex_model_catalog_path();
         if let Some(parent) = catalog_path.parent() {
@@ -8748,7 +8748,7 @@ requires_openai_auth = true
         );
         assert!(
             restored.contains(pointer.as_str()),
-            "restored pointer must still reference the cc-switch generated catalog file"
+            "restored pointer must still reference the model-board generated catalog file"
         );
     }
 
@@ -8811,7 +8811,7 @@ requires_openai_auth = true
         );
         assert!(
             catalog_path.exists(),
-            "restore must generate the cc-switch catalog file on disk"
+            "restore must generate the model-board catalog file on disk"
         );
         let catalog: Value = serde_json::from_str(
             &std::fs::read_to_string(&catalog_path).expect("read generated catalog"),
@@ -8880,7 +8880,7 @@ requires_openai_auth = true
         );
         assert!(
             crate::codex_config::get_codex_model_catalog_path().exists(),
-            "empty-auth restore must generate the cc-switch catalog file"
+            "empty-auth restore must generate the model-board catalog file"
         );
         assert!(
             !crate::codex_config::get_codex_auth_path().exists(),

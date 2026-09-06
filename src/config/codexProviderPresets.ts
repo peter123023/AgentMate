@@ -145,8 +145,8 @@ export const codexProviderPresets: CodexProviderPreset[] = [
   {
     name: "Kimi",
     primePartner: true,
-    websiteUrl: "https://platform.kimi.com?aff=cc-switch",
-    apiKeyUrl: "https://platform.kimi.com/console/api-keys?aff=cc-switch",
+    websiteUrl: "https://platform.kimi.com?aff=model-board",
+    apiKeyUrl: "https://platform.kimi.com/console/api-keys?aff=model-board",
     auth: generateThirdPartyAuth(""),
     config: generateThirdPartyConfig(
       "kimi",
@@ -175,7 +175,7 @@ export const codexProviderPresets: CodexProviderPreset[] = [
       },
     ]),
     // supportsEffort:true（2026-08-15 盘点）：Kimi 官方 Codex 接入文档
-    //（platform.kimi.com/docs/guide/codex-kimi.md，直接以 CC Switch 为例）
+    //（platform.kimi.com/docs/guide/codex-kimi.md，直接以 ModelBoard 为例）
     // 要求「支持思考模式 开启 / 支持推理强度 开启」；k3 的 reasoning_effort
     // 是顶层字符串。effortValueMode 不声明=passthrough 原值透传（勿用
     // deepseek 模式，会把 low 压成 high）。注：官方参数页写 k3"不应传入
@@ -196,8 +196,8 @@ export const codexProviderPresets: CodexProviderPreset[] = [
   {
     name: "Kimi For Coding",
     primePartner: true,
-    websiteUrl: "https://www.kimi.com/code/?aff=cc-switch",
-    apiKeyUrl: "https://www.kimi.com/code/?aff=cc-switch",
+    websiteUrl: "https://www.kimi.com/code/?aff=model-board",
+    apiKeyUrl: "https://www.kimi.com/code/?aff=model-board",
     auth: generateThirdPartyAuth(""),
     config: generateThirdPartyConfig(
       "kimi_coding",
@@ -243,7 +243,7 @@ export const codexProviderPresets: CodexProviderPreset[] = [
       },
     ]),
     // 官方 Codex 接入文档（kimi.com/code/docs/third-party-tools/codex.html，
-    // 以 CC Switch 为例）：「支持思考模式 开启（必须——关闭后 K3/K2.7 Code
+    // 以 ModelBoard 为例）：「支持思考模式 开启（必须——关闭后 K3/K2.7 Code
     // 都会被路由到 K2.6）/ 支持思考等级 开启」。effortValueMode 不声明=
     // passthrough；网关自身对 effort 做归一映射（null→high、none→关思考）
     codexChatReasoning: {
@@ -260,7 +260,7 @@ export const codexProviderPresets: CodexProviderPreset[] = [
   {
     name: "PackyCode",
     websiteUrl: "https://www.packyapi.ai",
-    apiKeyUrl: "https://www.packyapi.ai/register?aff=cc-switch",
+    apiKeyUrl: "https://www.packyapi.ai/register?aff=model-board",
     category: "third_party",
     auth: generateThirdPartyAuth(""),
     config: generateThirdPartyConfig(
@@ -554,7 +554,7 @@ requires_openai_auth = true`,
   {
     name: "PPIO",
     websiteUrl: "https://ppio.com",
-    apiKeyUrl: "https://ppio.com/activity/ccswitch",
+    apiKeyUrl: "https://ppio.com/activity/modelboard",
     auth: generateThirdPartyAuth(""),
     config: generateThirdPartyConfig(
       "ppio",
@@ -602,9 +602,9 @@ requires_openai_auth = true`,
   {
     name: "火山 Agent Plan",
     websiteUrl:
-      "https://www.volcengine.com/activity/agentplan?ac=MMAP8JTTCAQ2&rc=6J6FV5N2&utm_source=OWO&utm_medium=devrel-1&utm_campaign=hw&utm_term=ccswitch&utm_content=hw",
+      "https://www.volcengine.com/activity/agentplan?ac=MMAP8JTTCAQ2&rc=6J6FV5N2&utm_source=OWO&utm_medium=devrel-1&utm_campaign=hw&utm_term=modelboard&utm_content=hw",
     apiKeyUrl:
-      "https://www.volcengine.com/activity/agentplan?ac=MMAP8JTTCAQ2&rc=6J6FV5N2&utm_source=OWO&utm_medium=devrel-1&utm_campaign=hw&utm_term=ccswitch&utm_content=hw",
+      "https://www.volcengine.com/activity/agentplan?ac=MMAP8JTTCAQ2&rc=6J6FV5N2&utm_source=OWO&utm_medium=devrel-1&utm_campaign=hw&utm_term=modelboard&utm_content=hw",
     auth: generateThirdPartyAuth(""),
     config: generateThirdPartyConfig(
       "ark_agentplan",
@@ -639,9 +639,9 @@ requires_openai_auth = true`,
   {
     name: "火山 Coding Plan",
     websiteUrl:
-      "https://www.volcengine.com/activity/codingplan?ac=MMAP8JTTCAQ2&rc=6J6FV5N2&utm_campaign=hw&utm_content=ccswitch&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=ccswitch",
+      "https://www.volcengine.com/activity/codingplan?ac=MMAP8JTTCAQ2&rc=6J6FV5N2&utm_campaign=hw&utm_content=modelboard&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=modelboard",
     apiKeyUrl:
-      "https://www.volcengine.com/activity/codingplan?ac=MMAP8JTTCAQ2&rc=6J6FV5N2&utm_campaign=hw&utm_content=ccswitch&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=ccswitch",
+      "https://www.volcengine.com/activity/codingplan?ac=MMAP8JTTCAQ2&rc=6J6FV5N2&utm_campaign=hw&utm_content=modelboard&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=modelboard",
     auth: generateThirdPartyAuth(""),
     config: generateThirdPartyConfig(
       "ark_codingplan",
@@ -674,9 +674,9 @@ requires_openai_auth = true`,
   {
     name: "BytePlus",
     websiteUrl:
-      "https://www.byteplus.com/en/product/modelark?utm_campaign=hw&utm_content=ccswitch&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=ccswitch",
+      "https://www.byteplus.com/en/product/modelark?utm_campaign=hw&utm_content=modelboard&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=modelboard",
     apiKeyUrl:
-      "https://www.byteplus.com/en/product/modelark?utm_campaign=hw&utm_content=ccswitch&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=ccswitch",
+      "https://www.byteplus.com/en/product/modelark?utm_campaign=hw&utm_content=modelboard&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=modelboard",
     auth: generateThirdPartyAuth(""),
     config: generateThirdPartyConfig(
       "byteplus",
@@ -711,9 +711,9 @@ requires_openai_auth = true`,
   {
     name: "DouBaoSeed",
     websiteUrl:
-      "https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D&utm_campaign=hw&utm_content=ccswitch&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=ccswitch",
+      "https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D&utm_campaign=hw&utm_content=modelboard&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=modelboard",
     apiKeyUrl:
-      "https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D&utm_campaign=hw&utm_content=ccswitch&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=ccswitch",
+      "https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D&utm_campaign=hw&utm_content=modelboard&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=modelboard",
     auth: generateThirdPartyAuth(""),
     config: generateThirdPartyConfig(
       "doubaoseed",
@@ -848,7 +848,7 @@ requires_openai_auth = true`,
     nameKey: "providerForm.presets.ucloud",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_cc-switch",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
     auth: generateThirdPartyAuth(""),
     config: generateThirdPartyConfig(
       "compshare",
@@ -867,7 +867,7 @@ requires_openai_auth = true`,
     nameKey: "providerForm.presets.ucloudCoding",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_cc-switch",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
     auth: generateThirdPartyAuth(""),
     config: generateThirdPartyConfig(
       "compshare_coding",
@@ -993,7 +993,7 @@ requires_openai_auth = true`,
   {
     name: "CrazyRouter",
     websiteUrl: "https://www.crazyrouter.com",
-    apiKeyUrl: "https://www.crazyrouter.com/register?aff=OZcm&ref=cc-switch",
+    apiKeyUrl: "https://www.crazyrouter.com/register?aff=OZcm&ref=model-board",
     auth: generateThirdPartyAuth(""),
     config: generateThirdPartyConfig(
       "crazyrouter",
@@ -1024,7 +1024,7 @@ requires_openai_auth = true`,
     name: "SudoCode.chat",
     websiteUrl: "https://sudocode.chat",
     apiKeyUrl:
-      "https://sudocode.chat/sign-up?aff=CC-SWITCH&utm_source=cc-switch&utm_medium=sponsor&utm_campaign=ccswitch",
+      "https://sudocode.chat/sign-up?aff=CC-SWITCH&utm_source=model-board&utm_medium=sponsor&utm_campaign=modelboard",
     category: "third_party",
     auth: generateThirdPartyAuth(""),
     config: `model_provider = "custom"
@@ -1189,7 +1189,7 @@ requires_openai_auth = true`,
     // 官方目录虽声明 freeform，无真机验证前按保守口径，不引入 400 风险）
     apiFormat: "openai_responses",
     // 档位/上下文/模态照抄官方 models.json：glm-5.3 low/high/max 默认 max；
-    // glm-5-turbo 官方档位为空、默认 max——cc-switch 表达不了空档位（回落会得到
+    // glm-5-turbo 官方档位为空、默认 max——model-board 表达不了空档位（回落会得到
     // 模板 none/high，none 在原生直连下没有转换层兜底、会原样发给严格网关），
     // 按官方默认收成单档 max。两模型 input_modalities=["text"]、并行工具调用 true
     modelCatalog: modelCatalog([

@@ -4,14 +4,14 @@ import { useCodexOauthQuotaByAccountId } from "@/lib/query/subscription";
 import { SubscriptionQuotaView } from "@/components/SubscriptionQuotaFooter";
 
 interface CodexOauthAccountQuotaProps {
-  /** cc-switch 自管的 ChatGPT 账号 ID */
+  /** model-board 自管的 ChatGPT 账号 ID */
   accountId: string;
 }
 
 /**
  * 设置 → 认证中心里，单个 ChatGPT (Codex OAuth) 账号的用量展示。
  *
- * 直接按 accountId 查询 cc-switch 自管 OAuth token 的订阅额度，复用
+ * 直接按 accountId 查询 model-board 自管 OAuth token 的订阅额度，复用
  * `SubscriptionQuotaView` 的展开布局（进度条 + 重置倒计时 + 刷新按钮），
  * 因此与供应商卡片里的额度展示保持完全一致的观感与状态处理。
  *

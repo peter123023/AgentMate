@@ -13,7 +13,7 @@ use crate::error::AppError;
 /// - `dirs::home_dir()` 在 Windows 上使用 `SHGetKnownFolderPath(FOLDERID_Profile)`，
 ///   返回的是真实用户目录（类似 `C:\\Users\\Alice`），与 v3.10.2 行为一致。
 /// - 不要直接使用 `HOME` 环境变量：它可能由 Git/Cygwin/MSYS 等第三方工具注入，
-///   且不一定等于用户目录，可能导致 `.cc-switch/cc-switch.db` 路径变化，从而“看起来像数据丢失”。
+///   且不一定等于用户目录，可能导致 `.model-board/model-board.db` 路径变化，从而“看起来像数据丢失”。
 ///
 /// ## 测试隔离
 ///
@@ -199,27 +199,27 @@ pub fn get_claude_settings_path() -> PathBuf {
     settings
 }
 
-/// 获取应用配置目录路径 (~/.cc-switch)
+/// 获取应用配置目录路径 (~/.model-board)
 pub fn get_app_config_dir() -> PathBuf {
     if let Some(custom) = crate::app_store::get_app_config_dir_override() {
         return custom;
     }
 
-    let default_dir = get_home_dir().join(".cc-switch");
+    let default_dir = get_home_dir().join(".model-board");
 
     // 兼容 v3.10.3：当用户环境存在 `HOME` 且与真实用户目录不同，
-    // v3.10.3 可能在 `HOME/.cc-switch/` 下创建/使用了数据库。
+    // v3.10.3 可能在 `HOME/.model-board/` 下创建/使用了数据库。
     // 这里仅在“默认位置没有数据库”时回退到旧位置，避免再次出现“供应商消失”问题，
     // 同时也避免新安装因为 `HOME` 被设置而写入非预期路径。
     #[cfg(windows)]
     {
-        let default_db = default_dir.join("cc-switch.db");
+        let default_db = default_dir.join("model-board.db");
         if !default_db.exists() {
             if let Ok(home_env) = std::env::var("HOME") {
                 let trimmed = home_env.trim();
                 if !trimmed.is_empty() {
-                    let legacy_dir = PathBuf::from(trimmed).join(".cc-switch");
-                    if legacy_dir.join("cc-switch.db").exists() {
+                    let legacy_dir = PathBuf::from(trimmed).join(".model-board");
+                    if legacy_dir.join("model-board.db").exists() {
                         log::info!(
                             "Detected v3.10.3 legacy database at {}, using it instead of {}",
                             legacy_dir.display(),
@@ -233,6 +233,53 @@ pub fn get_app_config_dir() -> PathBuf {
     }
 
     default_dir
+}
+
+/// 将旧版配置目录 `~/.model-board` 迁移到新的 `~/.model-board`。
+///
+/// 仅当默认路径未被用户通过 Store 覆盖（`app_config_dir` override）时执行，
+/// 且只在「旧目录存在、新目录不存在」时复制一次（复制成功后保留旧目录作为备份）。
+/// 必须在日志/数据库初始化之前调用，否则新目录会是空库、旧配置读不到。
+pub fn migrate_legacy_config_dir() {
+    // 仅在未自定义 app_config_dir 时迁移默认目录
+    if crate::app_store::get_app_config_dir_override().is_some() {
+        return;
+    }
+
+    let home = get_home_dir();
+    let old_dir = home.join(".model-board");
+    let new_dir = home.join(".model-board");
+
+    if !old_dir.exists() || new_dir.exists() {
+        return;
+    }
+
+    log::info!(
+        "迁移旧配置目录 {} -> {}",
+        old_dir.display(),
+        new_dir.display()
+    );
+
+    match copy_dir_all(&old_dir, &new_dir) {
+        Ok(()) => log::info!("旧配置目录迁移完成（旧目录保留为备份）"),
+        Err(e) => log::warn!("迁移旧配置目录失败（不影响启动）：{e}"),
+    }
+}
+
+/// 递归复制目录
+fn copy_dir_all(src: &Path, dst: &Path) -> std::io::Result<()> {
+    std::fs::create_dir_all(dst)?;
+    for entry in std::fs::read_dir(src)? {
+        let entry = entry?;
+        let file_type = entry.file_type()?;
+        let dst_path = dst.join(entry.file_name());
+        if file_type.is_dir() {
+            copy_dir_all(&entry.path(), &dst_path)?;
+        } else {
+            std::fs::copy(entry.path(), &dst_path)?;
+        }
+    }
+    Ok(())
 }
 
 /// 获取应用配置文件路径

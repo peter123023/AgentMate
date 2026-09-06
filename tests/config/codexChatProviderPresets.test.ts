@@ -239,7 +239,7 @@ describe("Codex Chat provider presets", () => {
           preset?.modelCatalog?.[0]?.model,
         );
       }
-      // 原生 Responses 预设现在带 modelCatalog：cc-switch 直连时据此生成
+      // 原生 Responses 预设现在带 modelCatalog：model-board 直连时据此生成
       // ~/.codex 的 model-catalogs.json（shell_command 编辑、不发 freeform
       // apply_patch）。带 catalog 不再强制开“本地路由映射”——前端已按
       // apiFormat 解耦（openai_responses 默认不开接管）。

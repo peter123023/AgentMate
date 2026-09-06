@@ -2,9 +2,9 @@
 
 ## 背景
 
-Pi 会读取 `~/.pi/agent/models.json` 中的 `providers`，并把同名显式供应商配置与自己的内置供应商、内置模型合并。当前 CC Switch 会跳过 `anthropic`、`openai`、`deepseek` 等 Pi 内置供应商 ID，导致 Pi 已经加载了显式配置，但 CC Switch 页面没有对应的已启用卡片，也无法正常移除、编辑或重新启用。
+Pi 会读取 `~/.pi/agent/models.json` 中的 `providers`，并把同名显式供应商配置与自己的内置供应商、内置模型合并。当前 ModelBoard 会跳过 `anthropic`、`openai`、`deepseek` 等 Pi 内置供应商 ID，导致 Pi 已经加载了显式配置，但 ModelBoard 页面没有对应的已启用卡片，也无法正常移除、编辑或重新启用。
 
-这类供应商是否属于 CC Switch 可管理范围，应只由配置来源决定，不能再由供应商 ID 或认证类型决定。
+这类供应商是否属于 ModelBoard 可管理范围，应只由配置来源决定，不能再由供应商 ID 或认证类型决定。
 
 ## 目标架构
 
@@ -13,7 +13,7 @@ Pi 会读取 `~/.pi/agent/models.json` 中的 `providers`，并把同名显式�
 | OpenCode                            | Pi                                  |
 | ----------------------------------- | ----------------------------------- |
 | `opencode.json.provider`            | `models.json.providers`             |
-| 显式 provider 同步为 CC Switch 卡片 | 显式 provider 同步为 CC Switch 卡片 |
+| 显式 provider 同步为 ModelBoard 卡片 | 显式 provider 同步为 ModelBoard 卡片 |
 | `/connect` 认证由 OpenCode 管理     | `/login` 与 `auth.json` 由 Pi 管理  |
 | 添加和移除 provider 节点            | 启用和移除 provider 节点            |
 | 数据库保留未添加供应商              | 数据库保留未启用供应商              |
@@ -28,38 +28,38 @@ Pi 额外需要支持同名内置供应商的显式覆盖：只要供应商节�
 - 数据库中没有对应记录时，按精确 provider ID 自动导入并 upsert。
 - 数据库中已有记录时，用 Pi 当前的显式配置同步对应记录。
 - provider 节点存在于 `models.json` 时，卡片显示为已启用。
-- provider 只存在于 CC Switch 数据库时，卡片保留并显示为未启用。
+- provider 只存在于 ModelBoard 数据库时，卡片保留并显示为未启用。
 - 已启用卡片沿用 OpenCode 的蓝色高亮。
 - 外部修改 `models.json` 后，刷新供应商页面即自动同步，不要求二次确认。
-- 不再出现“不是 CC Switch 管理的值”或“配置刚发生变化，请确认后重试”等 ownership 冲突提示。
+- 不再出现“不是 ModelBoard 管理的值”或“配置刚发生变化，请确认后重试”等 ownership 冲突提示。
 - `PI_BUILTIN_PROVIDER_KEYS` 或等价集合不能参与配置归属判断，也不能用于跳过 live provider 同步。
 
 ## 认证边界
 
 边界按配置来源划分：
 
-- `models.json.providers` 中的显式配置由 CC Switch 管理。
+- `models.json.providers` 中的显式配置由 ModelBoard 管理。
 - Pi `/login` 写入 `auth.json` 的凭证始终由 Pi 管理，无论其类型为 OAuth 还是 API Key。
-- CC Switch 不读取、复制、修改或删除 `auth.json` 中的凭证。
-- CC Switch 不刷新 OAuth Token。
-- 只有 `auth.json` 凭证、没有 `models.json.providers` 节点的供应商，不生成 CC Switch 卡片。
-- 环境变量中的凭证不导入 CC Switch。
-- 同一供应商同时存在显式配置和 Pi 登录时，CC Switch 只管理显式配置。
+- ModelBoard 不读取、复制、修改或删除 `auth.json` 中的凭证。
+- ModelBoard 不刷新 OAuth Token。
+- 只有 `auth.json` 凭证、没有 `models.json.providers` 节点的供应商，不生成 ModelBoard 卡片。
+- 环境变量中的凭证不导入 ModelBoard。
+- 同一供应商同时存在显式配置和 Pi 登录时，ModelBoard 只管理显式配置。
 - 移除显式配置不退出 Pi 登录，也不删除 `auth.json`。
-- 用户在 CC Switch 中创建的 API Key 供应商仍由 CC Switch 保存并写入 `models.json`；用户通过 Pi `/login` 保存的 API Key 仍属于 Pi 原生认证状态。
+- 用户在 ModelBoard 中创建的 API Key 供应商仍由 ModelBoard 保存并写入 `models.json`；用户通过 Pi `/login` 保存的 API Key 仍属于 Pi 原生认证状态。
 
 ## 启用与移除
 
 ### 启用
 
-- 将 CC Switch 数据库中保存的完整配置写入 `models.json.providers.<providerId>`。
+- 将 ModelBoard 数据库中保存的完整配置写入 `models.json.providers.<providerId>`。
 - 成功后卡片变为蓝色已启用状态。
 - 不修改 Pi 默认供应商、默认模型或 `auth.json`。
 
 ### 移除
 
 - 只删除 `models.json.providers.<providerId>`。
-- 不删除 CC Switch 数据库记录。
+- 不删除 ModelBoard 数据库记录。
 - 卡片继续保留并变为未启用，之后可以再次启用。
 - 不修改 `auth.json`、环境变量或 Pi 原生登录状态。
 - 不因供应商当前正被 Pi 使用而阻止移除。
@@ -72,7 +72,7 @@ Pi 额外需要支持同名内置供应商的显式覆盖：只要供应商节�
 - 接受 Pi 对同名内置供应商的原生合并行为。
 - 供应商卡片只根据显式 provider 节点判断启用状态。
 - 编辑页面只展示该 provider 在 `models.json` 中显式保存的模型。
-- 不把 Pi 的内置模型复制到 CC Switch 数据库或 `models.json`。
+- 不把 Pi 的内置模型复制到 ModelBoard 数据库或 `models.json`。
 - 不根据 Pi 运行时出现的模型扩充供应商预设。
 - 模型 ID 按精确字符串处理，不做大小写或相似名称合并。
 - 同名内置供应商的显式配置必须完整保留。
@@ -118,7 +118,7 @@ Pi 额外需要支持同名内置供应商的显式覆盖：只要供应商节�
 3. 点击移除后，仅删除对应 provider 节点；数据库卡片保留并变为未启用。
 4. 在没有 `auth.json` 凭证和相关环境变量时重启 Pi，被显式配置激活的模型不再可用。
 5. 再次启用后完整配置恢复，Pi 可以继续使用。
-6. 在 CC Switch 外部新增、修改或删除 provider，刷新页面后自动同步。
+6. 在 ModelBoard 外部新增、修改或删除 provider，刷新页面后自动同步。
 7. Pi `/login` 写入的 OAuth 或 API Key 凭证不被读取或修改。
 8. 移除供应商前后 `auth.json` 内容与文件状态完全不变。
 9. 自定义 Header、模型能力字段和未知 JSON 字段在同步、编辑、保存、移除与重新启用后不丢失。

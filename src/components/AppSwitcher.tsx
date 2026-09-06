@@ -25,7 +25,7 @@ interface AppSwitcherProps {
   visibleApps?: VisibleApps;
 }
 
-const STORAGE_KEY = "cc-switch-last-app";
+const STORAGE_KEY = "model-board-last-app";
 
 const APP_ICON_NAME: Record<AppId, string> = {
   claude: "claude",
@@ -52,7 +52,7 @@ const APP_DISPLAY_NAME: Record<AppId, string> = {
 };
 
 /** 应用图标 + 角标（Claude Code / Desktop 用角标区分终端与桌面） */
-function AppGlyph({ app, isActive }: { app: AppId; isActive: boolean }) {
+export function AppGlyph({ app, isActive }: { app: AppId; isActive: boolean }) {
   const badgeConfig = APP_BADGE_ICON[app];
   const BadgeIcon = badgeConfig?.icon;
   return (

@@ -115,7 +115,7 @@ export interface UseCodexOauthQuotaOptions {
 /**
  * Codex OAuth 订阅额度查询 hook（按账号 ID）
  *
- * 直接以 cc-switch 自管的 ChatGPT 账号 ID 查询额度，供认证中心里逐个账号
+ * 直接以 model-board 自管的 ChatGPT 账号 ID 查询额度，供认证中心里逐个账号
  * 展示用量时复用。Query key 与 `useCodexOauthQuota` 一致，绑定到同一账号的
  * 供应商卡片与账号列表会自动去重共享同一份请求缓存。
  * accountId 为 null 时使用 "default" 占位，让后端 fallback 到默认账号。
@@ -153,7 +153,7 @@ export function useCodexOauthQuotaByAccountId(
 /**
  * Codex OAuth (ChatGPT Plus/Pro 反代) 订阅额度查询 hook
  *
- * 与 `useSubscriptionQuota` 平行：数据走 cc-switch 自管的 OAuth token，
+ * 与 `useSubscriptionQuota` 平行：数据走 model-board 自管的 OAuth token，
  * 而不是 Codex CLI 的 ~/.codex/auth.json。账号 ID 从供应商 meta 的
  * authBinding 中解析，再委托给 `useCodexOauthQuotaByAccountId`。
  */
@@ -168,7 +168,7 @@ export function useCodexOauthQuota(
 /**
  * xAI OAuth (SuperGrok 反代) 订阅额度查询 hook
  *
- * 与 `useCodexOauthQuota` 平行：数据走 cc-switch 自管的 xAI OAuth token，
+ * 与 `useCodexOauthQuota` 平行：数据走 model-board 自管的 xAI OAuth token，
  * 而不是 Grok CLI 的 ~/.grok/auth.json；后端复用同一个 grok.com 账单端点，
  * 因此与 Grok Build 分区的官方订阅显示同一份额度。
  */

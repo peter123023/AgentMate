@@ -979,7 +979,7 @@ mod tests {
         let path = root.join("captured.jsonl");
         fs::write(
             &path,
-            "{\"type\":\"session\",\"version\":3,\"id\":\"cc-switch-capture-session\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"cwd\":\"/work/captured\",\"parentSession\":null}\n\
+            "{\"type\":\"session\",\"version\":3,\"id\":\"model-board-capture-session\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"cwd\":\"/work/captured\",\"parentSession\":null}\n\
              {\"type\":\"session_info\",\"id\":\"00000000-0000-7000-8000-000000000001\",\"parentId\":null,\"timestamp\":\"2023-11-14T22:13:20.100Z\",\"name\":\"Captured session\"}\n\
              {\"type\":\"message\",\"id\":\"00000000-0000-7000-8000-000000000002\",\"parentId\":\"00000000-0000-7000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.200Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"captured question\"}],\"timestamp\":1700000000000}}\n\
              {\"type\":\"message\",\"id\":\"00000000-0000-7000-8000-000000000003\",\"parentId\":\"00000000-0000-7000-8000-000000000002\",\"timestamp\":\"2023-11-14T22:13:21.200Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"captured answer\"}],\"api\":\"openai-responses\",\"provider\":\"capture\",\"model\":\"capture-model\",\"usage\":{\"input\":1,\"output\":1,\"cacheRead\":0,\"cacheWrite\":0,\"totalTokens\":2,\"cost\":{\"input\":0,\"output\":0,\"cacheRead\":0,\"cacheWrite\":0,\"total\":0}},\"stopReason\":\"stop\",\"timestamp\":1700000001000}}\n",
@@ -987,7 +987,7 @@ mod tests {
         .expect("captured session");
 
         let session = parse_session(&path).expect("parse capture-generated session");
-        assert_eq!(session.session_id, "cc-switch-capture-session");
+        assert_eq!(session.session_id, "model-board-capture-session");
         assert_eq!(session.title.as_deref(), Some("Captured session"));
         assert_eq!(session.summary.as_deref(), Some("captured answer"));
         assert_eq!(session.project_dir.as_deref(), Some("/work/captured"));

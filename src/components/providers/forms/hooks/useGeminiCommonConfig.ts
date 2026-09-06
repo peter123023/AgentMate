@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { configApi } from "@/lib/api";
 
-const LEGACY_STORAGE_KEY = "cc-switch:gemini-common-config-snippet";
+const LEGACY_STORAGE_KEY = "model-board:gemini-common-config-snippet";
 const DEFAULT_GEMINI_COMMON_CONFIG_SNIPPET = "{}";
 
 /** 供应商专属、不可共享的键（端点与主凭据），按名单剥离。 */

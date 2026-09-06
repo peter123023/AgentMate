@@ -161,7 +161,7 @@ pub fn inject_codex_chat_prompt_cache_key(
 
 /// Whether this Codex provider's real upstream speaks the native Anthropic
 /// Messages protocol (`/v1/messages`). The local Codex client always talks to CC
-/// Switch through the Responses API, so CC Switch bridges Responses ⇄ Anthropic.
+/// Switch through the Responses API, so ModelBoard bridges Responses ⇄ Anthropic.
 ///
 /// Determined solely from explicit config (apiFormat / wire_api); no base_url
 /// guessing — Anthropic gateway addresses vary widely and guessing easily misfires.
@@ -217,7 +217,7 @@ pub fn should_convert_codex_responses_to_anthropic(provider: &Provider, endpoint
 /// fires on native Responses passthrough.
 ///
 /// Covers managed xAI OAuth *and* API-key providers whose live upstream is
-/// `api.x.ai` with `wire_api = "responses"`. See farion1231/cc-switch#6815.
+/// `api.x.ai` with `wire_api = "responses"`. See farion1231/model-board#6815.
 pub fn provider_needs_responses_namespace_flatten(provider: &Provider) -> bool {
     provider.is_xai_oauth() || provider_is_xai_native_responses(provider)
 }

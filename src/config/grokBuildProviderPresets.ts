@@ -83,7 +83,7 @@ export const grokBuildProviderPresets: GrokBuildProviderPreset[] = [
   {
     name: "PackyCode",
     websiteUrl: "https://www.packyapi.ai",
-    apiKeyUrl: "https://www.packyapi.ai/register?aff=cc-switch",
+    apiKeyUrl: "https://www.packyapi.ai/register?aff=model-board",
     auth: grokAuth(),
     config: grokPresetConfig("PackyCode", "https://www.packyapi.ai/v1"),
     endpointCandidates: [
@@ -324,7 +324,7 @@ export const grokBuildProviderPresets: GrokBuildProviderPreset[] = [
     nameKey: "providerForm.presets.ucloud",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_cc-switch",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
     auth: grokAuth(),
     config: grokPresetConfig("Compshare", "https://api.modelverse.cn/v1"),
     endpointCandidates: ["https://api.modelverse.cn/v1"],
@@ -339,7 +339,7 @@ export const grokBuildProviderPresets: GrokBuildProviderPreset[] = [
     nameKey: "providerForm.presets.ucloudCoding",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_cc-switch",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
     auth: grokAuth(),
     config: grokPresetConfig(
       "Compshare Coding Plan",
@@ -443,7 +443,7 @@ export const grokBuildProviderPresets: GrokBuildProviderPreset[] = [
   {
     name: "CrazyRouter",
     websiteUrl: "https://www.crazyrouter.com",
-    apiKeyUrl: "https://www.crazyrouter.com/register?aff=OZcm&ref=cc-switch",
+    apiKeyUrl: "https://www.crazyrouter.com/register?aff=OZcm&ref=model-board",
     auth: grokAuth(),
     config: grokPresetConfig("CrazyRouter", "https://cn.crazyrouter.com/v1"),
     endpointCandidates: ["https://cn.crazyrouter.com/v1"],
@@ -466,7 +466,7 @@ export const grokBuildProviderPresets: GrokBuildProviderPreset[] = [
     name: "SudoCode.chat",
     websiteUrl: "https://sudocode.chat",
     apiKeyUrl:
-      "https://sudocode.chat/sign-up?aff=CC-SWITCH&utm_source=cc-switch&utm_medium=sponsor&utm_campaign=ccswitch",
+      "https://sudocode.chat/sign-up?aff=CC-SWITCH&utm_source=model-board&utm_medium=sponsor&utm_campaign=modelboard",
     auth: grokAuth(),
     config: grokPresetConfig("SudoCode.chat", "https://api.sudocode.chat/v1"),
     endpointCandidates: ["https://api.sudocode.chat/v1"],

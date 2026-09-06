@@ -160,7 +160,7 @@ pub fn set_provider(id: &str, config: Value) -> Result<(), AppError> {
     let mut full_config = read_opencode_config_from_path(&path)?;
 
     // 判空要连「存在但不是对象」一起算：否则下面 as_object_mut 拿不到，
-    // 写入会静默失效——界面显示添加成功而文件里没有。provider 段是 cc-switch
+    // 写入会静默失效——界面显示添加成功而文件里没有。provider 段是 model-board
     // 的投影区，归一化不会碰用户自有的 model / theme 等顶层配置。
     if !full_config.get("provider").is_some_and(Value::is_object) {
         if full_config.get("provider").is_some() {
