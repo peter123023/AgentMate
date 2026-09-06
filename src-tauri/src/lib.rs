@@ -328,7 +328,7 @@ async fn update_tray_menu(
 
 #[cfg(target_os = "macos")]
 fn macos_tray_icon() -> Option<Image<'static>> {
-    const ICON_BYTES: &[u8] = include_bytes!("../icons/tray/macos/statusbar_template_3x.png");
+    const ICON_BYTES: &[u8] = include_bytes!("../icons/tray/macos/statusbar@3x.png");
 
     match Image::from_bytes(ICON_BYTES) {
         Ok(icon) => Some(icon),
@@ -1100,11 +1100,12 @@ pub fn run() {
                 })
                 .show_menu_on_left_click(true);
 
-            // 使用平台对应的托盘图标（macOS 使用模板图标适配深浅色）
+            // 使用平台对应的托盘图标（macOS 使用与主图标一致的彩色方块，
+            // 非模板模式以保留渐变背景色；改回 icon_as_template(true) 会强制单色剪影）
             #[cfg(target_os = "macos")]
             {
                 if let Some(icon) = macos_tray_icon() {
-                    tray_builder = tray_builder.icon(icon).icon_as_template(true);
+                    tray_builder = tray_builder.icon(icon).icon_as_template(false);
                 } else if let Some(icon) = app.default_window_icon() {
                     log::warn!("Falling back to default window icon for tray");
                     tray_builder = tray_builder.icon(icon.clone());
