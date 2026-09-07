@@ -1,9 +1,17 @@
 //! 供应商连通性检查服务（reachability）
 //!
 //! 仅探测供应商 `base_url` 是否可达，**不发送真实大模型请求**：
-//! - 收到任意 HTTP 响应（200/4xx/5xx）即判定"可达"（端口通、网关存活）；
+//! - 收到 2xx/3xx/4xx 响应即判定"可达"（端口通、网关存活；4xx 说明服务活着，只是
+//!   鉴权/路径/限流问题）；
+//! - **5xx 判定"不可达"**——直连挂掉的服务不会有 HTTP 响应，5xx 几乎必然来自中间
+//!   代理/网关（上游连不上时返回 502/504），照单全收会把"服务已挂"误判为在线；
 //! - 仅 DNS / 连接被拒 / TLS / 超时等网络级错误判定"不可达"；
 //! - 延迟 = 收到响应头的耗时（TTFB，真实往返）。
+//!
+//! ## 代理规避
+//!
+//! loopback / 私网目标绕过全局代理与系统代理直连探测：本地服务（Ollama 等）挂掉时，
+//! 走代理只会拿到代理的 5xx 响应，永远看不到真实的"连接被拒"。
 //!
 //! ## 设计取舍：可达 ≠ 配置正确
 //!
@@ -50,6 +58,8 @@ fn is_local_address(url: &str) -> bool {
         return false;
     };
     let host = host.trim_end_matches('.');
+    // url crate 对 IPv6 host 保留方括号（如 `[::1]`），解析前需剥掉
+    let host = host.trim_start_matches('[').trim_end_matches(']');
     if host.eq_ignore_ascii_case("localhost") || host.to_lowercase().ends_with(".local") {
         return true;
     }
@@ -245,11 +255,12 @@ impl StreamCheckService {
         }
     }
 
-    /// 轻量可达性探测：GET `base_url`，收到任意 HTTP 响应即可达。
+    /// 轻量可达性探测：GET `base_url`，收到 2xx/3xx/4xx 响应即可达（5xx 由
+    /// `build_result` 判为不可达）。
     ///
     /// - `send()` 在收到响应头时即返回，故计时天然是 TTFB；不读 body。
     /// - reqwest 对任何 HTTP 状态码都返回 `Ok`，只有网络级错误进 `Err`——
-    ///   这正是"任何响应都算可达、只有连不上才算失败"的语义。
+    ///   状态码的成败语义（4xx 可达 / 5xx 不可达）由 `build_result` 统一裁决。
     async fn probe_reachability(
         client: &Client,
         base_url: &str,
@@ -285,6 +296,20 @@ impl StreamCheckService {
     ) -> StreamCheckResult {
         let tested_at = chrono::Utc::now().timestamp();
         match result {
+            // 5xx：服务端/网关错误，判为不可达。直连一个挂掉的服务不会有 HTTP 响应
+            // （连接被拒/超时），5xx 几乎必然来自中间代理或网关——上游连不上时代理
+            // 会返回 502/504。若照单全收，"服务已挂"会被误判为在线。
+            Ok(status) if status >= 500 => StreamCheckResult {
+                status: HealthStatus::Failed,
+                success: false,
+                message: format!("HTTP {status} server error"),
+                response_time_ms: Some(response_time),
+                http_status: Some(status),
+                model_used: String::new(),
+                tested_at,
+                retry_count: 0,
+                error_category: None,
+            },
             Ok(status) => StreamCheckResult {
                 status: Self::determine_status(response_time, degraded_threshold_ms),
                 success: true,
@@ -521,9 +546,9 @@ mod tests {
     }
 
     #[test]
-    fn test_build_result_any_http_status_is_reachable() {
-        // 任何 HTTP 状态码都算可达（success=true）
-        for status in [200u16, 401, 403, 404, 429, 500, 503] {
+    fn test_build_result_4xx_is_reachable() {
+        // 4xx 说明服务活着（鉴权/路径/限流问题），仍算可达
+        for status in [200u16, 201, 301, 400, 401, 403, 404, 429] {
             let r = StreamCheckService::build_result(Ok(status), 100, 1500);
             assert!(r.success, "status {status} should be reachable");
             assert_eq!(r.status, HealthStatus::Operational);
@@ -531,6 +556,39 @@ mod tests {
             assert!(r.model_used.is_empty());
             assert!(r.error_category.is_none());
         }
+    }
+
+    #[test]
+    fn test_build_result_5xx_is_unreachable() {
+        // 5xx（含代理/网关对挂掉上游返回的 502/504）判为不可达，
+        // 否则"服务已挂"会被误判为在线
+        for status in [500u16, 501, 502, 503, 504] {
+            let r = StreamCheckService::build_result(Ok(status), 100, 1500);
+            assert!(!r.success, "status {status} should be unreachable");
+            assert_eq!(r.status, HealthStatus::Failed);
+            assert_eq!(r.http_status, Some(status));
+            assert!(r.message.contains("server error"), "message: {}", r.message);
+        }
+    }
+
+    #[test]
+    fn test_is_local_address() {
+        // loopback / 私网 / localhost → 直连
+        assert!(is_local_address("http://127.0.0.1:11434/v1"));
+        assert!(is_local_address("http://localhost:8080"));
+        assert!(is_local_address("http://LOCALHOST:8080"));
+        assert!(is_local_address("http://192.168.1.10:3000"));
+        assert!(is_local_address("http://10.0.0.5"));
+        assert!(is_local_address("http://172.16.0.1"));
+        assert!(is_local_address("http://[::1]:11434"));
+        assert!(is_local_address("http://mymac.local:8080"));
+
+        // 公网地址 → 走全局代理
+        assert!(!is_local_address("https://api.example.com/v1"));
+        assert!(!is_local_address("http://8.8.8.8"));
+        assert!(!is_local_address("https://ark.cn-beijing.volces.com/api/v3"));
+        // 非法 URL 一律按公网处理
+        assert!(!is_local_address("not a url"));
     }
 
     #[test]
