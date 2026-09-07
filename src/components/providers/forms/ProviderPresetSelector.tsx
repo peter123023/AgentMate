@@ -8,8 +8,6 @@ import {
   ArrowUpAZ,
   Search,
   Zap,
-  Star,
-  Heart,
   Layers,
   Settings2,
 } from "lucide-react";
@@ -86,6 +84,39 @@ export function filterPresetEntries(
   );
 }
 
+// 知名供应商关键词（按知名度大致排序）：命中越靠前展示越靠前；
+// 未命中的小供应商统一排在知名供应商之后，按显示名排序。
+const WELL_KNOWN_PROVIDER_KEYWORDS = [
+  "deepseek",
+  "kimi",
+  "zhipu glm",
+  "qwencloud",
+  "bailian",
+  "火山",
+  "doubao",
+  "byteplus",
+  "tencent",
+  "baidu qianfan",
+  "siliconflow",
+  "modelscope",
+  "minimax",
+  "stepfun",
+  "xiaomi mimo",
+  "longcat",
+  "openrouter",
+  "nvidia",
+  "novita",
+  "xai",
+] as const;
+
+function wellKnownRank(presetName: string | undefined): number {
+  const name = (presetName ?? "").toLowerCase();
+  for (let i = 0; i < WELL_KNOWN_PROVIDER_KEYWORDS.length; i++) {
+    if (name.includes(WELL_KNOWN_PROVIDER_KEYWORDS[i])) return i;
+  }
+  return WELL_KNOWN_PROVIDER_KEYWORDS.length;
+}
+
 export function sortPresetEntries(
   entries: PresetEntry[],
   sortMode: PresetSortMode,
@@ -97,32 +128,18 @@ export function sortPresetEntries(
     );
 
   if (sortMode === PresetSortMode.Original) {
-    // 置顶优先级：官方分类 > 尊享合作伙伴（Kimi）> 其余赞助商 > 非赞助商。
-    // 前三组用分区拼接而非排序，保持各自在预设文件里的相对顺序
-    // （赞助商的文件顺序与 README 赞助商表对齐）；非赞助商按显示名排序。
-    // 排他条件保证同时命中多组的预设只归入最前面的组、不被重复。
+    // 官方分类置顶；其余按知名度排序（知名大厂在前，小供应商按名称排后）
     const official = entries.filter(
       (entry) => entry.preset.category === "official",
     );
-    const prime = entries.filter(
-      (entry) =>
-        entry.preset.category !== "official" && entry.preset.primePartner,
-    );
-    const partner = entries.filter(
-      (entry) =>
-        entry.preset.category !== "official" &&
-        !entry.preset.primePartner &&
-        entry.preset.isPartner,
-    );
     const rest = entries
-      .filter(
-        (entry) =>
-          entry.preset.category !== "official" &&
-          !entry.preset.primePartner &&
-          !entry.preset.isPartner,
-      )
-      .sort(byDisplayName);
-    return [...official, ...prime, ...partner, ...rest];
+      .filter((entry) => entry.preset.category !== "official")
+      .sort((a, b) => {
+        const rankDiff =
+          wellKnownRank(a.preset.name) - wellKnownRank(b.preset.name);
+        return rankDiff !== 0 ? rankDiff : byDisplayName(a, b);
+      });
+    return [...official, ...rest];
   }
 
   return [...entries].sort(byDisplayName);
@@ -420,8 +437,6 @@ export function ProviderPresetSelector({
 
         {visiblePresetEntries.map((entry) => {
           const isSelected = selectedPresetId === entry.id;
-          const isPartner = entry.preset.isPartner;
-          const isPrimePartner = entry.preset.primePartner;
           const presetCategory = entry.preset.category ?? "others";
           return (
             <button
@@ -439,19 +454,6 @@ export function ProviderPresetSelector({
               <span className="truncate">
                 {getPresetDisplayName(entry.preset, t)}
               </span>
-              {isPrimePartner ? (
-                <Heart
-                  className="absolute -top-1 -right-1 h-5 w-5 fill-amber-500 text-amber-500 drop-shadow-sm"
-                  strokeWidth={0}
-                  aria-hidden
-                />
-              ) : (
-                isPartner && (
-                  <span className="absolute -top-1 -right-1 flex items-center gap-0.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-md">
-                    <Star className="h-2.5 w-2.5 fill-current" />
-                  </span>
-                )
-              )}
             </button>
           );
         })}

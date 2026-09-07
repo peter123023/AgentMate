@@ -231,15 +231,12 @@ describe("ProviderPresetSelector pure helpers", () => {
     ).toEqual(["alpha", "beta", "delta", "gamma"]);
   });
 
-  it("original 模式按「官方 → 尊享伙伴 → 赞助商 → 非赞助商」四段排序，前三组保序、末组按显示名，双重身份不重复", () => {
+  it("original 模式官方置顶（保序），知名供应商次之，小供应商按显示名排最后", () => {
     // 故意打乱传入顺序，验证：
     // - official 组置顶（officialOnly、officialPrime 按出现顺序）；
-    // - 非官方且 primePartner 的预设次之（primeAndPartner）；
-    // - 赞助商（isPartner）第三段，保持传入（预设文件）顺序：
-    //   partnerZeta 在 partnerAlpha 前，不按字母重排；
-    // - 非赞助商按显示名排序：restAlpha 排到 restZulu 前；
-    // - 既是 official 又是 primePartner 的只归入官方组；
-    //   既是 primePartner 又是 isPartner 的只归入 prime 组、不在赞助商组重复。
+    // - 知名供应商（name 命中关键词表，如 DeepSeek）排在其他供应商之前；
+    // - 未命中关键词的小供应商按显示名排序：
+    //   Alpha Partner < Alpha Rest < Prime And Partner < Zeta Partner < Zulu Rest。
     const mixed: TestPresetEntry[] = [
       {
         id: "restZulu",
@@ -309,15 +306,25 @@ describe("ProviderPresetSelector pure helpers", () => {
           category: "aggregator",
         },
       },
+      {
+        id: "wellKnownDeepseek",
+        preset: {
+          name: "DeepSeek",
+          websiteUrl: "https://deepseek.example.com",
+          settingsConfig: {},
+          category: "third_party",
+        },
+      },
     ];
 
     expect(getIds(sortPresetEntries(mixed, "original", t))).toEqual([
       "officialOnly",
       "officialPrime",
-      "primeAndPartner",
-      "partnerZeta",
+      "wellKnownDeepseek",
       "partnerAlpha",
       "restAlpha",
+      "primeAndPartner",
+      "partnerZeta",
       "restZulu",
     ]);
   });
