@@ -244,6 +244,31 @@ html[data-window-active="false"] .status-heartbeat {
     overflow-x: hidden;
   }
 
+  /* 全局隐藏了滚动条（::-webkit-scrollbar display:none），
+     需要显式展示滚动条的容器（如预设供应商列表）加此类。 */
+  .scrollbar-visible {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.35) transparent;
+  }
+
+  .scrollbar-visible::-webkit-scrollbar {
+    display: block;
+    width: 6px;
+  }
+
+  .scrollbar-visible::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-visible::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.35);
+    border-radius: 3px;
+  }
+
+  .scrollbar-visible::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.55);
+  }
+
   .border-default {
     border-width: 1px;
     border-color: hsl(var(--border));

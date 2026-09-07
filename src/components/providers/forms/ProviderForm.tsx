@@ -2159,7 +2159,7 @@ function ProviderFormFull({
               setFormTab("basic");
             }
           })}
-          className="space-y-6 glass rounded-xl p-6 border border-white/10"
+          className="space-y-6 glass rounded-xl px-6 pt-4 pb-6 border border-white/10"
         >
           {!initialData && (
             <ProviderPresetSelector

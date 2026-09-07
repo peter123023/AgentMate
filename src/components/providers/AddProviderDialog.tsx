@@ -407,14 +407,14 @@ export function AddProviderDialog({
       title={t("provider.addNewProvider")}
       onClose={handlePanelClose}
       footer={footer}
-      contentClassName={appId === "pi" ? "pt-3 pb-0" : "pt-3"}
+      contentClassName={appId === "pi" ? "pt-1 pb-0" : "pt-1"}
     >
       {showUniversalTab ? (
         <Tabs
           value={activeTab}
           onValueChange={(v) => setActiveTab(v as "app-specific" | "universal")}
         >
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger value="app-specific">
               {t(`apps.${appId}`)} {t("provider.tabProvider")}
             </TabsTrigger>
