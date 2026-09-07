@@ -967,7 +967,7 @@ const UsageScriptModal: React.FC<UsageScriptModalProps> = ({
                 <div className="space-y-1 text-xs">
                   {/* baseUrl */}
                   <div className="flex items-center gap-2 py-1">
-                    <code className="text-emerald-500 dark:text-emerald-400 font-mono shrink-0">
+                    <code className="text-success font-mono shrink-0">
                       {"{{baseUrl}}"}
                     </code>
                     <span className="text-muted-foreground/50">=</span>
@@ -984,7 +984,7 @@ const UsageScriptModal: React.FC<UsageScriptModalProps> = ({
 
                   {/* apiKey */}
                   <div className="flex items-center gap-2 py-1">
-                    <code className="text-emerald-500 dark:text-emerald-400 font-mono shrink-0">
+                    <code className="text-success font-mono shrink-0">
                       {"{{apiKey}}"}
                     </code>
                     <span className="text-muted-foreground/50">=</span>

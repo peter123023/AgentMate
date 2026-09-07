@@ -81,7 +81,7 @@ const MemoryTabPane: React.FC<MemoryTabPaneProps> = ({
           </span>
         </div>
         {!enabled && (
-          <span className="text-xs text-amber-700 dark:text-amber-400">
+          <span className="text-xs text-warning-foreground">
             {t("hermes.memory.disabledHint")}
           </span>
         )}

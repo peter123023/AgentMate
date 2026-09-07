@@ -113,7 +113,7 @@ const WorkspaceFilesPanel: React.FC = () => {
                     {file.filename}
                   </span>
                   {exists ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-success flex-shrink-0" />
                   ) : (
                     <Circle className="w-3.5 h-3.5 text-muted-foreground/40 flex-shrink-0" />
                   )}

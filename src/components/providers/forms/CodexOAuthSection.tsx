@@ -492,7 +492,7 @@ export const CodexOAuthSection: React.FC<CodexOAuthSectionProps> = ({
                     {account.reauth_required && (
                       <Badge
                         variant="outline"
-                        className="shrink-0 gap-1 border-amber-400/70 text-xs text-amber-700 dark:border-amber-500/50 dark:text-amber-300"
+                        className="shrink-0 gap-1 border-warning/70 text-xs text-warning-foreground"
                       >
                         <AlertTriangle className="h-3 w-3" />
                         {t("codexOauth.reauthBadge", "需要重新登录")}
@@ -506,7 +506,7 @@ export const CodexOAuthSection: React.FC<CodexOAuthSectionProps> = ({
                       size="sm"
                       className={`h-7 gap-1 px-2 text-xs ${
                         account.reauth_required
-                          ? "border-amber-400/70 text-amber-700 hover:bg-amber-100 dark:border-amber-500/50 dark:text-amber-300 dark:hover:bg-amber-900/40"
+                          ? "border-warning/70 text-warning-foreground hover:bg-warning/10"
                           : "text-muted-foreground"
                       }`}
                       onClick={() => reauthAccount(account.id)}

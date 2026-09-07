@@ -347,6 +347,11 @@ export const useSwitchProviderMutation = (appId: AppId) => {
       if (appId === "hermes") {
         await invalidateHermesProviderCaches(queryClient);
       }
+      if (appId === "workbuddy") {
+        await queryClient.invalidateQueries({
+          queryKey: ["workbuddyLiveProviderIds"],
+        });
+      }
       try {
         await providersApi.updateTrayMenu();
       } catch (trayError) {

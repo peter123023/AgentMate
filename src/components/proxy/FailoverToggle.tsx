@@ -65,7 +65,7 @@ export function FailoverToggle({ className, activeApp }: FailoverToggleProps) {
           className={cn(
             "h-4 w-4 transition-colors",
             isEnabled
-              ? "text-emerald-500 status-heartbeat"
+              ? "text-success status-heartbeat"
               : "text-muted-foreground",
           )}
         />

@@ -319,7 +319,7 @@ export function UsageHero({
                 icon={<Sparkles className="h-3.5 w-3.5" />}
                 label={t("usage.cacheRead", "缓存命中")}
                 value={formatTokensShort(cacheRead, lang)}
-                accent="text-emerald-500"
+                accent="text-success"
               />
 
               <div className="col-span-2 lg:col-span-1 flex flex-col justify-center rounded-xl border border-border/40 bg-background/40 p-3 shadow-sm">
@@ -327,13 +327,13 @@ export function UsageHero({
                   <span className="text-muted-foreground font-medium">
                     {t("usage.cacheHitRate", "缓存命中率")}
                   </span>
-                  <span className="font-bold text-emerald-500 tabular-nums">
+                  <span className="font-bold text-success tabular-nums">
                     {hitPercentLabel}%
                   </span>
                 </div>
                 <div className="relative h-1.5 rounded-full bg-muted/60 overflow-hidden">
                   <motion.div
-                    className="absolute inset-y-0 left-0 bg-emerald-500 rounded-full"
+                    className="absolute inset-y-0 left-0 bg-success rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: `${hitPercent}%` }}
                     transition={{ duration: 0.8, ease: "easeOut" }}

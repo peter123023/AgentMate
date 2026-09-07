@@ -224,7 +224,19 @@ function App() {
 
   // Fallback from sessions view when switching to an app without session support
   useEffect(() => {
-    if (currentView === "mcp" && sharedFeatureApp === "pi") {
+    if (
+      currentView === "mcp" &&
+      (sharedFeatureApp === "pi" || sharedFeatureApp === "workbuddy")
+    ) {
+      setCurrentView("providers");
+      return;
+    }
+    if (
+      (currentView === "skills" ||
+        currentView === "skillsDiscovery" ||
+        currentView === "prompts") &&
+      sharedFeatureApp === "workbuddy"
+    ) {
       setCurrentView("providers");
       return;
     }
@@ -305,7 +317,8 @@ function App() {
       currentView === "openclawAgents");
   const { data: openclawHealthWarnings = [] } =
     useOpenClawHealth(isOpenClawView);
-  const hasSkillsSupport = sharedFeatureApp !== "openclaw";
+  const hasSkillsSupport =
+    sharedFeatureApp !== "openclaw" && sharedFeatureApp !== "workbuddy";
   const hasSessionSupport =
     sharedFeatureApp === "claude" ||
     sharedFeatureApp === "codex" ||
@@ -315,7 +328,8 @@ function App() {
     sharedFeatureApp === "gemini" ||
     sharedFeatureApp === "hermes" ||
     sharedFeatureApp === "pi";
-  const hasMcpSupport = sharedFeatureApp !== "pi";
+  const hasMcpSupport =
+    sharedFeatureApp !== "pi" && sharedFeatureApp !== "workbuddy";
 
   const {
     addProvider,
@@ -756,6 +770,10 @@ function App() {
         await queryClient.invalidateQueries({
           queryKey: hermesKeys.liveProviderIds,
         });
+      } else if (activeApp === "workbuddy") {
+        await queryClient.invalidateQueries({
+          queryKey: ["workbuddyLiveProviderIds"],
+        });
       }
       toast.success(
         activeApp === "pi"
@@ -1129,7 +1147,8 @@ function App() {
                         activeApp === "opencode" ||
                         activeApp === "openclaw" ||
                         activeApp === "hermes" ||
-                        activeApp === "pi"
+                        activeApp === "pi" ||
+                        activeApp === "workbuddy"
                           ? (provider) =>
                               setConfirmAction({ provider, action: "remove" })
                           : undefined
@@ -1348,171 +1367,178 @@ function App() {
                       proxyStatus !== undefined && takeoverStatus !== undefined
                     }
                   />
-                  {/* 功能入口（skills/prompts/会话/MCP 等）：移到 header 左侧 */}
-                  <div className="flex items-center gap-1 p-1 bg-muted rounded-xl">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={
-                          activeApp === "openclaw"
-                            ? "openclaw"
-                            : activeApp === "hermes"
-                              ? "hermes"
-                              : activeApp === "grokbuild"
-                                ? "grokbuild"
-                                : "default"
-                        }
-                        className="flex items-center gap-1"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.15 }}
-                      >
-                        {activeApp === "hermes" ? (
-                          <>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setCurrentView("skills")}
-                              className="text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 w-8 px-2"
-                              title={t("skills.manage")}
-                            >
-                              <Wrench className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setCurrentView("hermesMemory")}
-                              className="text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 w-8 px-2"
-                              title={t("hermes.memory.title")}
-                            >
-                              <Brain className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => void openHermesWebUI()}
-                              className="text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 w-8 px-2"
-                              title={t("hermes.webui.open")}
-                            >
-                              <LayoutDashboard className="w-4 h-4" />
-                            </Button>
-                            {hasMcpSupport && (
+                  {/* 功能入口（skills/prompts/会话/MCP 等）：移到 header 左侧。
+                      WorkBuddy 无任何功能入口，整个胶囊不渲染，避免蓝点右侧残留空灰块 */}
+                  {(activeApp === "hermes" ||
+                    activeApp === "openclaw" ||
+                    sharedFeatureApp !== "workbuddy") && (
+                    <div className="flex items-center gap-1 p-1 bg-muted rounded-xl">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={
+                            activeApp === "openclaw"
+                              ? "openclaw"
+                              : activeApp === "hermes"
+                                ? "hermes"
+                                : activeApp === "grokbuild"
+                                  ? "grokbuild"
+                                  : "default"
+                          }
+                          className="flex items-center gap-1"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.15 }}
+                        >
+                          {activeApp === "hermes" ? (
+                            <>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setCurrentView("mcp")}
-                                className="text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 w-8 px-2"
-                                title={t("mcp.title")}
+                                onClick={() => setCurrentView("skills")}
+                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                title={t("skills.manage")}
                               >
-                                <McpIcon size={16} />
+                                <Wrench className="w-4 h-4" />
                               </Button>
-                            )}
-                          </>
-                        ) : activeApp === "openclaw" ? (
-                          <>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setCurrentView("workspace")}
-                              className="text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 w-8 px-2"
-                              title={t("workspace.manage")}
-                            >
-                              <FolderOpen className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setCurrentView("openclawEnv")}
-                              className="text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 w-8 px-2"
-                              title={t("openclaw.env.title")}
-                            >
-                              <KeyRound className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setCurrentView("openclawTools")}
-                              className="text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 w-8 px-2"
-                              title={t("openclaw.tools.title")}
-                            >
-                              <Shield className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setCurrentView("openclawAgents")}
-                              className="text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 w-8 px-2"
-                              title={t("openclaw.agents.title")}
-                            >
-                              <Cpu className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setCurrentView("sessions")}
-                              className="text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 w-8 px-2"
-                              title={t("sessionManager.title")}
-                            >
-                              <History className="w-4 h-4" />
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setCurrentView("skills")}
-                              className={cn(
-                                "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5",
-                                "transition-all duration-200 ease-in-out overflow-hidden",
-                                hasSkillsSupport
-                                  ? "opacity-100 w-8 scale-100 px-2"
-                                  : "opacity-0 w-0 scale-75 pointer-events-none px-0 -ml-1",
-                              )}
-                              title={t("skills.manage")}
-                            >
-                              <Wrench className="flex-shrink-0 w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setCurrentView("prompts")}
-                              className="text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 w-8 px-2"
-                              title={t("prompts.manage")}
-                            >
-                              <Book className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setCurrentView("sessions")}
-                              className={cn(
-                                "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5",
-                                "transition-all duration-200 ease-in-out overflow-hidden",
-                                hasSessionSupport
-                                  ? "opacity-100 w-8 scale-100 px-2"
-                                  : "opacity-0 w-0 scale-75 pointer-events-none px-0 -ml-1",
-                              )}
-                              title={t("sessionManager.title")}
-                            >
-                              <History className="flex-shrink-0 w-4 h-4" />
-                            </Button>
-                            {hasMcpSupport && (
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setCurrentView("mcp")}
-                                className="text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 w-8 px-2"
-                                title={t("mcp.title")}
+                                onClick={() => setCurrentView("hermesMemory")}
+                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                title={t("hermes.memory.title")}
                               >
-                                <McpIcon size={16} />
+                                <Brain className="w-4 h-4" />
                               </Button>
-                            )}
-                          </>
-                        )}
-                      </motion.div>
-                    </AnimatePresence>
-                  </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => void openHermesWebUI()}
+                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                title={t("hermes.webui.open")}
+                              >
+                                <LayoutDashboard className="w-4 h-4" />
+                              </Button>
+                              {hasMcpSupport && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setCurrentView("mcp")}
+                                  className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                  title={t("mcp.title")}
+                                >
+                                  <McpIcon size={16} />
+                                </Button>
+                              )}
+                            </>
+                          ) : activeApp === "openclaw" ? (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setCurrentView("workspace")}
+                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                title={t("workspace.manage")}
+                              >
+                                <FolderOpen className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setCurrentView("openclawEnv")}
+                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                title={t("openclaw.env.title")}
+                              >
+                                <KeyRound className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setCurrentView("openclawTools")}
+                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                title={t("openclaw.tools.title")}
+                              >
+                                <Shield className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setCurrentView("openclawAgents")}
+                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                title={t("openclaw.agents.title")}
+                              >
+                                <Cpu className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setCurrentView("sessions")}
+                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                title={t("sessionManager.title")}
+                              >
+                                <History className="w-4 h-4" />
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setCurrentView("skills")}
+                                className={cn(
+                                  "text-muted-foreground hover:text-foreground hover-soft",
+                                  "transition-all duration-200 ease-in-out overflow-hidden",
+                                  hasSkillsSupport
+                                    ? "opacity-100 w-8 scale-100 px-2"
+                                    : "opacity-0 w-0 scale-75 pointer-events-none px-0 -ml-1",
+                                )}
+                                title={t("skills.manage")}
+                              >
+                                <Wrench className="flex-shrink-0 w-4 h-4" />
+                              </Button>
+                              {sharedFeatureApp !== "workbuddy" && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setCurrentView("prompts")}
+                                  className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                  title={t("prompts.manage")}
+                                >
+                                  <Book className="w-4 h-4" />
+                                </Button>
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setCurrentView("sessions")}
+                                className={cn(
+                                  "text-muted-foreground hover:text-foreground hover-soft",
+                                  "transition-all duration-200 ease-in-out overflow-hidden",
+                                  hasSessionSupport
+                                    ? "opacity-100 w-8 scale-100 px-2"
+                                    : "opacity-0 w-0 scale-75 pointer-events-none px-0 -ml-1",
+                                )}
+                                title={t("sessionManager.title")}
+                              >
+                                <History className="flex-shrink-0 w-4 h-4" />
+                              </Button>
+                              {hasMcpSupport && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setCurrentView("mcp")}
+                                  className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                  title={t("mcp.title")}
+                                >
+                                  <McpIcon size={16} />
+                                </Button>
+                              )}
+                            </>
+                          )}
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
+                  )}
                   <UpdateBadge
                     onClick={() => {
                       setSettingsDefaultTab("about");
@@ -1530,7 +1556,7 @@ function App() {
                       title={t("usage.title", {
                         defaultValue: "使用统计",
                       })}
-                      className="hover:bg-black/5 dark:hover:bg-white/5"
+                      className="hover-soft"
                     >
                       <BarChart2 className="w-4 h-4" />
                     </Button>
@@ -1581,7 +1607,7 @@ function App() {
                       size="sm"
                       disabled={promptManagementBusy}
                       onClick={() => promptPanelRef.current?.openAdd()}
-                      className="hover:bg-black/5 disabled:opacity-100 dark:hover:bg-white/5"
+                      className="hover-soft disabled:opacity-100"
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       {t(
@@ -1598,7 +1624,7 @@ function App() {
                         size="sm"
                         disabled={mcpManagementBusy}
                         onClick={() => mcpPanelRef.current?.openImport()}
-                        className="hover:bg-black/5 disabled:opacity-100 dark:hover:bg-white/5"
+                        className="hover-soft disabled:opacity-100"
                       >
                         <Download className="w-4 h-4 mr-2" />
                         {t("mcp.importExisting")}
@@ -1608,7 +1634,7 @@ function App() {
                         size="sm"
                         disabled={mcpManagementBusy}
                         onClick={() => mcpPanelRef.current?.openAdd()}
-                        className="hover:bg-black/5 disabled:opacity-100 dark:hover:bg-white/5"
+                        className="hover-soft disabled:opacity-100"
                       >
                         <Plus className="w-4 h-4 mr-2" />
                         {t("mcp.addMcp")}
@@ -1629,7 +1655,7 @@ function App() {
                           unifiedSkillsPanelRef.current?.checkUpdates()
                         }
                         className={cn(
-                          "hover:bg-black/5 dark:hover:bg-white/5",
+                          "hover-soft",
                           skillsManagementBusy && "disabled:opacity-100",
                         )}
                       >
@@ -1649,7 +1675,7 @@ function App() {
                         onClick={() =>
                           unifiedSkillsPanelRef.current?.openRestoreFromBackup()
                         }
-                        className="hover:bg-black/5 disabled:opacity-100 dark:hover:bg-white/5"
+                        className="hover-soft disabled:opacity-100"
                       >
                         <History className="w-4 h-4 mr-2" />
                         {t("skills.restoreFromBackup.button")}
@@ -1661,7 +1687,7 @@ function App() {
                         onClick={() =>
                           unifiedSkillsPanelRef.current?.openInstallFromZip()
                         }
-                        className="hover:bg-black/5 disabled:opacity-100 dark:hover:bg-white/5"
+                        className="hover-soft disabled:opacity-100"
                       >
                         <FolderArchive className="w-4 h-4 mr-2" />
                         {t("skills.installFromZip.button")}
@@ -1673,7 +1699,7 @@ function App() {
                         onClick={() =>
                           unifiedSkillsPanelRef.current?.openImport()
                         }
-                        className="relative hover:bg-black/5 disabled:opacity-100 dark:hover:bg-white/5"
+                        className="relative hover-soft disabled:opacity-100"
                         title={
                           hasUnmanagedSkills
                             ? t("skills.unmanagedAvailable")
@@ -1696,7 +1722,7 @@ function App() {
                         onClick={() =>
                           unifiedSkillsPanelRef.current?.openDiscovery()
                         }
-                        className="hover:bg-black/5 disabled:opacity-100 dark:hover:bg-white/5"
+                        className="hover-soft disabled:opacity-100"
                       >
                         <Search className="w-4 h-4 mr-2" />
                         {t("skills.discover")}
@@ -1712,7 +1738,7 @@ function App() {
                             variant="ghost"
                             size="sm"
                             onClick={() => execute(skillsPageRef.current)}
-                            className="hover:bg-black/5 dark:hover:bg-white/5"
+                            className="hover-soft"
                           >
                             <Icon className="w-4 h-4 mr-2" />
                             {t(labelKey)}

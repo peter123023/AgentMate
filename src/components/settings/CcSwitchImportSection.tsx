@@ -329,8 +329,8 @@ export function CcSwitchImportSection({
         )}
 
         {result?.success && result.results && (
-          <div className="flex items-start gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-4">
-            <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-emerald-500" />
+          <div className="flex items-start gap-3 rounded-md border border-success/30 bg-success/10 p-4">
+            <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-success" />
             <div className="space-y-1 text-sm min-w-0">
               {Object.entries(result.results).map(([key, stats]) => (
                 <div key={key} className="flex items-center gap-2">

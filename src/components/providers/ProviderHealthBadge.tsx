@@ -26,19 +26,19 @@ export function ProviderHealthBadge({
         labelKey: "health.operational",
         labelFallback: "正常",
         status: ProviderHealthStatus.Healthy,
-        color: "bg-green-500",
+        color: "bg-success",
         // 使用更深/柔和的背景色，去除可能的白色内容感
-        bgColor: "bg-green-500/10",
-        textColor: "text-green-600 dark:text-green-400",
+        bgColor: "bg-success/10",
+        textColor: "text-success-foreground",
       };
     } else if (isHealthy !== false) {
       return {
         labelKey: "health.degraded",
         labelFallback: "降级",
         status: ProviderHealthStatus.Degraded,
-        color: "bg-yellow-500",
-        bgColor: "bg-yellow-500/10",
-        textColor: "text-yellow-600 dark:text-yellow-400",
+        color: "bg-warning",
+        bgColor: "bg-warning/10",
+        textColor: "text-warning-foreground",
       };
     } else {
       return {

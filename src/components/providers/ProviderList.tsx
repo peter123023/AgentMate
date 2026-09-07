@@ -115,11 +115,18 @@ export function ProviderList({
   // Hermes: 查询 live 配置中的供应商 ID 列表，用于判断 isInConfig
   const { data: hermesLiveIds } = useHermesLiveProviderIds(appId === "hermes");
 
+  // WorkBuddy: 查询 live 配置（models.json）中的模型 ID 列表，用于判断 isInConfig
+  const { data: workbuddyLiveIds } = useQuery({
+    queryKey: ["workbuddyLiveProviderIds"],
+    queryFn: () => providersApi.getWorkBuddyLiveProviderIds(),
+    enabled: appId === "workbuddy",
+  });
+
   // Hermes: 读取当前 model.provider，用于判断哪个供应商是"当前激活"（高亮）
   const { data: hermesModelConfig } = useHermesModelConfig(appId === "hermes");
   const hermesCurrentProviderId = hermesModelConfig?.provider;
 
-  // 判断供应商是否已添加到配置（累加模式应用：OpenCode/OpenClaw/Hermes）
+  // 判断供应商是否已添加到配置（累加模式应用：OpenCode/OpenClaw/Hermes/WorkBuddy）
   const isProviderInConfig = useCallback(
     (providerId: string): boolean => {
       if (appId === "opencode") {
@@ -131,9 +138,12 @@ export function ProviderList({
       if (appId === "hermes") {
         return hermesLiveIds?.includes(providerId) ?? false;
       }
+      if (appId === "workbuddy") {
+        return workbuddyLiveIds?.includes(providerId) ?? false;
+      }
       return true; // 其他应用始终返回 true
     },
-    [appId, opencodeLiveIds, openclawLiveIds, hermesLiveIds],
+    [appId, opencodeLiveIds, openclawLiveIds, hermesLiveIds, workbuddyLiveIds],
   );
 
   // OpenClaw: query default model to determine which provider is default
@@ -382,7 +392,7 @@ export function ProviderList({
     appId === "pi" && piStateErrorMessages.length > 0 ? (
       <div
         role="alert"
-        className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-200"
+        className="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning-foreground"
       >
         <div className="flex items-center gap-2 font-medium">
           <AlertTriangle className="h-4 w-4 shrink-0" />
@@ -528,7 +538,7 @@ export function ProviderList({
       {appId === "workbuddy" && <WorkBuddyStatsPanel />}
       {piStateErrorNotice}
       {claudeDesktopStatusMessages.length > 0 && (
-        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
+        <div className="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning-foreground">
           <div className="flex items-center gap-2 font-medium">
             <AlertTriangle className="h-4 w-4 shrink-0" />
             {t("claudeDesktop.statusTitle", {

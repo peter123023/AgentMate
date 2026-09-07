@@ -107,8 +107,8 @@ export function WorkBuddyStatsPanel() {
                     usagePercent > 90
                       ? "bg-red-500"
                       : usagePercent > 70
-                        ? "bg-amber-500"
-                        : "bg-emerald-500"
+                        ? "bg-warning"
+                        : "bg-success"
                   }`}
                   style={{ width: `${usagePercent}%` }}
                 />

@@ -25,6 +25,11 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
+    --success: 160 84% 39%;
+    --success-foreground: 163 88% 24%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 27 94% 37%;
+
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 210 100% 56%;
@@ -32,30 +37,36 @@
     --radius: 0.5rem;
   }
 
+  /* 暗色层次阶梯：背景(9%) < 卡片(14%) < 弹层(15%)，明度差拉开让卡片"浮"起来 */
   .dark {
-    --background: 240 5% 12%;
+    --background: 240 6% 9%;
     --foreground: 0 0% 98%;
-    --card: 240 5% 16%;
+    --card: 240 5% 14%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 5% 16%;
+    --popover: 240 5% 15%;
     --popover-foreground: 0 0% 98%;
 
     --primary: 210 100% 54%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 5% 18%;
+    --secondary: 240 5% 17%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 240 5% 18%;
+    --muted: 240 5% 16%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 240 5% 18%;
+    --accent: 240 5% 19%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 5% 24%;
-    --input: 240 5% 24%;
+    --success: 158 76% 53%;
+    --success-foreground: 158 76% 67%;
+    --warning: 43 96% 56%;
+    --warning-foreground: 45 97% 64%;
+
+    --border: 240 5% 19%;
+    --input: 240 5% 19%;
     --ring: 210 100% 54%;
   }
 }
@@ -256,6 +267,15 @@ html[data-window-active="false"] .status-heartbeat {
 
   .border-border-dragging {
     border-color: hsl(var(--primary) / 0.6);
+  }
+
+  /* 中性悬停底色：亮色压黑 5%、暗色提白 5%，替代散落的 hover:bg-black/5 dark:hover:bg-white/5 */
+  .hover-soft:hover {
+    background-color: rgb(0 0 0 / 0.05);
+  }
+
+  .dark .hover-soft:hover {
+    background-color: rgb(255 255 255 / 0.05);
   }
 }
 

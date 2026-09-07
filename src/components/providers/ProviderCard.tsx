@@ -372,11 +372,11 @@ export function ProviderCard({
         "relative overflow-hidden rounded-xl border border-border p-4 transition-all duration-300",
         "bg-card text-card-foreground group",
         isAutoFailoverEnabled || isProxyTakeover
-          ? "hover:border-emerald-500/50"
+          ? "hover:border-success/50"
           : "hover:border-border-active",
         shouldUseGreen &&
-          "border-emerald-500/60 shadow-sm shadow-emerald-500/10",
-        shouldUseBlue && "border-blue-500/60 shadow-sm shadow-blue-500/10",
+          "border-success/60 shadow-sm shadow-success/10",
+        shouldUseBlue && "border-primary/60 shadow-sm shadow-primary/10",
         !hasStateHighlight && "hover:shadow-sm",
         dragHandleProps?.isDragging &&
           "cursor-grabbing border-primary shadow-lg scale-105 z-10",
@@ -385,8 +385,8 @@ export function ProviderCard({
       <div
         className={cn(
           "absolute inset-0 bg-gradient-to-r to-transparent transition-opacity duration-500 pointer-events-none",
-          shouldUseGreen && "from-emerald-500/10",
-          shouldUseBlue && "from-blue-500/10",
+          shouldUseGreen && "from-success/10",
+          shouldUseBlue && "from-primary/10",
           !hasStateHighlight && "from-primary/10",
           hasStateHighlight ? "opacity-100" : "opacity-0",
         )}
@@ -536,14 +536,14 @@ export function ProviderCard({
                           : managedCodexAccount.login)}
                     </span>
                     {managedCodexAccount.reauth_required && (
-                      <span className="inline-flex shrink-0 items-center gap-1 text-amber-700 dark:text-amber-300">
+                      <span className="inline-flex shrink-0 items-center gap-1 text-warning-foreground">
                         <AlertTriangle className="h-3.5 w-3.5" />
                         {t("codexOauth.reauthBadge", "需要重新登录")}
                       </span>
                     )}
                   </>
                 ) : isCodexAuthStatusError ? (
-                  <span className="inline-flex min-w-0 items-center gap-1 text-amber-700 dark:text-amber-300">
+                  <span className="inline-flex min-w-0 items-center gap-1 text-warning-foreground">
                     <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                     <span className="truncate">
                       {t("codex.accountStatusUnavailable", {
@@ -553,7 +553,7 @@ export function ProviderCard({
                   </span>
                 ) : isCodexAuthStatusSuccess ? (
                   <>
-                    <span className="inline-flex min-w-0 items-center gap-1 text-sm text-amber-700 dark:text-amber-300">
+                    <span className="inline-flex min-w-0 items-center gap-1 text-sm text-warning-foreground">
                       <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                       <span className="truncate">
                         {t("codex.boundAccountUnavailable", {

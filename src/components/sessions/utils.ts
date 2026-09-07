@@ -131,7 +131,7 @@ export const getProviderIconName = (providerId: string) => {
 export const getRoleTone = (role: string) => {
   const normalized = role.toLowerCase();
   if (normalized === "assistant") return "text-blue-500";
-  if (normalized === "user") return "text-emerald-500";
+  if (normalized === "user") return "text-success";
   if (normalized === "system") return "text-amber-500";
   if (normalized === "tool") return "text-purple-500";
   return "text-muted-foreground";
