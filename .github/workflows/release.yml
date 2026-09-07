@@ -468,11 +468,11 @@ jobs:
 
           # 绿色版（portable）：仅可执行文件打 zip（不参与 Updater）
           $exeCandidates = if ($isArm64) {
-            @('src-tauri/target/aarch64-pc-windows-msvc/release/model-board.exe')
+            @('src-tauri/target/aarch64-pc-windows-msvc/release/ModelBoard.exe')
           } else {
             @(
-              'src-tauri/target/release/model-board.exe',
-              'src-tauri/target/x86_64-pc-windows-msvc/release/model-board.exe'
+              'src-tauri/target/release/ModelBoard.exe',
+              'src-tauri/target/x86_64-pc-windows-msvc/release/ModelBoard.exe'
             )
           }
           $exePath = $exeCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1

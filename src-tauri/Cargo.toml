@@ -15,6 +15,13 @@ name = "cc_switch_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 doctest = false
 
+# 显式二进制名：dev 模式（tauri dev）下 macOS Dock 悬停显示的是进程名，
+# 若跟随 package name（model-board）会显示成 "Model-Board"。
+# 打包版不受影响（bundle 内二进制名由 productName 决定）。
+[[bin]]
+name = "ModelBoard"
+path = "src/main.rs"
+
 [features]
 default = []
 test-hooks = []
