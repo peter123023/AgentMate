@@ -121,7 +121,7 @@ export function AppSidebar({
         </button>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto p-2">
+      <nav className="flex-1 space-y-0.5 overflow-y-auto p-2">
         {appsToShow.map((app) => {
           const isActive = app === activeApp;
           const label = t(`apps.${app}`);

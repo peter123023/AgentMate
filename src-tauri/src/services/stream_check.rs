@@ -16,10 +16,51 @@
 //! 算"可达"，但它对真实流量是坏的。熔断器只由 `proxy/forwarder.rs` 转发真实流量
 //! 的成败驱动（被动）。两者职责分离——可达性回答"能不能到"，真实流量回答"能不能用"。
 
+use once_cell::sync::OnceCell;
 use reqwest::header::HeaderValue;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use std::time::Instant;
+use std::net::IpAddr;
+use std::time::{Duration, Instant};
+
+/// 直连客户端（绕过全局/系统代理），用于探测 loopback / 私网地址。
+///
+/// 本地服务（Ollama / LM Studio / 本地网关）挂掉时，走代理探测会拿到代理返回的
+/// 5xx 响应而被误判"可达"；只有直连才能拿到真实的连接拒绝错误。
+static DIRECT_CLIENT: OnceCell<Client> = OnceCell::new();
+
+fn direct_client() -> Client {
+    DIRECT_CLIENT
+        .get_or_init(|| {
+            Client::builder()
+                .connect_timeout(Duration::from_secs(10))
+                .no_proxy()
+                .build()
+                .unwrap_or_default()
+        })
+        .clone()
+}
+
+/// 判断 URL host 是否为 loopback / 私网地址（应绕过代理直连探测）。
+fn is_local_address(url: &str) -> bool {
+    let Ok(parsed) = url::Url::parse(url) else {
+        return false;
+    };
+    let Some(host) = parsed.host_str() else {
+        return false;
+    };
+    let host = host.trim_end_matches('.');
+    if host.eq_ignore_ascii_case("localhost") || host.to_lowercase().ends_with(".local") {
+        return true;
+    }
+    match host.parse::<IpAddr>() {
+        Ok(IpAddr::V4(v4)) => {
+            v4.is_loopback() || v4.is_private() || v4.is_link_local() || v4.is_unspecified()
+        }
+        Ok(IpAddr::V6(v6)) => v6.is_loopback() || v6.is_unique_local() || v6.is_unspecified(),
+        Err(_) => false,
+    }
+}
 
 use crate::app_config::AppType;
 use crate::error::AppError;
@@ -143,7 +184,13 @@ impl StreamCheckService {
             None => Self::resolve_base_url(app_type, provider)?,
         };
 
-        let client = crate::proxy::http_client::get();
+        // loopback / 私网目标绕过代理直连：本地服务挂掉时，走代理只会拿到代理的
+        // 5xx 响应，永远看不到真实的"连接被拒"。
+        let client = if is_local_address(&base_url) {
+            direct_client()
+        } else {
+            crate::proxy::http_client::get()
+        };
         let timeout = std::time::Duration::from_secs(config.timeout_secs);
         let ua = Self::custom_user_agent(provider);
 
@@ -182,6 +229,7 @@ impl StreamCheckService {
             AppType::OpenClaw => Self::extract_openclaw_base_url(provider),
             AppType::Hermes => Self::extract_hermes_base_url(provider),
             AppType::Pi => crate::pi_config::provider_base_url(&provider.settings_config),
+            AppType::WorkBuddy => Self::extract_workbuddy_base_url(provider),
             AppType::ClaudeDesktop => ClaudeAdapter::new()
                 .extract_base_url(provider)
                 .map_err(|e| AppError::Message(format!("Failed to extract base_url: {e}"))),
@@ -330,6 +378,24 @@ impl StreamCheckService {
             })
     }
 
+    /// WorkBuddy: `settings_config` 即 models.json 条目，`url` 字段就是
+    /// 完整端点（如 `https://ark.cn-beijing.volces.com/api/coding/v3`）。
+    fn extract_workbuddy_base_url(provider: &Provider) -> Result<String, AppError> {
+        provider
+            .settings_config
+            .get("url")
+            .and_then(|v| v.as_str())
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+            .ok_or_else(|| {
+                AppError::localized(
+                    "workbuddy_base_url_missing",
+                    "WorkBuddy 供应商缺少 url",
+                    "WorkBuddy provider is missing `url`",
+                )
+            })
+    }
+
     /// OpenCode: `{ npm, options: { baseURL, apiKey }, ... }`
     ///
     /// 用户未显式填 `options.baseURL` 时，按 `npm`（AI SDK 包）回退到包自带默认端点。
@@ -389,6 +455,32 @@ mod tests {
             settings_config,
             None,
         )
+    }
+
+    #[test]
+    fn test_workbuddy_base_url_from_url_field() {
+        // models.json 条目：url 字段就是完整端点
+        let provider = make_provider(serde_json::json!({
+            "id": "deepseek-v4-flash",
+            "url": "https://ark.cn-beijing.volces.com/api/coding/v3",
+            "apiKey": "ark-x"
+        }));
+        let url = StreamCheckService::resolve_base_url(
+            &AppType::WorkBuddy,
+            &provider,
+        )
+        .unwrap();
+        assert_eq!(url, "https://ark.cn-beijing.volces.com/api/coding/v3");
+    }
+
+    #[test]
+    fn test_workbuddy_base_url_missing_is_error_not_panic() {
+        let provider = make_provider(serde_json::json!({ "id": "x" }));
+        assert!(StreamCheckService::resolve_base_url(
+            &AppType::WorkBuddy,
+            &provider,
+        )
+        .is_err());
     }
 
     #[test]

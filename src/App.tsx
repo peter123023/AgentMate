@@ -1238,7 +1238,10 @@ function App() {
       )}
       <AppSidebar
         activeApp={activeApp}
-        onSwitch={setActiveApp}
+        onSwitch={(app) => {
+          setActiveApp(app);
+          setCurrentView("providers");
+        }}
         visibleApps={visibleApps}
         onOpenSettings={() => {
           setSettingsDefaultTab("general");
