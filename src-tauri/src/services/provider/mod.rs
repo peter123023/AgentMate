@@ -4981,6 +4981,7 @@ impl ProviderService {
                     AppType::OpenClaw => remove_openclaw_provider_from_live(id)?,
                     AppType::Hermes => remove_hermes_provider_from_live(id)?,
                     AppType::WorkBuddy => remove_workbuddy_provider_from_live(id)?,
+                    AppType::DeepSeekHarness => crate::dsh_config::remove_provider(id)?,
                     _ => {}
                 }
             }
@@ -5084,6 +5085,31 @@ impl ProviderService {
     pub fn switch(state: &AppState, app_type: AppType, id: &str) -> Result<SwitchResult, AppError> {
         if app_type == AppType::Pi {
             return pi::enable(state, id);
+        }
+
+        // DSH：供应商是全局 settings.yaml 的 route；当前模型写入
+        // 每个 profile 的 cordis.patch.yml（agent-default-model），保证无论用
+        // 哪个 profile 启动，DSH agent 都使用 ModelBoard 选中的供应商。
+        if app_type == AppType::DeepSeekHarness {
+            let providers = state.db.get_all_providers(app_type.as_str())?;
+            let provider = providers
+                .get(id)
+                .ok_or_else(|| AppError::Message(format!("供应商 {id} 不存在")))?;
+            state.db.set_current_provider(app_type.as_str(), id)?;
+            crate::settings::set_current_provider(&app_type, Some(id))?;
+
+            let model = provider
+                .settings_config
+                .get("models")
+                .and_then(|m| m.as_array())
+                .and_then(|arr| arr.first())
+                .and_then(|m| m.get("id"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string();
+            // profile 传 None = 写入全部 profile
+            crate::dsh_config::set_default_model(id, &model, None)?;
+            return Ok(SwitchResult::default());
         }
 
         // Check if provider exists
@@ -5688,6 +5714,7 @@ impl ProviderService {
             AppType::Hermes => Ok(String::new()), // Hermes doesn't use common config snippets
             AppType::Pi => Ok(String::new()),
             AppType::WorkBuddy => Ok(String::new()),
+            AppType::DeepSeekHarness => Ok(String::new()), // DSH 不使用通用配置片段
         }
     }
 
@@ -5707,6 +5734,7 @@ impl ProviderService {
             AppType::Hermes => Ok(String::new()), // Hermes doesn't use common config snippets
             AppType::Pi => Ok(String::new()),
             AppType::WorkBuddy => Ok(String::new()),
+            AppType::DeepSeekHarness => Ok(String::new()), // DSH 不使用通用配置片段
         }
     }
 
@@ -6485,6 +6513,16 @@ impl ProviderService {
                     ));
                 }
             }
+            AppType::DeepSeekHarness => {
+                // DSH provider entry: must be a JSON object with a base_url.
+                if !provider.settings_config.is_object() {
+                    return Err(AppError::localized(
+                        "provider.dsh.settings.not_object",
+                        "DSH 供应商配置必须是 JSON 对象",
+                        "DSH provider configuration must be a JSON object",
+                    ));
+                }
+            }
         }
 
         // Validate and clean UsageScript configuration (common for all app types)
@@ -6519,6 +6557,21 @@ impl ProviderService {
                 let base_url = provider
                     .settings_config
                     .get("url")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .to_string();
+                Ok((api_key, base_url))
+            }
+            AppType::DeepSeekHarness => {
+                let api_key = provider
+                    .settings_config
+                    .get("api_key")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .to_string();
+                let base_url = provider
+                    .settings_config
+                    .get("base_url")
                     .and_then(Value::as_str)
                     .unwrap_or_default()
                     .to_string();

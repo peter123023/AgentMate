@@ -50,6 +50,13 @@ pub struct VisibleApps {
     pub pi: bool,
     #[serde(default = "default_true")]
     pub workbuddy: bool,
+    #[serde(
+        rename = "deepseek-harness",
+        alias = "deepseekHarness",
+        alias = "deepseek_harness",
+        default = "default_true"
+    )]
+    pub deepseek_harness: bool,
 }
 
 impl Default for VisibleApps {
@@ -65,6 +72,7 @@ impl Default for VisibleApps {
             hermes: false, // 默认不显示，需用户手动启用
             pi: true,
             workbuddy: true,
+            deepseek_harness: true,
         }
     }
 }
@@ -83,6 +91,7 @@ impl VisibleApps {
             AppType::Hermes => self.hermes,
             AppType::Pi => self.pi,
             AppType::WorkBuddy => self.workbuddy,
+            AppType::DeepSeekHarness => self.deepseek_harness,
         }
     }
 }
@@ -466,6 +475,7 @@ pub struct AppSettings {
     /// 当前 WorkBuddy 模型 ID（本地存储，保持结构一致）
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub current_provider_workbuddy: Option<String>,
+    pub current_provider_deepseek_harness: Option<String>,
 
     // ===== Skill 同步设置 =====
     /// Skill 同步方式：auto（默认，优先 symlink）、symlink、copy
@@ -566,6 +576,7 @@ impl Default for AppSettings {
             current_provider_openclaw: None,
             current_provider_hermes: None,
             current_provider_workbuddy: None,
+            current_provider_deepseek_harness: None,
             skill_sync_method: SyncMethod::default(),
             skill_storage_location: SkillStorageLocation::default(),
             webdav_sync: None,
@@ -1025,6 +1036,7 @@ pub fn get_current_provider(app_type: &AppType) -> Option<String> {
         AppType::Hermes => settings.current_provider_hermes.clone(),
         AppType::Pi => None,
         AppType::WorkBuddy => settings.current_provider_workbuddy.clone(),
+        AppType::DeepSeekHarness => settings.current_provider_deepseek_harness.clone(),
     }
 }
 
@@ -1045,6 +1057,9 @@ pub fn set_current_provider(app_type: &AppType, id: Option<&str>) -> Result<(), 
         AppType::Hermes => settings.current_provider_hermes = id_owned.clone(),
         AppType::Pi => {}
         AppType::WorkBuddy => settings.current_provider_workbuddy = id_owned.clone(),
+        AppType::DeepSeekHarness => {
+            settings.current_provider_deepseek_harness = id_owned.clone()
+        }
     })
 }
 

@@ -39,6 +39,7 @@ mod tray;
 mod usage_events;
 mod usage_script;
 mod workbuddy_config;
+pub mod dsh_config;
 
 pub use app_config::{AppType, InstalledSkill, McpApps, McpServer, MultiAppConfig, SkillApps};
 pub use codex_config::{

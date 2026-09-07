@@ -94,3 +94,23 @@ export function McpIcon({ size = 16, className = "" }: IconProps) {
     </svg>
   );
 }
+
+// DeepSeek Harness icon: DeepSeek brand blue rounded square with a white "DS" mark.
+export function DeepSeekHarnessIcon({ size = 16, className = "" }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      className={cn("inline-block shrink-0 rounded-[4px]", className)}
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <rect width="24" height="24" rx="5" fill="#4D6BFE" />
+      <path
+        d="M7.5 8.2h6.1c2 0 3.3 1 3.3 2.6 0 1.2-.7 2-1.9 2.3l2 3.1h-2.5l-1.8-2.9h-2.4v2.9H7.5V8.2zm2.3 1.7v2.6h3.4c.9 0 1.5-.4 1.5-1.3 0-.8-.6-1.3-1.5-1.3h-3.4z"
+        fill="#fff"
+      />
+    </svg>
+  );
+}

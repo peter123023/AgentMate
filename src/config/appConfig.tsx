@@ -1,5 +1,6 @@
 import React from "react";
 import type { AppId } from "@/lib/api/types";
+import type { SkillAppId } from "@/lib/api/skills";
 import type { VisibleApps } from "@/types";
 import {
   ClaudeIcon,
@@ -7,6 +8,7 @@ import {
   GeminiIcon,
   OpenClawIcon,
   WorkBuddyIcon,
+  DeepSeekHarnessIcon,
 } from "@/components/BrandIcons";
 import { ProviderIcon } from "@/components/ProviderIcon";
 
@@ -28,6 +30,7 @@ export const APP_IDS: AppId[] = [
   "hermes",
   "pi",
   "workbuddy",
+  "deepseek-harness",
 ];
 
 export const DEFAULT_VISIBLE_APPS: VisibleApps = {
@@ -41,10 +44,11 @@ export const DEFAULT_VISIBLE_APPS: VisibleApps = {
   hermes: true,
   pi: true,
   workbuddy: true,
+  "deepseek-harness": true,
 };
 
 /** App IDs shown in Skills panels. */
-export const SKILLS_APP_IDS: AppId[] = [
+export const SKILLS_APP_IDS: SkillAppId[] = [
   "claude",
   "codex",
   "gemini",
@@ -73,7 +77,7 @@ export function isProxyAppId(appId: string): appId is ProxyAppId {
 
 export type AdditiveAppId = Extract<
   AppId,
-  "opencode" | "openclaw" | "hermes" | "pi" | "workbuddy"
+  "opencode" | "openclaw" | "hermes" | "pi" | "workbuddy" | "deepseek-harness"
 >;
 
 export const ADDITIVE_APP_IDS: AdditiveAppId[] = [
@@ -82,6 +86,7 @@ export const ADDITIVE_APP_IDS: AdditiveAppId[] = [
   "hermes",
   "pi",
   "workbuddy",
+  "deepseek-harness",
 ];
 
 export function isAdditiveAppId(appId: string): appId is AdditiveAppId {
@@ -91,7 +96,7 @@ export function isAdditiveAppId(appId: string): appId is AdditiveAppId {
 /** Pi has no native MCP registry; do not manufacture a disabled mirror. */
 export type McpAppId = Exclude<
   AppId,
-  "claude-desktop" | "openclaw" | "pi" | "workbuddy"
+  "claude-desktop" | "openclaw" | "pi" | "workbuddy" | "deepseek-harness"
 >;
 export const MCP_APP_IDS: McpAppId[] = [
   "claude",
@@ -207,6 +212,14 @@ export const APP_ICON_MAP: Record<AppId, AppConfig> = {
       "bg-teal-500/10 ring-1 ring-teal-500/20 hover:bg-teal-500/20 text-teal-600 dark:text-teal-400",
     badgeClass:
       "bg-teal-500/10 text-teal-700 dark:text-teal-300 hover:bg-teal-500/20 border-0 gap-1.5",
+  },
+  "deepseek-harness": {
+    label: "DeepSeek Harness",
+    icon: <DeepSeekHarnessIcon size={14} />,
+    activeClass:
+      "bg-[#4D6BFE]/10 ring-1 ring-[#4D6BFE]/20 hover:bg-[#4D6BFE]/20 text-[#4D6BFE] dark:text-[#8DA2FF]",
+    badgeClass:
+      "bg-[#4D6BFE]/10 text-[#3A52E0] dark:text-[#8DA2FF] hover:bg-[#4D6BFE]/20 border-0 gap-1.5",
   },
 };
 

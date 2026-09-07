@@ -28,6 +28,9 @@ export interface SkillApps {
   workbuddy?: boolean;
 }
 
+/** 支持 Skill 的应用 id 集合（DSH 不在此列）。 */
+export type SkillAppId = keyof SkillApps;
+
 /** 已安装的 Skill（v3.10.0+ 统一结构） */
 export interface InstalledSkill {
   id: string;

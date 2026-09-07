@@ -138,6 +138,9 @@ impl ConfigService {
             AppType::WorkBuddy => {
                 // WorkBuddy uses additive mode (models.json), no live sync needed here.
             }
+            AppType::DeepSeekHarness => {
+                // DSH 供应商写在全局 settings.yaml，由 dsh_config 模块直接管理，无需此单供应商 live-sync 路径。
+            }
             AppType::Hermes => {
                 // Hermes uses additive mode, no live sync needed
             }

@@ -35,6 +35,7 @@ impl McpApps {
             AppType::Pi => false, // Pi core has no native MCP registry.
             AppType::ClaudeDesktop => false,
             AppType::WorkBuddy => false, // WorkBuddy has no native MCP registry here.
+            AppType::DeepSeekHarness => false, // DSH: MCP 本期不接入（dsh-mcp-client 待评估）
         }
     }
 
@@ -51,6 +52,7 @@ impl McpApps {
             AppType::Pi => {}            // Pi core has no native MCP registry.
             AppType::ClaudeDesktop => {} // Claude Desktop 3P provider config doesn't support MCP here
             AppType::WorkBuddy => {}     // WorkBuddy has no native MCP registry here.
+            AppType::DeepSeekHarness => {} // DSH: MCP 本期不接入
         }
     }
 
@@ -122,6 +124,7 @@ impl SkillApps {
             AppType::OpenClaw => false, // OpenClaw doesn't support Skills
             AppType::ClaudeDesktop => false,
             AppType::WorkBuddy => false, // WorkBuddy doesn't use ModelBoard skill sync.
+            AppType::DeepSeekHarness => false, // DSH: Skills 本期不接入
         }
     }
 
@@ -138,6 +141,7 @@ impl SkillApps {
             AppType::OpenClaw => {} // OpenClaw doesn't support Skills, ignore
             AppType::ClaudeDesktop => {} // Claude Desktop 3P profiles don't use ModelBoard skill sync
             AppType::WorkBuddy => {} // WorkBuddy doesn't use ModelBoard skill sync
+            AppType::DeepSeekHarness => {} // DSH: Skills 本期不接入
         }
     }
 
@@ -397,6 +401,7 @@ pub enum AppType {
     Hermes,
     Pi,
     WorkBuddy,
+    DeepSeekHarness,
 }
 
 impl AppType {
@@ -412,6 +417,7 @@ impl AppType {
             AppType::Hermes => "hermes",
             AppType::Pi => "pi",
             AppType::WorkBuddy => "workbuddy",
+            AppType::DeepSeekHarness => "deepseek-harness",
         }
     }
 
@@ -424,6 +430,7 @@ impl AppType {
         matches!(
             self,
             AppType::OpenCode | AppType::OpenClaw | AppType::Hermes | AppType::Pi | AppType::WorkBuddy
+            | AppType::DeepSeekHarness
         )
     }
 
@@ -447,6 +454,7 @@ impl AppType {
             AppType::Hermes,
             AppType::Pi,
             AppType::WorkBuddy,
+            AppType::DeepSeekHarness,
         ]
         .into_iter()
     }
@@ -468,10 +476,13 @@ impl FromStr for AppType {
             "hermes" => Ok(AppType::Hermes),
             "pi" => Ok(AppType::Pi),
             "workbuddy" => Ok(AppType::WorkBuddy),
+            "deepseek-harness" | "deepseek_harness" | "deepseekharness" | "dsh" => {
+                Ok(AppType::DeepSeekHarness)
+            }
             other => Err(AppError::localized(
                 "unsupported_app",
-                format!("不支持的应用标识: '{other}'。可选值: claude, claude-desktop, codex, gemini, grokbuild, opencode, openclaw, hermes, pi, workbuddy。"),
-                format!("Unsupported app id: '{other}'. Allowed: claude, claude-desktop, codex, gemini, grokbuild, opencode, openclaw, hermes, pi, workbuddy."),
+                format!("不支持的应用标识: '{other}'。可选值: claude, claude-desktop, codex, gemini, grokbuild, opencode, openclaw, hermes, pi, workbuddy, deepseek-harness。"),
+                format!("Unsupported app id: '{other}'. Allowed: claude, claude-desktop, codex, gemini, grokbuild, opencode, openclaw, hermes, pi, workbuddy, deepseek-harness."),
             )),
         }
     }
@@ -513,6 +524,7 @@ impl CommonConfigSnippets {
             AppType::Hermes => self.hermes.as_ref(),
             AppType::Pi => None,
             AppType::WorkBuddy => None,
+            AppType::DeepSeekHarness => None,
         }
     }
 
@@ -529,6 +541,7 @@ impl CommonConfigSnippets {
             AppType::Hermes => self.hermes = snippet,
             AppType::Pi => {}
             AppType::WorkBuddy => {}
+            AppType::DeepSeekHarness => {}
         }
     }
 }
@@ -574,6 +587,7 @@ impl Default for MultiAppConfig {
         apps.insert("openclaw".to_string(), ProviderManager::default());
         apps.insert("hermes".to_string(), ProviderManager::default());
         apps.insert("workbuddy".to_string(), ProviderManager::default());
+        apps.insert("deepseek-harness".to_string(), ProviderManager::default());
 
         Self {
             version: 2,
@@ -858,6 +872,7 @@ impl MultiAppConfig {
             AppType::Pi => return Ok(false),
             // WorkBuddy is additive-only (models.json); no legacy prompt state.
             AppType::WorkBuddy => return Ok(false),
+            AppType::DeepSeekHarness => return Ok(false),
         };
 
         prompts.insert(id, prompt);
@@ -903,6 +918,7 @@ impl MultiAppConfig {
                 AppType::Hermes => continue,   // Hermes didn't exist in v3.6.x, skip
                 AppType::Pi => continue,       // Pi didn't exist in v3.6.x, skip
                 AppType::WorkBuddy => continue, // WorkBuddy didn't exist in v3.6.x, skip
+                AppType::DeepSeekHarness => continue, // DSH didn't exist in v3.6.x, skip
             };
 
             for (id, entry) in old_servers {

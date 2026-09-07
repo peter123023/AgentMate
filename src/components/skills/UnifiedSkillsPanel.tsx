@@ -35,6 +35,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { settingsApi, skillsApi } from "@/lib/api";
 import { toast } from "sonner";
 import { SKILLS_APP_IDS } from "@/config/appConfig";
+import type { SkillAppId } from "@/lib/api/skills";
 import { AppCountBar } from "@/components/common/AppCountBar";
 import { AppToggleGroup } from "@/components/common/AppToggleGroup";
 import { ListItemRow } from "@/components/common/ListItemRow";
@@ -282,7 +283,7 @@ const UnifiedSkillsPanel = React.forwardRef<
     if (!skills || !beginWrite()) return;
 
     const ids = skills
-      .filter((skill) => Boolean(skill.apps[app]) !== enabled)
+      .filter((skill) => Boolean(skill.apps[app as SkillAppId]) !== enabled)
       .map((skill) => skill.id);
     if (ids.length === 0) {
       endWrite();

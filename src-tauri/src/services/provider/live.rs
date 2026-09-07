@@ -532,7 +532,7 @@ fn settings_contain_common_config(app_type: &AppType, settings: &Value, snippet:
         | AppType::Hermes
         | AppType::Pi
         | AppType::ClaudeDesktop
-        | AppType::WorkBuddy => false,
+        | AppType::WorkBuddy | AppType::DeepSeekHarness => false,
     }
 }
 
@@ -608,7 +608,7 @@ pub(crate) fn remove_common_config_from_settings(
         | AppType::Hermes
         | AppType::Pi
         | AppType::ClaudeDesktop
-        | AppType::WorkBuddy => Ok(settings.clone()),
+        | AppType::WorkBuddy | AppType::DeepSeekHarness => Ok(settings.clone()),
     }
 }
 
@@ -669,7 +669,7 @@ fn apply_common_config_to_settings(
         | AppType::Hermes
         | AppType::Pi
         | AppType::ClaudeDesktop
-        | AppType::WorkBuddy => Ok(settings.clone()),
+        | AppType::WorkBuddy | AppType::DeepSeekHarness => Ok(settings.clone()),
     }
 }
 
@@ -1443,6 +1443,12 @@ pub(crate) fn write_live_snapshot(app_type: &AppType, provider: &Provider) -> Re
             crate::workbuddy_config::set_provider(&provider.id, config)?;
             log::debug!("WorkBuddy model '{}' written to live config", provider.id);
         }
+        AppType::DeepSeekHarness => {
+            // DSH 供应商是全局 settings.yaml 里的 route；DSH 单供应商切换时
+            // 由 command 层额外写 cordis.patch.yml 的 agent-default-model。
+            crate::dsh_config::set_provider(&provider.id, provider.settings_config.clone())?;
+            log::debug!("DSH provider '{}' written to live config", provider.id);
+        }
         AppType::Pi => {
             return Err(AppError::InvalidInput(
                 "Pi providers use the Pi provider service".to_string(),
@@ -1836,6 +1842,10 @@ pub fn read_live_settings(app_type: AppType) -> Result<Value, AppError> {
             // instead of an error so the edit dialog stays usable.
             crate::workbuddy_config::read_live_settings()
         }
+        AppType::DeepSeekHarness => {
+            // settings.yaml 可能尚不存在（首跑）；read_live_settings 已处理空态。
+            crate::dsh_config::read_live_settings()
+        }
     }
 }
 
@@ -1946,7 +1956,7 @@ pub fn import_default_config(state: &AppState, app_type: AppType) -> Result<bool
         }
         // OpenCode, OpenClaw and Hermes use additive mode and are handled by early return above
         AppType::OpenCode | AppType::OpenClaw | AppType::Hermes | AppType::Pi
-        | AppType::WorkBuddy => {
+        | AppType::WorkBuddy | AppType::DeepSeekHarness => {
             unreachable!("additive mode apps are handled by early return")
         }
     };

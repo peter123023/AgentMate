@@ -162,6 +162,11 @@ pub(crate) fn build_provider_from_request(
                 "WorkBuddy models must be added from the WorkBuddy provider page".to_string(),
             ));
         }
+        AppType::DeepSeekHarness => {
+            return Err(AppError::InvalidInput(
+                "DeepSeek Harness providers must be managed from the DSH provider page".to_string(),
+            ));
+        }
     };
 
     // Build usage script configuration if provided

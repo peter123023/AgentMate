@@ -222,6 +222,12 @@ impl Provider {
                 str_at(settings.get("url")),
                 str_at(settings.get("apiKey")),
             ),
+            // DSH stores `base_url`/`api_key` in settings_config; the api_key is
+            // written to .credentials.yaml and referenced via `apiKeyEnv` at write time.
+            AppType::DeepSeekHarness => (
+                str_at(settings.get("base_url")),
+                str_at(settings.get("api_key")),
+            ),
             // Pi custom providers use the native models.json field names.
             AppType::Pi => (
                 crate::pi_config::provider_base_url(settings).unwrap_or_default(),

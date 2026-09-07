@@ -36,6 +36,7 @@ const PromptFormPanel: React.FC<PromptFormPanelProps> = ({
     hermes: "SOUL.md",
     pi: "AGENTS.md",
     workbuddy: "AGENTS.md",
+    "deepseek-harness": "AGENTS.md",
   };
   const filename = filenameMap[appId];
   const [name, setName] = useState("");

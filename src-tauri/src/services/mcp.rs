@@ -148,6 +148,9 @@ impl McpService {
             AppType::WorkBuddy => {
                 // WorkBuddy has no native MCP registry here, skip.
             }
+            AppType::DeepSeekHarness => {
+                // DSH MCP 本期不接入，skip.
+            }
             AppType::Pi => {}
         }
         Ok(())
@@ -187,6 +190,9 @@ impl McpService {
             }
             AppType::WorkBuddy => {
                 // WorkBuddy has no native MCP registry here, skip.
+            }
+            AppType::DeepSeekHarness => {
+                // DSH MCP 本期不接入，skip.
             }
             AppType::Pi => {}
         }

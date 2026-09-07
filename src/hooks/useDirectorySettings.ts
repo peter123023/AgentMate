@@ -5,7 +5,10 @@ import { homeDir, join } from "@tauri-apps/api/path";
 import { settingsApi, type AppId } from "@/lib/api";
 import type { SettingsFormState } from "./useSettingsForm";
 
-export type DirectoryAppId = Exclude<AppId, "claude-desktop" | "workbuddy">;
+export type DirectoryAppId = Exclude<
+  AppId,
+  "claude-desktop" | "workbuddy" | "deepseek-harness"
+>;
 type AppDirectoryKey =
   | "claude"
   | "codex"

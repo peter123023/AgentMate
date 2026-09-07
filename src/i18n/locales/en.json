@@ -944,7 +944,8 @@
     "openclaw": "OpenClaw",
     "hermes": "Hermes",
     "pi": "Pi",
-    "workbuddy": "WorkBuddy"
+    "workbuddy": "WorkBuddy",
+    "deepseek-harness": "DeepSeek Harness"
   },
   "workbuddy": {
     "stats": {
