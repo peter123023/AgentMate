@@ -1225,6 +1225,8 @@
     "openReleaseNotesFailed": "打开更新日志失败:"
   },
   "providerForm": {
+    "tabBasic": "基础配置",
+    "tabConfig": "配置文件",
     "supplierName": "供应商名称",
     "supplierNameRequired": "供应商名称 *",
     "supplierNamePlaceholder": "例如：Anthropic 官方",

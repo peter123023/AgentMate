@@ -150,12 +150,6 @@ function getPresetButtonTexts() {
     .filter((text) => knownNames.has(text));
 }
 
-function getSearchButton() {
-  return screen.getByRole("button", {
-    name: /providerPreset\.(search|searchAriaLabel|openSearch)|搜索|search/i,
-  });
-}
-
 function getSortButton() {
   return screen.getByRole("button", {
     name: /providerPreset\.(sort|sortByName|restoreOriginalOrder)|按名称排序|恢复原顺序|sort/i,
@@ -374,7 +368,6 @@ describe("ProviderPresetSelector", () => {
     const user = userEvent.setup();
     renderSelector();
 
-    await user.click(getSearchButton());
     await user.type(getSearchInput(), "gateway");
 
     expect(
@@ -398,7 +391,6 @@ describe("ProviderPresetSelector", () => {
     const user = userEvent.setup();
     renderSelector();
 
-    await user.click(getSearchButton());
     await user.type(getSearchInput(), "not-found");
 
     expect(
@@ -490,19 +482,11 @@ describe("ProviderPresetSelector", () => {
     expect(placeholder).not.toBeNull();
   });
 
-  it("点击放大镜 inline 切换搜索输入框可见性,ESC 收起并清空", async () => {
+  it("搜索框默认常驻显示，输入过滤，ESC 清空关键词并恢复全部预设", async () => {
     const user = userEvent.setup();
     renderSelector();
 
-    // 初始没有搜索输入框
-    expect(
-      screen.queryByRole("textbox", {
-        name: /providerPreset\.(searchInput|searchPlaceholder)|搜索预设|search/i,
-      }),
-    ).not.toBeInTheDocument();
-
-    // 点击放大镜展开输入框
-    await user.click(getSearchButton());
+    // 搜索框默认可见
     const input = getSearchInput();
     expect(input).toBeInTheDocument();
 
@@ -512,33 +496,25 @@ describe("ProviderPresetSelector", () => {
       screen.getByRole("button", { name: "Beta Gateway" }),
     ).toBeInTheDocument();
 
-    // ESC 收起输入框并清空
+    // ESC 清空关键词，搜索框仍在，所有预设恢复显示
     await user.keyboard("{Escape}");
-    expect(
-      screen.queryByRole("textbox", {
-        name: /providerPreset\.(searchInput|searchPlaceholder)|搜索预设|search/i,
-      }),
-    ).not.toBeInTheDocument();
-    // 收起后所有预设恢复显示
+    expect(getSearchInput()).toBeInTheDocument();
+    expect(getSearchInput()).toHaveValue("");
     expect(
       screen.getByRole("button", { name: "preset.gamma" }),
     ).toBeInTheDocument();
   });
 
-  it("按 Ctrl+F 快捷键打开搜索输入框", async () => {
+  it("按 Ctrl+F 快捷键聚焦搜索输入框", async () => {
     const user = userEvent.setup();
     renderSelector();
 
-    // 初始没有搜索输入框
-    expect(
-      screen.queryByRole("textbox", {
-        name: /providerPreset\.(searchInput|searchPlaceholder)|搜索预设|search/i,
-      }),
-    ).not.toBeInTheDocument();
-
-    // 按 Ctrl+F 展开输入框
-    await user.keyboard("{Control>}f{/Control}");
+    // 搜索框默认可见
     expect(getSearchInput()).toBeInTheDocument();
+
+    // 按 Ctrl+F 聚焦输入框
+    await user.keyboard("{Control>}f{/Control}");
+    await waitFor(() => expect(getSearchInput()).toHaveFocus());
   });
 
   it("搜索后点击预设按钮可选中预设且不清空搜索关键词", async () => {
@@ -546,36 +522,33 @@ describe("ProviderPresetSelector", () => {
     const onPresetChange = vi.fn();
     renderSelector({ onPresetChange });
 
-    await user.click(getSearchButton());
     await user.type(getSearchInput(), "gateway");
 
     await user.click(screen.getByRole("button", { name: "Beta Gateway" }));
 
     expect(onPresetChange).toHaveBeenCalledWith("beta");
-    // 搜索框仍展开、关键词保留
+    // 搜索框常驻、关键词保留
     expect(getSearchInput()).toBeInTheDocument();
     expect(getSearchInput()).toHaveValue("gateway");
   });
 
-  it("搜索已打开、焦点在别处时再次 Ctrl+F 把焦点移回搜索框且保留关键词", async () => {
+  it("焦点在别处时 Ctrl+F 把焦点移回搜索框且保留关键词", async () => {
     const user = userEvent.setup();
     renderSelector();
 
-    await user.click(getSearchButton());
     await user.type(getSearchInput(), "gateway");
 
-    // 选中 preset 后焦点离开搜索框（搜索框仍展开、关键词保留）
+    // 选中 preset 后焦点离开搜索框（关键词保留）
     await user.click(screen.getByRole("button", { name: "Beta Gateway" }));
     expect(getSearchInput()).not.toHaveFocus();
 
-    // 再次 Ctrl+F：setSearchOpen(true) 同值不重渲染、autoFocus 不重触发，
-    // 需靠快捷键命中时的命令式聚焦把焦点移回搜索框，且不清空关键词
+    // Ctrl+F 命令式地把焦点移回搜索框，且不清空关键词
     await user.keyboard("{Control>}f{/Control}");
     await waitFor(() => expect(getSearchInput()).toHaveFocus());
     expect(getSearchInput()).toHaveValue("gateway");
   });
 
-  it("点击组件外区域自动收起并清空", async () => {
+  it("点击组件外区域搜索框保持展开且关键词保留", async () => {
     const user = userEvent.setup();
     const Wrapper = () => {
       const form = useForm();
@@ -593,21 +566,13 @@ describe("ProviderPresetSelector", () => {
     };
     render(<Wrapper />);
 
-    await user.click(getSearchButton());
     await user.type(getSearchInput(), "gateway");
     expect(getSearchInput()).toBeInTheDocument();
 
-    // 点击组件外的元素应收起搜索框
+    // 点击组件外的元素不影响常驻搜索框
     await user.click(screen.getByTestId("outside"));
 
-    expect(
-      screen.queryByRole("textbox", {
-        name: /providerPreset\.(searchInput|searchPlaceholder)|搜索预设|search/i,
-      }),
-    ).not.toBeInTheDocument();
-    // 收起后清空 query,所有预设恢复显示
-    expect(
-      screen.getByRole("button", { name: "preset.gamma" }),
-    ).toBeInTheDocument();
+    expect(getSearchInput()).toBeInTheDocument();
+    expect(getSearchInput()).toHaveValue("gateway");
   });
 });

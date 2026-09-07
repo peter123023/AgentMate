@@ -1226,6 +1226,8 @@
     "openReleaseNotesFailed": "開啟更新日誌失敗："
   },
   "providerForm": {
+    "tabBasic": "基礎配置",
+    "tabConfig": "設定檔",
     "supplierName": "供應商名稱",
     "supplierNameRequired": "供應商名稱 *",
     "supplierNamePlaceholder": "例如：Anthropic 官方",

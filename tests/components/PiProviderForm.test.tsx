@@ -753,6 +753,10 @@ describe("PiProviderForm", () => {
       />,
     );
 
+    fireEvent.change(
+      screen.getByLabelText("Search provider presets"),
+      { target: { value: "Kimi" } },
+    );
     fireEvent.click(screen.getByText("Kimi", { selector: "span" }));
     fireEvent.change(screen.getByLabelText("pi.form.credential"), {
       target: { value: "literal-key" },
@@ -786,6 +790,10 @@ describe("PiProviderForm", () => {
       />,
     );
 
+    fireEvent.change(
+      screen.getByLabelText("Search provider presets"),
+      { target: { value: "Kimi" } },
+    );
     fireEvent.click(screen.getByText("Kimi", { selector: "span" }));
     fireEvent.change(screen.getByLabelText("pi.form.credential"), {
       target: { value: "literal-key" },
@@ -909,6 +917,10 @@ describe("PiProviderForm", () => {
       />,
     );
 
+    fireEvent.change(
+      screen.getByLabelText("Search provider presets"),
+      { target: { value: "Kimi" } },
+    );
     fireEvent.click(screen.getByText("Kimi", { selector: "span" }));
     fireEvent.click(
       screen.getByRole("button", { name: "Save invalid preset" }),
@@ -1315,6 +1327,10 @@ describe("PiProviderForm", () => {
       />,
     );
 
+    fireEvent.change(
+      screen.getByLabelText("Search provider presets"),
+      { target: { value: "Kimi" } },
+    );
     await user.click(screen.getByText("Kimi", { selector: "span" }));
     const configEditor = screen.getByLabelText(
       "provider.configJson",
@@ -1587,6 +1603,10 @@ describe("PiProviderForm", () => {
       />,
     );
 
+    fireEvent.change(
+      screen.getByLabelText("Search provider presets"),
+      { target: { value: "Kimi" } },
+    );
     await user.click(screen.getByText("Kimi", { selector: "span" }));
     const configEditor = screen.getByLabelText(
       "provider.configJson",
