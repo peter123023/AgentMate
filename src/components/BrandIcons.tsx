@@ -8,6 +8,8 @@ import ClaudeSvg from "@/icons/extracted/claude.svg?url";
 import OpenAISvg from "@/icons/extracted/openai.svg?url";
 import GeminiSvg from "@/icons/extracted/gemini.svg?url";
 import OpenClawSvg from "@/icons/extracted/claw.svg?url";
+import workbuddyIcon from "@/icons/extracted/workbuddy.png";
+import { cn } from "@/lib/utils";
 
 export function ClaudeIcon({ size = 16, className = "" }: IconProps) {
   return (
@@ -61,26 +63,17 @@ export function OpenClawIcon({ size = 16, className = "" }: IconProps) {
   );
 }
 
-// WorkBuddy icon: inline SVG (briefcase glyph) with currentColor support
+// WorkBuddy icon: 官网抓取的真实应用图标（open.workbuddy.cn favicon，324x324 PNG）
 export function WorkBuddyIcon({ size = 16, className = "" }: IconProps) {
   return (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    <img
+      src={workbuddyIcon}
+      alt=""
       width={size}
       height={size}
-      viewBox="0 0 24 24"
-      className={className}
+      className={cn("inline-block shrink-0 rounded-[4px] object-contain", className)}
       aria-hidden="true"
-    >
-      <rect x="3" y="7.5" width="18" height="13" rx="2.5" />
-      <path d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5" />
-      <path d="M3 12.5h18" />
-      <path d="M12 12.5v2.5" />
-    </svg>
+    />
   );
 }
 

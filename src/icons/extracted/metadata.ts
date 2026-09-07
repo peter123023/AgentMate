@@ -570,6 +570,13 @@ export const iconMetadata: Record<string, IconMetadata> = {
     keywords: ["unity2", "aggregator", "relay", "claude", "codex", "gateway"],
     defaultColor: "#000000",
   },
+  workbuddy: {
+    name: "workbuddy",
+    displayName: "WorkBuddy",
+    category: "ai-provider",
+    keywords: ["workbuddy", "tencent", "work buddy", "agent"],
+    defaultColor: "#00C6A2",
+  },
   vercel: {
     name: "vercel",
     displayName: "vercel",
