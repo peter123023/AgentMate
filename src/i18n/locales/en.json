@@ -963,7 +963,8 @@
   },
   "sidebar": {
     "collapse": "Collapse sidebar",
-    "expand": "Expand sidebar"
+    "expand": "Expand sidebar",
+    "pin": "Pin to top"
   },
   "pi": {
     "empty": {

@@ -964,7 +964,8 @@
   },
   "sidebar": {
     "collapse": "收起側邊欄",
-    "expand": "展開側邊欄"
+    "expand": "展開側邊欄",
+    "pin": "置頂"
   },
   "pi": {
     "empty": {

@@ -55,3 +55,17 @@ export function tickVibrate(durationMs = 8): void {
     // 不支持则忽略
   }
 }
+
+/**
+ * 在用户手势调用栈内预热/恢复 AudioContext。
+ * 打字声由 setInterval 回调触发（不在手势栈内），若 AudioContext 首次
+ * 创建发生在非手势上下文，WebView 会将其置于 suspended 且后续 resume
+ * 可能失败（表现为打字声静音）。在点击处理函数里调用本函数可确保
+ * AudioContext 在手势内创建并进入 running 状态。
+ */
+export function warmupAudioFeedback(): void {
+  const ctx = ensureAudioContext();
+  if (ctx && ctx.state === "suspended") {
+    void ctx.resume();
+  }
+}
