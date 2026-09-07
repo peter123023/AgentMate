@@ -12,6 +12,39 @@ export interface ProviderSortUpdate {
   sortIndex: number;
 }
 
+export interface WorkBuddyCreditPackage {
+  code: string;
+  total: number;
+  used: number;
+  remain: number;
+}
+
+export interface WorkBuddyCreditsBalance {
+  available: boolean;
+  reason?:
+    | "noAuth"
+    | "unauthorized"
+    | "forbidden"
+    | "network"
+    | "http"
+    | "parse"
+    | "apiError";
+  detail?: string;
+  isPaidUser?: boolean;
+  packages?: WorkBuddyCreditPackage[];
+}
+
+export interface WorkBuddyUsageStats {
+  available: boolean;
+  reason?: string;
+  totalCredits: number;
+  todayCredits: number;
+  last7dCredits: number;
+  sessionCount: number;
+  totalTokens: number;
+  lastUpdated: number;
+}
+
 export interface ProviderSwitchEvent {
   appType: AppId;
   providerId: string;
@@ -219,6 +252,21 @@ export const providersApi = {
    */
   async importWorkBuddyFromLive(): Promise<number> {
     return await invoke("import_workbuddy_providers_from_live");
+  },
+
+  /**
+   * 查询 WorkBuddy 云端积分余额（只读、尽力而为）。
+   * 不可用时返回 { available: false, reason }，由前端静默降级。
+   */
+  async getWorkBuddyCreditsBalance(): Promise<WorkBuddyCreditsBalance> {
+    return await invoke("get_workbuddy_credits_balance");
+  },
+
+  /**
+   * 汇总 WorkBuddy 本地消耗记录（只读 ~/.workbuddy/workbuddy.db）。
+   */
+  async getWorkBuddyUsageStats(): Promise<WorkBuddyUsageStats> {
+    return await invoke("get_workbuddy_usage_stats");
   },
 };
 

@@ -1506,6 +1506,10 @@ pub fn run() {
             // theirs: config import/export and dialogs
             commands::export_config_to_file,
             commands::import_config_from_file,
+            commands::cc_switch_import_preview,
+            commands::cc_switch_import_execute,
+            commands::get_workbuddy_credits_balance,
+            commands::get_workbuddy_usage_stats,
             commands::webdav_test_connection,
             commands::webdav_sync_upload,
             commands::webdav_sync_download,

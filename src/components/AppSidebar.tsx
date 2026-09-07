@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronsLeft, ChevronsRight, Settings } from "lucide-react";
 import type { AppId } from "@/lib/api";
@@ -6,9 +6,13 @@ import type { VisibleApps } from "@/types";
 import { cn } from "@/lib/utils";
 import { AppGlyph } from "@/components/AppSwitcher";
 import { APP_IDS } from "@/config/appConfig";
-import appIcon from "@/assets/icons/app-icon.png";
+import { playTypeClick, tickVibrate } from "@/lib/typewriterFeedback";
 
 const COLLAPSE_STORAGE_KEY = "model-board-sidebar-collapsed";
+
+// 打字/擦除逐字间隔；侧边栏宽度过渡时长 = 字数 × 间隔，保证两者同步
+const TYPE_INTERVAL_MS = 45;
+const ERASE_INTERVAL_MS = 100;
 
 interface AppSidebarProps {
   activeApp: AppId;
@@ -30,6 +34,44 @@ export function AppSidebar({
     () => localStorage.getItem(COLLAPSE_STORAGE_KEY) === "true",
   );
 
+  // 品牌标题打字机效果：展开时逐字打出，收起时逐字收回
+  const title = t("app.title");
+  const [visibleChars, setVisibleChars] = useState(() =>
+    collapsed ? 0 : title.length,
+  );
+
+  useEffect(() => {
+    const target = collapsed ? 0 : title.length;
+    const interval = window.setInterval(
+      () => {
+        setVisibleChars((prev) => {
+          const next = collapsed
+            ? Math.max(target, prev - 1)
+            : Math.min(target, prev + 1);
+          if (next !== prev) {
+            playTypeClick();
+            tickVibrate();
+          }
+          if (next === target) window.clearInterval(interval);
+          return next;
+        });
+      },
+      collapsed ? ERASE_INTERVAL_MS : TYPE_INTERVAL_MS,
+    );
+    return () => window.clearInterval(interval);
+  }, [collapsed, title]);
+
+  // 宽度过渡时长与字母动画总时长一致，展开/收起时两者同步进行
+  const widthTransitionMs = title.length * (collapsed ? ERASE_INTERVAL_MS : TYPE_INTERVAL_MS);
+
+  // 箭头图标方向延迟切换：等字母动画和宽度动画到位后才翻转方向
+  const [iconCollapsed, setIconCollapsed] = useState(collapsed);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setIconCollapsed(collapsed), widthTransitionMs);
+    return () => window.clearTimeout(timer);
+  }, [collapsed, widthTransitionMs]);
+
   const handleToggle = () => {
     const next = !collapsed;
     setCollapsed(next);
@@ -45,43 +87,33 @@ export function AppSidebar({
     <aside
       className={cn(
         "flex shrink-0 flex-col border-r border-border bg-background/60",
-        "transition-[width] duration-200 ease-in-out",
-        collapsed ? "w-16" : "w-[200px]",
+        "transition-[width] ease-in-out",
+        collapsed ? "w-12" : "w-44",
       )}
+      style={{ transitionDuration: `${widthTransitionMs}ms` }}
     >
-      {/* 顶部：品牌（logo + ModelBoard）；收起时仅显示 logo */}
-      <div
-        className={cn(
-          "flex shrink-0 items-center border-b border-border",
-          collapsed
-            ? "flex-col justify-center gap-1 px-1 py-2"
-            : "h-12 justify-between px-3",
-        )}
-      >
-        <div className="flex min-w-0 items-center gap-2">
-          <img
-            src={appIcon}
-            alt="ModelBoard"
-            className="h-7 w-7 shrink-0 rounded-md"
-          />
-          {!collapsed && (
-            <span className="truncate text-sm font-semibold">
-              {t("app.title")}
-            </span>
-          )}
+      {/* 顶部：品牌标题（水平居中） + 收起按钮（右侧），始终单行 */}
+      <div className="relative flex h-12 shrink-0 items-center justify-end border-b border-border px-2">
+        <div className="pointer-events-none absolute inset-y-0 left-0 right-8 flex items-center justify-center overflow-hidden">
+          <span
+            className="truncate text-base font-bold"
+            aria-label={title}
+          >
+            {title.slice(0, visibleChars)}
+          </span>
         </div>
         <button
           type="button"
           onClick={handleToggle}
           aria-expanded={!collapsed}
-          title={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
-          aria-label={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
+          title={iconCollapsed ? t("sidebar.expand") : t("sidebar.collapse")}
+          aria-label={iconCollapsed ? t("sidebar.expand") : t("sidebar.collapse")}
           className={cn(
             "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground",
             "transition-colors duration-150 hover:bg-muted/50 hover:text-foreground",
           )}
         >
-          {collapsed ? (
+          {iconCollapsed ? (
             <ChevronsRight size={18} className="shrink-0" />
           ) : (
             <ChevronsLeft size={18} className="shrink-0" />

@@ -30,6 +30,45 @@ export interface WebDavSyncResult {
   status: string;
 }
 
+export interface CcSwitchImportPreviewTable {
+  sourceCount: number;
+  targetCount: number;
+  conflicts: number;
+  missingTable?: boolean;
+  error?: string;
+}
+
+export interface CcSwitchImportPreview {
+  found: boolean;
+  sourceDir?: string;
+  tables?: Record<string, CcSwitchImportPreviewTable>;
+  universalProviders?: CcSwitchImportPreviewTable;
+}
+
+export interface CcSwitchImportOptions {
+  importProviders: boolean;
+  importMcpServers: boolean;
+  importPrompts: boolean;
+  importSkills: boolean;
+  importSkillRepos: boolean;
+  importUniversalProviders: boolean;
+  overwriteExisting: boolean;
+}
+
+export interface CcSwitchImportTableResult {
+  imported: number;
+  skipped: number;
+  overwritten: number;
+  missingTable?: boolean;
+  error?: string;
+}
+
+export interface CcSwitchImportResult {
+  success: boolean;
+  backupId?: string | null;
+  results?: Record<string, CcSwitchImportTableResult>;
+}
+
 export const settingsApi = {
   async get(): Promise<Settings> {
     return await invoke("get_settings");
@@ -130,6 +169,18 @@ export const settingsApi = {
 
   async importConfigFromFile(filePath: string): Promise<ConfigTransferResult> {
     return await invoke("import_config_from_file", { filePath });
+  },
+
+  /** 只读检测 ~/.cc-switch 数据目录，统计可导入内容与冲突 */
+  async ccSwitchImportPreview(): Promise<CcSwitchImportPreview> {
+    return await invoke("cc_switch_import_preview");
+  },
+
+  /** 从 ~/.cc-switch 导入配置（后端会先自动备份当前数据库） */
+  async ccSwitchImportExecute(
+    options: CcSwitchImportOptions,
+  ): Promise<CcSwitchImportResult> {
+    return await invoke("cc_switch_import_execute", { options });
   },
 
   // ─── WebDAV sync ──────────────────────────────────────────
