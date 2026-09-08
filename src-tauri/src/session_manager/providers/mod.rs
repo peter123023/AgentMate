@@ -4,6 +4,8 @@ pub mod gemini;
 pub mod grokbuild;
 pub mod hermes;
 pub mod openclaw;
+pub mod deepseek_harness;
 pub mod opencode;
 pub mod pi;
+pub mod workbuddy;
 mod utils;

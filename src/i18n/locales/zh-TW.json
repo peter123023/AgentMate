@@ -1,4 +1,16 @@
 {
+  "toolbar": {
+    "skills": "技能",
+    "prompts": "提示詞",
+    "sessions": "會話",
+    "mcp": "MCP",
+    "memory": "記憶",
+    "webui": "Web UI",
+    "workspace": "工作區",
+    "env": "環境",
+    "tools": "工具",
+    "agents": "Agents"
+  },
   "app": {
     "title": "ModelBoard",
     "description": "Claude Code / Codex / Gemini CLI 全方位輔助工具"
@@ -959,6 +971,8 @@
       "total": "累計",
       "sessions": "會話數",
       "tokens": "tokens {{count}}",
+      "tokensTitle": "Token 消耗",
+      "tokensUnit": "{{count}} tokens",
       "usageUnavailable": "未找到 WorkBuddy 本機資料庫"
     }
   },
@@ -1775,7 +1789,8 @@
       "gemini": "Gemini",
       "opencode": "OpenCode",
       "grokbuild": "Grok Build",
-      "pi": "Pi"
+      "pi": "Pi",
+      "workbuddy": "WorkBuddy"
     },
     "rawInputLabel": "原始",
     "sessionSync": {
@@ -1833,6 +1848,7 @@
     "allSources": "全部來源",
     "allModels": "全部模型",
     "filterBySource": "依來源篩選",
+    "filterByApp": "依應用篩選",
     "filterByModel": "依模型篩選",
     "refreshInterval": "自動重新整理間隔",
     "refreshOff": "關閉",
@@ -3315,5 +3331,101 @@
     "expiredHint": "請執行 {{tool}} 命令重新整理登入",
     "queryFailed": "查詢失敗",
     "refresh": "重新整理"
+  },
+  "home": {
+    "title": "概覽",
+    "comingSoonTitle": "數據看板即將上線",
+    "comingSoonDesc": "這裡將彙總各 Agent 的使用量、請求與成本趨勢。",
+    "openUsage": "查看完整統計",
+    "tabs": {
+      "usage": "用量",
+      "assets": "資產",
+      "ranking": "排行",
+      "runtime": "運行"
+    },
+    "appBreakdown": "應用用量分佈",
+    "topProviders": "供應商用量 Top 5",
+    "topModels": "模型用量 Top 5",
+    "recentRequests": "最近請求",
+    "recentRequestsHint": "最新 {{value}} 筆",
+    "totalCount": "共 {{value}} 個",
+    "kpi": {
+      "costPerRequest": "單次請求均價",
+      "tokensPerRequest": "單次請求 Tokens",
+      "dailyRequests": "日均請求",
+      "dailyCost": "日均成本"
+    },
+    "kpiHint": {
+      "stable": "運作穩定",
+      "checkErrors": "存在失敗請求",
+      "weightedByRequests": "按請求數加權",
+      "costPerRequest": "總成本 ÷ 請求數",
+      "tokensPerRequest": "含快取讀寫",
+      "perDay": "按 {{value}} 天攤平"
+    },
+    "columns": {
+      "time": "時間",
+      "target": "應用 / 模型",
+      "status": "狀態",
+      "cost": "成本",
+      "latency": "延遲"
+    },
+    "assets": {
+      "title": "設定資產盤點",
+      "providers": "供應商",
+      "providersHint": "去重後 · 設定 {{value}} 次",
+      "mcp": "MCP 伺服器",
+      "mcpHint": "已接入 {{value}} 個客戶端",
+      "skills": "Skills",
+      "skillsHint": "已安裝的技能包",
+      "prompts": "Prompts",
+      "promptsHint": "各 Agent 提示詞合計",
+      "emptyApps": "{{value}} 個 Agent 未設定供應商",
+      "colAgent": "Agent",
+      "colProviders": "供應商",
+      "colCurrent": "目前使用",
+      "colFailover": "備用",
+      "colPrompts": "提示詞",
+      "notConfigured": "未設定",
+      "notSelected": "未選擇"
+    },
+    "insights": {
+      "title": "交叉洞察",
+      "cacheSaved": "快取省下",
+      "cacheSavedHint": "{{value}} tokens 命中",
+      "monthForecast": "按此速度月底",
+      "monthForecastHint": "日均 {{value}}",
+      "idleProviders": "閒置供應商",
+      "idleProvidersHint": "本區間無請求",
+      "cheapest": "最低單價",
+      "cheapestHint": "{{value}} · 每百萬 tokens",
+      "noPricingData": "暫無計價數據",
+      "tipIdle": "有 {{value}} 家供應商設定了卻沒在用，可以清理了",
+      "tipEmpty": "還有 Agent 沒設定供應商，切換時會空轉",
+      "tipPriceGap": "最貴與最便宜的供應商單價差 {{value}} 倍"
+    },
+    "health": {
+      "title": "健康與告警",
+      "allGood": "一切正常",
+      "envConflicts": "環境變數衝突",
+      "envConflictsClean": "未偵測到會覆蓋設定的環境變數",
+      "failingProviders": "失敗請求",
+      "noFailures": "本區間沒有失敗請求"
+    },
+    "runtime": {
+      "title": "執行狀態",
+      "proxyRunning": "代理執行中",
+      "proxyStopped": "代理未啟動",
+      "port": "監聽連接埠",
+      "uptime": "已執行 {{value}}",
+      "proxyRequests": "代理累計請求",
+      "failovers": "故障轉移 {{value}} 次",
+      "peak": "用量高峰",
+      "peakCount": "{{value}} 次請求",
+      "failedRequests": "失敗請求",
+      "failedRatio": "佔 {{value}}",
+      "takenOver": "已接管",
+      "noTakeover": "沒有 App 走本地代理"
+    }
   }
 }

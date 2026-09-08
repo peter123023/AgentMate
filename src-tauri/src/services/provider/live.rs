@@ -2365,6 +2365,137 @@ pub fn import_hermes_providers_from_live(state: &AppState) -> Result<usize, AppE
     Ok(imported + updated)
 }
 
+/// 根据 WorkBuddy 模型名 / 端点 URL 推断品牌图标 key。
+///
+/// key 与前端 `src/icons/extracted`（metadata.ts / index.ts）对齐，例如
+/// deepseek / zhipu / kimi / huoshan / doubao / qwen / hunyuan / baidu /
+/// openai / grok / gemini / anthropic / ollama / meta / stepfun / minimax /
+/// yi / nvidia / openrouter / siliconflow。匹配不到返回 None，由前端回退
+/// 到首字母占位。
+fn infer_workbuddy_provider_icon(model_name: &str, endpoint_url: &str) -> Option<&'static str> {
+    let name = model_name.to_ascii_lowercase();
+    let url = endpoint_url.to_ascii_lowercase();
+
+    // 1) 官方品牌域名直连时按域名定渠道。聚合/中转网关（volces.com 的
+    // coding/v3、sensenova.cn 等）不在此列——其上按模型名路由到不同后端，
+    // 一律交给下面的模型名推断，避免 deepseek-v4-flash 这类挂在火山
+    // coding 网关上的模型被误标成火山图标。
+    if url.contains("api.deepseek.com") {
+        return Some("deepseek");
+    }
+    if url.contains("bigmodel.cn") {
+        return Some("zhipu");
+    }
+    if url.contains("moonshot.cn") {
+        return Some("kimi");
+    }
+    if url.contains("dashscope") || url.contains("aliyuncs.com") {
+        return Some("qwen");
+    }
+    if url.contains("qianfan.baidubce.com") {
+        return Some("baidu");
+    }
+    if url.contains("hunyuan.cloud.tencent.com") {
+        return Some("hunyuan");
+    }
+    if url.contains("api.openai.com") {
+        return Some("openai");
+    }
+    if url.contains("x.ai") {
+        return Some("grok");
+    }
+    if url.contains("generativelanguage") {
+        return Some("gemini");
+    }
+    if url.contains("api.anthropic.com") {
+        return Some("anthropic");
+    }
+    if url.contains("11434") || url.contains("ollama") {
+        return Some("ollama");
+    }
+    if url.contains("stepfun.com") {
+        return Some("stepfun");
+    }
+    if url.contains("minimaxi") || url.contains("minimax.chat") {
+        return Some("minimax");
+    }
+    if url.contains("lingyiwanwu") {
+        return Some("yi");
+    }
+    if url.contains("integrate.api.nvidia.com") || url.contains("build.nvidia.com") {
+        return Some("nvidia");
+    }
+    if url.contains("openrouter.ai") {
+        return Some("openrouter");
+    }
+    if url.contains("siliconflow.cn") {
+        return Some("siliconflow");
+    }
+
+    // 2) 端点不识别时退回模型名前缀推断
+    if name.contains("deepseek") {
+        return Some("deepseek");
+    }
+    if name.contains("glm") || name.contains("chatglm") || name.contains("zhipu") {
+        return Some("zhipu");
+    }
+    if name.contains("kimi") || name.contains("moonshot") {
+        return Some("kimi");
+    }
+    if name.contains("doubao") {
+        return Some("doubao");
+    }
+    if name.contains("ark") {
+        return Some("huoshan");
+    }
+    if name.contains("qwen") || name.contains("tongyi") {
+        return Some("qwen");
+    }
+    if name.contains("hunyuan") {
+        return Some("hunyuan");
+    }
+    if name.contains("ernie") || name.contains("wenxin") {
+        return Some("baidu");
+    }
+    if name.contains("gpt") || name.contains("openai") {
+        return Some("openai");
+    }
+    if name.contains("grok") {
+        return Some("grok");
+    }
+    if name.contains("gemini") {
+        return Some("gemini");
+    }
+    if name.contains("claude") {
+        return Some("anthropic");
+    }
+    if name.contains("ollama") {
+        return Some("ollama");
+    }
+    if name.contains("llama") {
+        return Some("meta");
+    }
+    if name.contains("step-") || name.contains("stepfun") {
+        return Some("stepfun");
+    }
+    if name.contains("minimax") {
+        return Some("minimax");
+    }
+    if name.starts_with("yi-") || name.contains("lingyi") {
+        return Some("yi");
+    }
+
+    None
+}
+
+/// WorkBuddy 模型的端点 URL（models.json 条目中的 `url` 字段）。
+fn workbuddy_entry_url(config: &serde_json::Value) -> &str {
+    config
+        .get("url")
+        .and_then(|v| v.as_str())
+        .unwrap_or_default()
+}
+
 /// Import all models from WorkBuddy live config to database
 ///
 /// WorkBuddy stores models as a JSON array in ~/.workbuddy/models.json. Each
@@ -2386,11 +2517,25 @@ pub fn import_workbuddy_providers_from_live(state: &AppState) -> Result<usize, A
             continue;
         }
 
+        let display_name = config
+            .get("name")
+            .and_then(|v| v.as_str())
+            .filter(|s| !s.trim().is_empty())
+            .unwrap_or(&id)
+            .to_string();
+        let inferred_icon =
+            infer_workbuddy_provider_icon(&display_name, workbuddy_entry_url(&config));
+
         if existing_ids.contains(&id) {
             match state.db.get_provider_by_id(&id, "workbuddy") {
                 Ok(Some(existing)) => {
-                    if existing.settings_config != config {
+                    // models.json 条目没有图标字段：只有当前行缺图标时才按
+                    // 渠道推断补上（用户手动设置过的 icon 不被覆盖）。
+                    if existing.settings_config != config || existing.icon.is_none() {
                         let mut provider = existing;
+                        if provider.icon.is_none() {
+                            provider.icon = inferred_icon.map(str::to_string);
+                        }
                         provider.settings_config = config;
                         if let Err(e) = state.db.save_provider("workbuddy", &provider) {
                             log::warn!(
@@ -2410,18 +2555,12 @@ pub fn import_workbuddy_providers_from_live(state: &AppState) -> Result<usize, A
             continue;
         }
 
-        let display_name = config
-            .get("name")
-            .and_then(|v| v.as_str())
-            .filter(|s| !s.trim().is_empty())
-            .unwrap_or(&id)
-            .to_string();
-
         let mut provider = Provider::with_id(id.clone(), display_name, config, None);
         provider.meta = Some(crate::provider::ProviderMeta {
             live_config_managed: Some(true),
             ..Default::default()
         });
+        provider.icon = inferred_icon.map(str::to_string);
 
         if let Err(e) = state.db.save_provider("workbuddy", &provider) {
             log::warn!("Failed to import WorkBuddy model '{id}': {e}");

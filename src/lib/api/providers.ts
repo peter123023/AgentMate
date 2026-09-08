@@ -42,6 +42,10 @@ export interface WorkBuddyUsageStats {
   last7dCredits: number;
   sessionCount: number;
   totalTokens: number;
+  /** 今日（本地自然日 0 点起）Token 消耗。 */
+  todayTokens: number;
+  /** 近 7 天（含今日）Token 消耗。 */
+  last7dTokens: number;
   lastUpdated: number;
 }
 

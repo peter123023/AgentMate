@@ -12,6 +12,7 @@ vi.mock("react-i18next", () => ({
 vi.mock("@/lib/typewriterFeedback", () => ({
   playTypeClick: vi.fn(),
   tickVibrate: vi.fn(),
+  warmupAudioFeedback: vi.fn(),
 }));
 
 vi.mock("@/components/AppSwitcher", () => ({
@@ -31,7 +32,7 @@ describe("AppSidebar typewriter sound", () => {
 
   it("plays click sounds while erasing on collapse", () => {
     render(
-      <AppSidebar activeApp="claude" onSwitch={vi.fn()} onOpenSettings={vi.fn()} />,
+      <AppSidebar activeApp="claude" onSwitch={vi.fn()} onOpenSettings={vi.fn()} onOpenHome={vi.fn()} />,
     );
 
     act(() => {
@@ -49,7 +50,7 @@ describe("AppSidebar typewriter sound", () => {
   it("plays click sounds while typing on expand", () => {
     localStorage.setItem("model-board-sidebar-collapsed", "true");
     render(
-      <AppSidebar activeApp="claude" onSwitch={vi.fn()} onOpenSettings={vi.fn()} />,
+      <AppSidebar activeApp="claude" onSwitch={vi.fn()} onOpenSettings={vi.fn()} onOpenHome={vi.fn()} />,
     );
 
     act(() => {

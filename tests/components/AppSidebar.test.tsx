@@ -21,7 +21,7 @@ const PINNED_KEY = "model-board-sidebar-pinned-apps";
 function renderSidebar() {
   const onSwitch = vi.fn();
   render(
-    <AppSidebar activeApp="claude" onSwitch={onSwitch} onOpenSettings={vi.fn()} />,
+    <AppSidebar activeApp="claude" onSwitch={onSwitch} onOpenSettings={vi.fn()} onOpenHome={vi.fn()} />,
   );
   return { onSwitch };
 }

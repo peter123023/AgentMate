@@ -154,4 +154,65 @@ describe("useDragSort", () => {
 
     expect(updateSortOrderMock).not.toHaveBeenCalled();
   });
+
+  it("keeps providers matching preferTop above others, preserving order", () => {
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(
+      () =>
+        useDragSort(mockProviders, "workbuddy", {
+          preferTop: (p) => p.id === "b" || p.id === "a",
+        }),
+      { wrapper },
+    );
+
+    // base order is [b, a, c]; grouping should yield [b, a] then [c]
+    expect(result.current.sortedProviders.map((item) => item.id)).toEqual([
+      "b",
+      "a",
+      "c",
+    ]);
+  });
+
+  it("moves addable providers (not in preferTop) to the bottom", () => {
+    const { wrapper } = createWrapper();
+
+    // local set where the "addable" provider c sorts first by sortIndex,
+    // so it must be sunk below the "added" providers.
+    const localProviders: Record<string, Provider> = {
+      a: {
+        id: "a",
+        name: "AAA",
+        settingsConfig: {},
+        sortIndex: 1,
+      },
+      b: {
+        id: "b",
+        name: "BBB",
+        settingsConfig: {},
+        sortIndex: 2,
+      },
+      c: {
+        id: "c",
+        name: "CCC",
+        settingsConfig: {},
+        sortIndex: 0,
+      },
+    };
+
+    const { result } = renderHook(
+      () =>
+        useDragSort(localProviders, "workbuddy", {
+          // a & b are already added (top); c is addable → must sink to bottom
+          preferTop: (p) => p.id === "a" || p.id === "b",
+        }),
+      { wrapper },
+    );
+
+    expect(result.current.sortedProviders.map((item) => item.id)).toEqual([
+      "a",
+      "b",
+      "c",
+    ]);
+  });
 });

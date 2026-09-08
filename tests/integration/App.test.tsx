@@ -477,4 +477,21 @@ describe("App integration with MSW", () => {
     expect(skillsPanelMocks.openDiscovery).toHaveBeenCalledTimes(1);
     expect(screen.getByTestId("unified-skills-panel")).toBeInTheDocument();
   });
+
+  it("persists the active app when switching, so refresh restores the last app", async () => {
+    const { default: App } = await import("@/App");
+    renderApp(App);
+
+    await waitFor(() =>
+      expect(screen.getByTestId("provider-list").textContent).toContain(
+        "claude-1",
+      ),
+    );
+
+    fireEvent.click(screen.getByText("switch-codex"));
+
+    await waitFor(() =>
+      expect(localStorage.getItem("model-board-last-app")).toBe("codex"),
+    );
+  });
 });

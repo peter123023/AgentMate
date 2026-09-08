@@ -36,3 +36,7 @@ src-tauri/keys/*.key
 
 # CodeBuddy agent working directory
 .codebuddy/
+
+# WorkBuddy local data & machine-specific dev script
+.workbuddy/
+dev.sh

@@ -1,4 +1,16 @@
 {
+  "toolbar": {
+    "skills": "スキル",
+    "prompts": "プロンプト",
+    "sessions": "セッション",
+    "mcp": "MCP",
+    "memory": "メモリ",
+    "webui": "Web UI",
+    "workspace": "ワークスペース",
+    "env": "環境",
+    "tools": "ツール",
+    "agents": "Agents"
+  },
   "app": {
     "title": "ModelBoard",
     "description": "Claude Code・Codex・Gemini CLI のためのオールインワンアシスタント"
@@ -958,6 +970,8 @@
       "total": "累計",
       "sessions": "セッション数",
       "tokens": "tokens {{count}}",
+      "tokensTitle": "Token 消費",
+      "tokensUnit": "{{count}} tokens",
       "usageUnavailable": "WorkBuddy のローカルデータベースが見つかりません"
     }
   },
@@ -1774,7 +1788,8 @@
       "gemini": "Gemini",
       "opencode": "OpenCode",
       "grokbuild": "Grok Build",
-      "pi": "Pi"
+      "pi": "Pi",
+      "workbuddy": "WorkBuddy"
     },
     "rawInputLabel": "原始",
     "sessionSync": {
@@ -1832,6 +1847,7 @@
     "allSources": "すべてのソース",
     "allModels": "すべてのモデル",
     "filterBySource": "ソースで絞り込む",
+    "filterByApp": "アプリで絞り込む",
     "filterByModel": "モデルで絞り込む",
     "refreshInterval": "自動更新間隔",
     "refreshOff": "オフ",
@@ -3314,5 +3330,101 @@
     "expiredHint": "{{tool}}コマンドを実行してログインを更新してください",
     "queryFailed": "クエリに失敗しました",
     "refresh": "更新"
+  },
+  "home": {
+    "title": "概要",
+    "comingSoonTitle": "ダッシュボードは近日公開",
+    "comingSoonDesc": "各エージェントの使用量・リクエスト・コスト傾向をここに表示します。",
+    "openUsage": "統計を開く",
+    "tabs": {
+      "usage": "利用量",
+      "assets": "資産",
+      "ranking": "ランキング",
+      "runtime": "実行"
+    },
+    "appBreakdown": "アプリ別使用量",
+    "topProviders": "プロバイダー Top 5",
+    "topModels": "モデル Top 5",
+    "recentRequests": "最近のリクエスト",
+    "recentRequestsHint": "最新 {{value}} 件",
+    "totalCount": "全 {{value}} 件",
+    "kpi": {
+      "costPerRequest": "リクエスト単価",
+      "tokensPerRequest": "リクエストあたり Tokens",
+      "dailyRequests": "1 日あたりリクエスト",
+      "dailyCost": "1 日あたりコスト"
+    },
+    "kpiHint": {
+      "stable": "安定稼働中",
+      "checkErrors": "失敗したリクエストあり",
+      "weightedByRequests": "リクエスト数で加重平均",
+      "costPerRequest": "総コスト ÷ リクエスト数",
+      "tokensPerRequest": "キャッシュの読み書きを含む",
+      "perDay": "{{value}} 日で平均"
+    },
+    "columns": {
+      "time": "時刻",
+      "target": "アプリ / モデル",
+      "status": "ステータス",
+      "cost": "コスト",
+      "latency": "レイテンシ"
+    },
+    "assets": {
+      "title": "設定資産の棚卸し",
+      "providers": "プロバイダー",
+      "providersHint": "重複除去 · {{value}} 件",
+      "mcp": "MCP サーバー",
+      "mcpHint": "{{value}} クライアントに接続",
+      "skills": "Skills",
+      "skillsHint": "インストール済みスキル",
+      "prompts": "Prompts",
+      "promptsHint": "全エージェントの合計",
+      "emptyApps": "{{value}} 個のエージェントにプロバイダー未設定",
+      "colAgent": "Agent",
+      "colProviders": "プロバイダー",
+      "colCurrent": "使用中",
+      "colFailover": "バックアップ",
+      "colPrompts": "プロンプト",
+      "notConfigured": "未設定",
+      "notSelected": "未選択"
+    },
+    "insights": {
+      "title": "クロス分析",
+      "cacheSaved": "キャッシュで節約",
+      "cacheSavedHint": "{{value}} tokens ヒット",
+      "monthForecast": "このペースの月末",
+      "monthForecastHint": "1 日 {{value}}",
+      "idleProviders": "未使用プロバイダー",
+      "idleProvidersHint": "期間内リクエストなし",
+      "cheapest": "最安単価",
+      "cheapestHint": "{{value}} · 100万 tokens あたり",
+      "noPricingData": "料金データなし",
+      "tipIdle": "設定済みだが未使用のプロバイダーが {{value}} 件あります",
+      "tipEmpty": "プロバイダー未設定のエージェントがあります",
+      "tipPriceGap": "最高単価は最安の {{value}} 倍です"
+    },
+    "health": {
+      "title": "健全性とアラート",
+      "allGood": "問題なし",
+      "envConflicts": "環境変数の競合",
+      "envConflictsClean": "設定を上書きする環境変数はありません",
+      "failingProviders": "失敗リクエスト",
+      "noFailures": "期間内の失敗リクエストはありません"
+    },
+    "runtime": {
+      "title": "稼働状態",
+      "proxyRunning": "プロキシ稼働中",
+      "proxyStopped": "プロキシ停止中",
+      "port": "リッスンポート",
+      "uptime": "稼働 {{value}}",
+      "proxyRequests": "プロキシ累計リクエスト",
+      "failovers": "フェイルオーバー {{value}} 回",
+      "peak": "ピーク時間帯",
+      "peakCount": "{{value}} リクエスト",
+      "failedRequests": "失敗リクエスト",
+      "failedRatio": "全体の {{value}}",
+      "takenOver": "引き受け済み",
+      "noTakeover": "ローカルプロキシ経由のアプリなし"
+    }
   }
 }

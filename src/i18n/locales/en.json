@@ -1,4 +1,16 @@
 {
+  "toolbar": {
+    "skills": "Skills",
+    "prompts": "Prompts",
+    "sessions": "Sessions",
+    "mcp": "MCP",
+    "memory": "Memory",
+    "webui": "Web UI",
+    "workspace": "Workspace",
+    "env": "Env",
+    "tools": "Tools",
+    "agents": "Agents"
+  },
   "app": {
     "title": "ModelBoard",
     "description": "All-in-One Assistant for Claude Code, Codex & Gemini CLI"
@@ -958,6 +970,8 @@
       "total": "Total",
       "sessions": "Sessions",
       "tokens": "tokens {{count}}",
+      "tokensTitle": "Token Usage",
+      "tokensUnit": "{{count}} tokens",
       "usageUnavailable": "WorkBuddy local database not found"
     }
   },
@@ -1774,7 +1788,8 @@
       "gemini": "Gemini",
       "opencode": "OpenCode",
       "grokbuild": "Grok Build",
-      "pi": "Pi"
+      "pi": "Pi",
+      "workbuddy": "WorkBuddy"
     },
     "rawInputLabel": "Raw",
     "sessionSync": {
@@ -1832,6 +1847,7 @@
     "allSources": "All Sources",
     "allModels": "All Models",
     "filterBySource": "Filter by source",
+    "filterByApp": "Filter by app",
     "filterByModel": "Filter by model",
     "refreshInterval": "Auto-refresh interval",
     "refreshOff": "Off",
@@ -3314,5 +3330,101 @@
     "expiredHint": "Run the {{tool}} command to refresh your login",
     "queryFailed": "Query failed",
     "refresh": "Refresh"
+  },
+  "home": {
+    "title": "Overview",
+    "comingSoonTitle": "Dashboard coming soon",
+    "comingSoonDesc": "Usage, request and cost trends across your agents will live here.",
+    "openUsage": "Open full stats",
+    "tabs": {
+      "usage": "Usage",
+      "assets": "Assets",
+      "ranking": "Ranking",
+      "runtime": "Runtime"
+    },
+    "appBreakdown": "Usage by app",
+    "topProviders": "Top 5 providers",
+    "topModels": "Top 5 models",
+    "recentRequests": "Recent requests",
+    "recentRequestsHint": "Latest {{value}}",
+    "totalCount": "{{value}} total",
+    "kpi": {
+      "costPerRequest": "Cost / request",
+      "tokensPerRequest": "Tokens / request",
+      "dailyRequests": "Requests / day",
+      "dailyCost": "Cost / day"
+    },
+    "kpiHint": {
+      "stable": "Running smoothly",
+      "checkErrors": "Some requests failed",
+      "weightedByRequests": "Weighted by requests",
+      "costPerRequest": "Total cost ÷ requests",
+      "tokensPerRequest": "Includes cache I/O",
+      "perDay": "Averaged over {{value}} days"
+    },
+    "columns": {
+      "time": "Time",
+      "target": "App / model",
+      "status": "Status",
+      "cost": "Cost",
+      "latency": "Latency"
+    },
+    "assets": {
+      "title": "Configured assets",
+      "providers": "Providers",
+      "providersHint": "Deduped · {{value}} entries",
+      "mcp": "MCP servers",
+      "mcpHint": "Linked to {{value}} clients",
+      "skills": "Skills",
+      "skillsHint": "Installed skill packs",
+      "prompts": "Prompts",
+      "promptsHint": "Across all agents",
+      "emptyApps": "{{value}} agents without providers",
+      "colAgent": "Agent",
+      "colProviders": "Providers",
+      "colCurrent": "Active",
+      "colFailover": "Failover",
+      "colPrompts": "Prompts",
+      "notConfigured": "Not configured",
+      "notSelected": "None selected"
+    },
+    "insights": {
+      "title": "Cross insights",
+      "cacheSaved": "Saved by cache",
+      "cacheSavedHint": "{{value}} tokens hit",
+      "monthForecast": "Month-end at this pace",
+      "monthForecastHint": "{{value}} per day",
+      "idleProviders": "Idle providers",
+      "idleProvidersHint": "No requests in range",
+      "cheapest": "Lowest unit price",
+      "cheapestHint": "{{value}} · per 1M tokens",
+      "noPricingData": "No pricing data",
+      "tipIdle": "{{value}} providers configured but unused — cleanup suggested",
+      "tipEmpty": "Some agents have no provider configured",
+      "tipPriceGap": "Priciest provider costs {{value}}× the cheapest"
+    },
+    "health": {
+      "title": "Health & alerts",
+      "allGood": "All good",
+      "envConflicts": "Env conflicts",
+      "envConflictsClean": "No env vars overriding config",
+      "failingProviders": "Failed requests",
+      "noFailures": "No failed requests in range"
+    },
+    "runtime": {
+      "title": "Runtime",
+      "proxyRunning": "Proxy running",
+      "proxyStopped": "Proxy stopped",
+      "port": "Listen port",
+      "uptime": "Up {{value}}",
+      "proxyRequests": "Proxy requests",
+      "failovers": "{{value}} failovers",
+      "peak": "Peak usage",
+      "peakCount": "{{value}} requests",
+      "failedRequests": "Failed requests",
+      "failedRatio": "{{value}} of total",
+      "takenOver": "Taken over",
+      "noTakeover": "No apps routed through proxy"
+    }
   }
 }

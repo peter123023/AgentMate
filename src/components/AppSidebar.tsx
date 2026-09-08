@@ -10,6 +10,8 @@ import type { AppId } from "@/lib/api";
 import type { VisibleApps } from "@/types";
 import { cn } from "@/lib/utils";
 import { AppGlyph } from "@/components/AppSwitcher";
+import { OverviewIcon } from "@/components/OverviewIcon";
+import appIcon from "@/assets/icons/app-icon.png";
 import { APP_IDS } from "@/config/appConfig";
 import {
   playTypeClick,
@@ -30,6 +32,10 @@ interface AppSidebarProps {
   visibleApps?: VisibleApps;
   onOpenSettings: () => void;
   settingsActive?: boolean;
+  onOpenHome: () => void;
+  homeActive?: boolean;
+  /** 顶部拖拽标题栏高度：侧边栏向上延伸覆盖它，让右侧分割线贯通到窗口顶 */
+  dragBarHeight?: number;
 }
 
 export function AppSidebar({
@@ -38,6 +44,9 @@ export function AppSidebar({
   visibleApps,
   onOpenSettings,
   settingsActive,
+  onOpenHome,
+  homeActive,
+  dragBarHeight = 0,
 }: AppSidebarProps) {
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(
@@ -127,17 +136,31 @@ export function AppSidebar({
   return (
     <aside
       className={cn(
-        "flex shrink-0 flex-col border-r border-border bg-background/60",
+        "flex shrink-0 flex-col border-r border-border bg-sidebar",
+        // 负 margin 抵消根容器的 pb-4，配合负 marginTop 覆盖标题栏区，使 border-r 贯通窗口上下
+        "-mb-4 pb-4",
         "transition-[width] ease-in-out",
         collapsed ? "w-12" : "w-48",
       )}
-      style={{ transitionDuration: `${widthTransitionMs}ms` }}
+      style={{
+        transitionDuration: `${widthTransitionMs}ms`,
+        marginTop: -dragBarHeight,
+        paddingTop: dragBarHeight,
+      }}
     >
-      {/* 顶部：品牌标题（水平居中） + 收起按钮（右侧），始终单行 */}
-      <div className="relative flex h-12 shrink-0 items-center justify-end border-b border-border px-2">
-        <div className="pointer-events-none absolute inset-y-0 left-0 right-8 flex items-center justify-center overflow-hidden">
+      {/* 顶部：品牌 Logo + 标题（水平居中） + 收起按钮（右侧），始终单行 */}
+      <div className="relative flex h-12 shrink-0 items-center justify-end border-b border-border bg-sidebar px-2">
+        <div className="pointer-events-none absolute inset-y-0 left-0 right-8 flex items-center justify-center gap-2 overflow-hidden">
+          {!collapsed && (
+            <img
+              src={appIcon}
+              alt=""
+              aria-hidden="true"
+              className="h-5 w-5 shrink-0 rounded-[5px] object-contain shadow-sm ring-1 ring-border/60"
+            />
+          )}
           <span
-            className="truncate text-base font-bold"
+            className="truncate text-base font-bold tracking-tight"
             aria-label={title}
           >
             {title.slice(0, visibleChars)}
@@ -162,7 +185,9 @@ export function AppSidebar({
         </button>
       </div>
 
-      <nav className="flex-1 space-y-0.5 overflow-y-auto p-2">
+      {/* 固定入口：概览（全局视图，不属于任何 Agent）已移至底部与设置并排 */}
+
+      <nav className="scrollbar-visible flex-1 space-y-0.5 overflow-y-auto p-2">
         {orderedApps.map((app, index) => {
           const isActive = app === activeApp;
           const label = t(`apps.${app}`);
@@ -177,13 +202,25 @@ export function AppSidebar({
                 aria-label={label}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "flex h-10 w-full items-center rounded-lg transition-colors duration-150",
+                  "relative flex h-10 w-full items-center rounded-lg transition-all duration-150",
                   collapsed ? "justify-center px-0" : "gap-3 pl-3 pr-8",
                   isActive
-                    ? "bg-muted font-medium text-foreground"
-                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                    ? "bg-primary/10 font-medium text-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
                 )}
               >
+                {isActive &&
+                  (collapsed ? (
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-1 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-primary shadow-sm"
+                    />
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-primary/80 shadow-sm"
+                    />
+                  ))}
                 <AppGlyph app={app} isActive={isActive} />
                 {!collapsed && <span className="truncate text-sm">{label}</span>}
               </button>
@@ -208,8 +245,13 @@ export function AppSidebar({
         })}
       </nav>
 
-      {/* 底部：设置（图标 + 文字，位于左侧底部） */}
-      <div className="flex shrink-0 border-t border-border p-2">
+      {/* 底部固定入口：设置（左）+ 概览（右）并排 */}
+      <div
+        className={cn(
+          "flex shrink-0 bg-sidebar",
+          collapsed ? "gap-0.5 p-1" : "gap-1 p-2",
+        )}
+      >
         <button
           type="button"
           onClick={onOpenSettings}
@@ -217,16 +259,35 @@ export function AppSidebar({
           aria-label={t("common.settings")}
           aria-current={settingsActive ? "page" : undefined}
           className={cn(
-            "flex h-10 w-full items-center rounded-lg transition-colors duration-150",
+            "flex h-10 min-w-0 flex-1 items-center rounded-lg transition-colors duration-150",
             collapsed ? "justify-center px-0" : "gap-3 px-3",
             settingsActive
-              ? "bg-muted font-medium text-foreground"
-              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+              ? "bg-primary/10 font-medium text-foreground shadow-sm"
+              : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
           )}
         >
           <Settings size={18} className="shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm">{t("common.settings")}</span>
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={onOpenHome}
+          title={t("home.title")}
+          aria-label={t("home.title")}
+          aria-current={homeActive ? "page" : undefined}
+          className={cn(
+            "flex h-10 min-w-0 flex-1 items-center rounded-lg transition-colors duration-150",
+            collapsed ? "justify-center px-0" : "gap-3 px-3",
+            homeActive
+              ? "bg-primary/10 font-medium text-foreground shadow-sm"
+              : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+          )}
+        >
+          <OverviewIcon size={18} className="shrink-0" />
+          {!collapsed && (
+            <span className="truncate text-sm">{t("home.title")}</span>
           )}
         </button>
       </div>

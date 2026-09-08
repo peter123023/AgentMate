@@ -11,9 +11,7 @@ import {
   Maximize2,
   Minimize2,
   X,
-  Book,
   Brain,
-  Wrench,
   History,
   BarChart2,
   Download,
@@ -62,6 +60,12 @@ import {
   DRAG_REGION_STYLE,
 } from "@/lib/platform";
 import { AppSidebar } from "@/components/AppSidebar";
+import {
+  SkillIcon,
+  PromptIcon,
+  SessionIcon,
+} from "@/components/ContentIcons";
+import { HomeDashboard } from "@/components/home/HomeDashboard";
 import { ProfileSwitcher } from "@/components/profiles/ProfileSwitcher";
 import { ProviderList } from "@/components/providers/ProviderList";
 import { AddProviderDialog } from "@/components/providers/AddProviderDialog";
@@ -113,6 +117,7 @@ import {
 } from "@/config/appConfig";
 
 type View =
+  | "home"
   | "providers"
   | "settings"
   | "prompts"
@@ -148,6 +153,7 @@ const getInitialApp = (): AppId => {
 
 const VIEW_STORAGE_KEY = "model-board-last-view";
 const VALID_VIEWS: View[] = [
+  "home",
   "providers",
   "settings",
   "prompts",
@@ -218,9 +224,42 @@ function App() {
 
   useEffect(() => {
     if (!visibleApps[activeApp]) {
-      setActiveApp(getFirstVisibleApp());
+      const first = getFirstVisibleApp();
+      // 回退时同步存储，避免下次刷新又落回已隐藏的 App
+      localStorage.setItem(STORAGE_KEY, first);
+      setActiveApp(first);
     }
   }, [visibleApps, activeApp]);
+
+  // ---- 各功能入口的能力开关（唯一事实来源）----
+  // 历史坑：这些能力曾在「顶栏胶囊开关」「视图回退 effect」「按钮渲染」三处
+  // 各自硬编码 app id 列表，给某 App 新增能力时极易漏改（WorkBuddy 会话
+  // 就连续踩了两次）。现统一在此定义，其余位置一律复用这些变量。
+  const hasSkillsSupport =
+    sharedFeatureApp !== "openclaw" && sharedFeatureApp !== "workbuddy";
+  const hasPromptSupport = sharedFeatureApp !== "workbuddy";
+  // 会话：白名单制（需后端有对应 session provider 解析器）
+  const hasSessionSupport =
+    sharedFeatureApp === "claude" ||
+    sharedFeatureApp === "codex" ||
+    sharedFeatureApp === "grokbuild" ||
+    sharedFeatureApp === "opencode" ||
+    sharedFeatureApp === "openclaw" ||
+    sharedFeatureApp === "gemini" ||
+    sharedFeatureApp === "hermes" ||
+    sharedFeatureApp === "pi" ||
+    sharedFeatureApp === "workbuddy" ||
+    sharedFeatureApp === "deepseek-harness";
+  const hasMcpSupport =
+    sharedFeatureApp !== "pi" && sharedFeatureApp !== "workbuddy";
+  // 顶栏功能入口胶囊是否渲染：只要任一能力可用就渲染，不留空灰块
+  const hasFeatureEntries =
+    activeApp === "hermes" ||
+    activeApp === "openclaw" ||
+    hasSkillsSupport ||
+    hasPromptSupport ||
+    hasSessionSupport ||
+    hasMcpSupport;
 
   // Fallback from sessions view when switching to an app without session support
   useEffect(() => {
@@ -240,20 +279,10 @@ function App() {
       setCurrentView("providers");
       return;
     }
-    if (
-      currentView === "sessions" &&
-      sharedFeatureApp !== "claude" &&
-      sharedFeatureApp !== "codex" &&
-      sharedFeatureApp !== "grokbuild" &&
-      sharedFeatureApp !== "opencode" &&
-      sharedFeatureApp !== "openclaw" &&
-      sharedFeatureApp !== "gemini" &&
-      sharedFeatureApp !== "hermes" &&
-      sharedFeatureApp !== "pi"
-    ) {
+    if (currentView === "sessions" && !hasSessionSupport) {
       setCurrentView("providers");
     }
-  }, [sharedFeatureApp, currentView]);
+  }, [sharedFeatureApp, currentView, hasSessionSupport]);
 
   const [editingProvider, setEditingProvider] = useState<Provider | null>(null);
   const [usageProvider, setUsageProvider] = useState<Provider | null>(null);
@@ -317,19 +346,6 @@ function App() {
       currentView === "openclawAgents");
   const { data: openclawHealthWarnings = [] } =
     useOpenClawHealth(isOpenClawView);
-  const hasSkillsSupport =
-    sharedFeatureApp !== "openclaw" && sharedFeatureApp !== "workbuddy";
-  const hasSessionSupport =
-    sharedFeatureApp === "claude" ||
-    sharedFeatureApp === "codex" ||
-    sharedFeatureApp === "grokbuild" ||
-    sharedFeatureApp === "opencode" ||
-    sharedFeatureApp === "openclaw" ||
-    sharedFeatureApp === "gemini" ||
-    sharedFeatureApp === "hermes" ||
-    sharedFeatureApp === "pi";
-  const hasMcpSupport =
-    sharedFeatureApp !== "pi" && sharedFeatureApp !== "workbuddy";
 
   const {
     addProvider,
@@ -1109,6 +1125,15 @@ function App() {
           return <ToolsPanel />;
         case "openclawAgents":
           return <AgentsDefaultsPanel />;
+        case "home":
+          return (
+            <HomeDashboard
+              onOpenUsage={() => {
+                setSettingsDefaultTab("usage");
+                setCurrentView("settings");
+              }}
+            />
+          );
         default:
           return (
             <div className="px-6 flex flex-col flex-1 min-h-0 overflow-hidden">
@@ -1257,7 +1282,10 @@ function App() {
       )}
       <AppSidebar
         activeApp={activeApp}
+        dragBarHeight={dragBarHeight}
         onSwitch={(app) => {
+          // 切换 App 时持久化，刷新后 getInitialApp 才能恢复上次的 App
+          localStorage.setItem(STORAGE_KEY, app);
           setActiveApp(app);
           setCurrentView("providers");
         }}
@@ -1267,6 +1295,8 @@ function App() {
           setCurrentView("settings");
         }}
         settingsActive={currentView === "settings"}
+        onOpenHome={() => setCurrentView("home")}
+        homeActive={currentView === "home"}
       />
       <div className="flex min-w-0 flex-1 flex-col">
         {showEnvBanner && envConflicts.length > 0 && (
@@ -1335,6 +1365,7 @@ function App() {
                     <ArrowLeft className="w-4 h-4" />
                   </Button>
                   <h1 className="text-lg font-semibold">
+                    {currentView === "home" && t("home.title")}
                     {currentView === "settings" && t("settings.title")}
                     {currentView === "prompts" &&
                       t("prompts.title", {
@@ -1368,10 +1399,9 @@ function App() {
                     }
                   />
                   {/* 功能入口（skills/prompts/会话/MCP 等）：移到 header 左侧。
-                      WorkBuddy 无任何功能入口，整个胶囊不渲染，避免蓝点右侧残留空灰块 */}
-                  {(activeApp === "hermes" ||
-                    activeApp === "openclaw" ||
-                    sharedFeatureApp !== "workbuddy") && (
+                      按实际支持能力决定是否渲染整个胶囊——WorkBuddy 目前仅
+                      支持会话，胶囊内就只会出现「会话」一项，不会留空灰块 */}
+                  {hasFeatureEntries && (
                     <div className="flex items-center gap-1 p-1 bg-muted rounded-xl">
                       <AnimatePresence mode="wait">
                         <motion.div
@@ -1396,38 +1426,42 @@ function App() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setCurrentView("skills")}
-                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
                                 title={t("skills.manage")}
                               >
-                                <Wrench className="w-4 h-4" />
+                                <SkillIcon size={16} className="shrink-0" />
+                                <span className="text-xs">{t("toolbar.skills")}</span>
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setCurrentView("hermesMemory")}
-                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
                                 title={t("hermes.memory.title")}
                               >
-                                <Brain className="w-4 h-4" />
+                                <Brain className="w-4 h-4 shrink-0" />
+                                <span className="text-xs">{t("toolbar.memory")}</span>
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => void openHermesWebUI()}
-                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
                                 title={t("hermes.webui.open")}
                               >
-                                <LayoutDashboard className="w-4 h-4" />
+                                <LayoutDashboard className="w-4 h-4 shrink-0" />
+                                <span className="text-xs">{t("toolbar.webui")}</span>
                               </Button>
                               {hasMcpSupport && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => setCurrentView("mcp")}
-                                  className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                  className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
                                   title={t("mcp.title")}
                                 >
-                                  <McpIcon size={16} />
+                                  <McpIcon size={16} className="shrink-0" />
+                                  <span className="text-xs">{t("toolbar.mcp")}</span>
                                 </Button>
                               )}
                             </>
@@ -1437,100 +1471,101 @@ function App() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setCurrentView("workspace")}
-                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
                                 title={t("workspace.manage")}
                               >
-                                <FolderOpen className="w-4 h-4" />
+                                <FolderOpen className="w-4 h-4 shrink-0" />
+                                <span className="text-xs">{t("toolbar.workspace")}</span>
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setCurrentView("openclawEnv")}
-                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
                                 title={t("openclaw.env.title")}
                               >
-                                <KeyRound className="w-4 h-4" />
+                                <KeyRound className="w-4 h-4 shrink-0" />
+                                <span className="text-xs">{t("toolbar.env")}</span>
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setCurrentView("openclawTools")}
-                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
                                 title={t("openclaw.tools.title")}
                               >
-                                <Shield className="w-4 h-4" />
+                                <Shield className="w-4 h-4 shrink-0" />
+                                <span className="text-xs">{t("toolbar.tools")}</span>
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setCurrentView("openclawAgents")}
-                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
                                 title={t("openclaw.agents.title")}
                               >
-                                <Cpu className="w-4 h-4" />
+                                <Cpu className="w-4 h-4 shrink-0" />
+                                <span className="text-xs">{t("toolbar.agents")}</span>
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setCurrentView("sessions")}
-                                className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
                                 title={t("sessionManager.title")}
                               >
-                                <History className="w-4 h-4" />
+                                <SessionIcon size={16} className="shrink-0" />
+                                <span className="text-xs">{t("toolbar.sessions")}</span>
                               </Button>
                             </>
                           ) : (
                             <>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setCurrentView("skills")}
-                                className={cn(
-                                  "text-muted-foreground hover:text-foreground hover-soft",
-                                  "transition-all duration-200 ease-in-out overflow-hidden",
-                                  hasSkillsSupport
-                                    ? "opacity-100 w-8 scale-100 px-2"
-                                    : "opacity-0 w-0 scale-75 pointer-events-none px-0 -ml-1",
-                                )}
-                                title={t("skills.manage")}
-                              >
-                                <Wrench className="flex-shrink-0 w-4 h-4" />
-                              </Button>
-                              {sharedFeatureApp !== "workbuddy" && (
+                              {hasSkillsSupport && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setCurrentView("skills")}
+                                  className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
+                                  title={t("skills.manage")}
+                                >
+                                  <SkillIcon size={16} className="shrink-0" />
+                                  <span className="text-xs">{t("toolbar.skills")}</span>
+                                </Button>
+                              )}
+                              {hasPromptSupport && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => setCurrentView("prompts")}
-                                  className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                  className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
                                   title={t("prompts.manage")}
                                 >
-                                  <Book className="w-4 h-4" />
+                                  <PromptIcon size={16} className="shrink-0" />
+                                  <span className="text-xs">{t("toolbar.prompts")}</span>
                                 </Button>
                               )}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setCurrentView("sessions")}
-                                className={cn(
-                                  "text-muted-foreground hover:text-foreground hover-soft",
-                                  "transition-all duration-200 ease-in-out overflow-hidden",
-                                  hasSessionSupport
-                                    ? "opacity-100 w-8 scale-100 px-2"
-                                    : "opacity-0 w-0 scale-75 pointer-events-none px-0 -ml-1",
-                                )}
-                                title={t("sessionManager.title")}
-                              >
-                                <History className="flex-shrink-0 w-4 h-4" />
-                              </Button>
+                              {hasSessionSupport && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setCurrentView("sessions")}
+                                  className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
+                                  title={t("sessionManager.title")}
+                                >
+                                  <SessionIcon size={16} className="shrink-0" />
+                                  <span className="text-xs">{t("toolbar.sessions")}</span>
+                                </Button>
+                              )}
                               {hasMcpSupport && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => setCurrentView("mcp")}
-                                  className="text-muted-foreground hover:text-foreground hover-soft w-8 px-2"
+                                  className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
                                   title={t("mcp.title")}
                                 >
-                                  <McpIcon size={16} />
+                                  <McpIcon size={16} className="shrink-0" />
+                                  <span className="text-xs">{t("toolbar.mcp")}</span>
                                 </Button>
                               )}
                             </>
@@ -1548,7 +1583,7 @@ function App() {
                   {isCurrentAppTakeoverActive && (
                     <Button
                       variant="ghost"
-                      size="icon"
+                      size="sm"
                       onClick={() => {
                         setSettingsDefaultTab("usage");
                         setCurrentView("settings");
@@ -1556,9 +1591,12 @@ function App() {
                       title={t("usage.title", {
                         defaultValue: "使用统计",
                       })}
-                      className="hover-soft"
+                      className="text-muted-foreground hover:text-foreground hover-soft gap-1.5 px-2.5"
                     >
-                      <BarChart2 className="w-4 h-4" />
+                      <BarChart2 className="w-4 h-4 shrink-0" />
+                      <span className="text-xs">
+                        {t("usage.title", { defaultValue: "使用统计" })}
+                      </span>
                     </Button>
                   )}
                 </div>

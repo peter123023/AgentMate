@@ -91,7 +91,9 @@ type ProviderFilter =
   | "openclaw"
   | "gemini"
   | "hermes"
-  | "pi";
+  | "pi"
+  | "workbuddy"
+  | "deepseek-harness";
 
 type SessionListViewMode = "flat" | "grouped";
 
@@ -1176,6 +1178,26 @@ export function SessionManagerPage({ appId }: { appId: string }) {
                               <div className="flex items-center gap-2">
                                 <ProviderIcon icon="pi" name="pi" size={14} />
                                 <span>Pi</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="workbuddy">
+                              <div className="flex items-center gap-2">
+                                <ProviderIcon
+                                  icon="workbuddy"
+                                  name="workbuddy"
+                                  size={14}
+                                />
+                                <span>WorkBuddy</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="deepseek-harness">
+                              <div className="flex items-center gap-2">
+                                <ProviderIcon
+                                  icon="deepseek"
+                                  name="deepseek-harness"
+                                  size={14}
+                                />
+                                <span>DeepSeek Harness</span>
                               </div>
                             </SelectItem>
                           </SelectContent>

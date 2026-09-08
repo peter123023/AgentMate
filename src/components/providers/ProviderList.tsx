@@ -96,10 +96,6 @@ export function ProviderList({
 }: ProviderListProps) {
   const { t } = useTranslation();
   const { checkProvider, isChecking } = useStreamCheck(appId);
-  const { sortedProviders, sensors, handleDragEnd } = useDragSort(
-    providers,
-    appId,
-  );
 
   const { data: opencodeLiveIds } = useQuery({
     queryKey: ["opencodeLiveProviderIds"],
@@ -144,6 +140,16 @@ export function ProviderList({
       return true; // 其他应用始终返回 true
     },
     [appId, opencodeLiveIds, openclawLiveIds, hermesLiveIds, workbuddyLiveIds],
+  );
+
+  // 供应商列表排序。仅 WorkBuddy 将"尚未添加到配置（可添加）"的供应商稳定
+  // 分区到列表底部，已添加的保持原有顺序排在前面；拖拽仍可自由跨区并持久化。
+  const { sortedProviders, sensors, handleDragEnd } = useDragSort(
+    providers,
+    appId,
+    appId === "workbuddy"
+      ? { preferTop: (provider) => isProviderInConfig(provider.id) }
+      : undefined,
   );
 
   // OpenClaw: query default model to determine which provider is default
@@ -424,7 +430,7 @@ export function ProviderList({
 
   if (sortedProviders.length === 0) {
     return (
-      <div className="mt-4 space-y-4">
+      <div className="mt-3 space-y-3">
         {appId === "workbuddy" && <WorkBuddyStatsPanel />}
         {piStateErrorNotice}
         <ProviderEmptyState
@@ -534,7 +540,7 @@ export function ProviderList({
   );
 
   return (
-    <div className="mt-4 space-y-4">
+    <div className="mt-3 space-y-3">
       {appId === "workbuddy" && <WorkBuddyStatsPanel />}
       {piStateErrorNotice}
       {claudeDesktopStatusMessages.length > 0 && (

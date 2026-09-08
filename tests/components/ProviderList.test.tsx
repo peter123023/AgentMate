@@ -6,7 +6,6 @@ import { http, HttpResponse } from "msw";
 import type { Provider } from "@/types";
 import { ProviderList } from "@/components/providers/ProviderList";
 import { server } from "../msw/server";
-
 const TAURI_ENDPOINT = "http://tauri.local";
 
 const useDragSortMock = vi.fn();
@@ -261,10 +260,11 @@ describe("ProviderList Component", () => {
     expect(handleUsage).toHaveBeenCalledWith(providerB);
     expect(handleDelete).toHaveBeenCalledWith(providerA);
 
-    // Verify useDragSort call parameters
+    // Verify useDragSort call parameters (3rd arg only set for WorkBuddy grouping)
     expect(useDragSortMock).toHaveBeenCalledWith(
       { a: providerA, b: providerB },
       "claude",
+      undefined,
     );
   });
 
@@ -576,5 +576,51 @@ describe("ProviderList Component", () => {
     expect(
       screen.queryByRole("button", { name: "provider.addProvider" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("sinks addable providers to the bottom for the WorkBuddy list", async () => {
+    const addedProvider = createProvider({ id: "added", name: "Added" });
+    const addableProvider = createProvider({ id: "addable", name: "Addable" });
+    useDragSortMock.mockReturnValue({
+      sortedProviders: [addedProvider, addableProvider],
+      sensors: [],
+      handleDragEnd: vi.fn(),
+    });
+
+    server.use(
+      http.post(`${TAURI_ENDPOINT}/get_workbuddy_live_provider_ids`, () =>
+        HttpResponse.json(["added"]),
+      ),
+    );
+
+    renderWithQueryClient(
+      <ProviderList
+        providers={{ added: addedProvider, addable: addableProvider }}
+        currentProviderId=""
+        appId="workbuddy"
+        onSwitch={vi.fn()}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onDuplicate={vi.fn()}
+        onOpenWebsite={vi.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(useDragSortMock).toHaveBeenCalledWith(
+        { added: addedProvider, addable: addableProvider },
+        "workbuddy",
+        { preferTop: expect.any(Function) },
+      );
+    });
+
+    // live config marks only "added" as in-config → preferTop only it. Poll until
+    // the live-provider-ids query resolves so the predicate reflects membership.
+    await waitFor(() => {
+      const lastCall = useDragSortMock.mock.calls.at(-1)!;
+      const { preferTop } = lastCall[2] as { preferTop: (p: Provider) => boolean };
+      expect(preferTop(addedProvider)).toBe(true);
+      expect(preferTop(addableProvider)).toBe(false);
+    });
   });
 });

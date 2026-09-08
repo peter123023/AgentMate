@@ -62,10 +62,28 @@ export function tickVibrate(durationMs = 8): void {
  * 创建发生在非手势上下文，WebView 会将其置于 suspended 且后续 resume
  * 可能失败（表现为打字声静音）。在点击处理函数里调用本函数可确保
  * AudioContext 在手势内创建并进入 running 状态。
+ *
+ * 注意：在 WKWebView（Tauri macOS）等环境，仅 resume() 不足以解锁音频
+ * 输出管线，必须真正 start 一个音频源。这里在手势内额外播放一个零增益
+ * 的极短静音 buffer（标准"解锁"技巧），确保后续 interval 里的打字声可闻。
  */
 export function warmupAudioFeedback(): void {
   const ctx = ensureAudioContext();
-  if (ctx && ctx.state === "suspended") {
+  if (!ctx) return;
+  if (ctx.state === "suspended") {
     void ctx.resume();
+  }
+  try {
+    const length = Math.floor(ctx.sampleRate * 0.01);
+    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+    const src = ctx.createBufferSource();
+    src.buffer = buffer;
+    const gain = ctx.createGain();
+    gain.gain.value = 0;
+    src.connect(gain);
+    gain.connect(ctx.destination);
+    src.start(ctx.currentTime);
+  } catch {
+    // 解锁失败则静默忽略，不影响交互
   }
 }

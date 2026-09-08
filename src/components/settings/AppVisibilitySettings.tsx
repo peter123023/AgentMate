@@ -32,6 +32,12 @@ const APP_CONFIG: Array<{
   { id: "openclaw", icon: "openclaw", nameKey: "apps.openclaw" },
   { id: "hermes", icon: "hermes", nameKey: "apps.hermes" },
   { id: "pi", icon: "pi", nameKey: "apps.pi" },
+  { id: "workbuddy", icon: "workbuddy", nameKey: "apps.workbuddy" },
+  {
+    id: "deepseek-harness",
+    icon: "deepseek",
+    nameKey: "apps.deepseek-harness",
+  },
 ];
 
 export function AppVisibilitySettings({

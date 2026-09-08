@@ -1,4 +1,16 @@
 {
+  "toolbar": {
+    "skills": "技能",
+    "prompts": "提示词",
+    "sessions": "会话",
+    "mcp": "MCP",
+    "memory": "记忆",
+    "webui": "Web UI",
+    "workspace": "工作区",
+    "env": "环境",
+    "tools": "工具",
+    "agents": "Agents"
+  },
   "app": {
     "title": "ModelBoard",
     "description": "Claude Code / Codex / Gemini CLI 全方位辅助工具"
@@ -958,6 +970,8 @@
       "total": "累计",
       "sessions": "会话数",
       "tokens": "tokens {{count}}",
+      "tokensTitle": "Token 消耗",
+      "tokensUnit": "{{count}} tokens",
       "usageUnavailable": "未找到 WorkBuddy 本地数据库"
     }
   },
@@ -1774,7 +1788,8 @@
       "gemini": "Gemini",
       "opencode": "OpenCode",
       "grokbuild": "Grok Build",
-      "pi": "Pi"
+      "pi": "Pi",
+      "workbuddy": "WorkBuddy"
     },
     "rawInputLabel": "原始",
     "sessionSync": {
@@ -1832,6 +1847,7 @@
     "allSources": "全部来源",
     "allModels": "全部模型",
     "filterBySource": "按来源筛选",
+    "filterByApp": "按应用筛选",
     "filterByModel": "按模型筛选",
     "refreshInterval": "自动刷新间隔",
     "refreshOff": "关闭",
@@ -3314,5 +3330,101 @@
     "expiredHint": "请运行 {{tool}} 命令刷新登录",
     "queryFailed": "查询失败",
     "refresh": "刷新"
+  },
+  "home": {
+    "title": "概览",
+    "comingSoonTitle": "数据看板即将上线",
+    "comingSoonDesc": "这里将汇总各 Agent 的使用量、请求与成本趋势。",
+    "openUsage": "查看完整统计",
+    "tabs": {
+      "usage": "用量",
+      "assets": "资产",
+      "ranking": "排行",
+      "runtime": "运行"
+    },
+    "appBreakdown": "应用用量分布",
+    "topProviders": "供应商用量 Top 5",
+    "topModels": "模型用量 Top 5",
+    "recentRequests": "最近请求",
+    "recentRequestsHint": "最新 {{value}} 条",
+    "totalCount": "共 {{value}} 个",
+    "kpi": {
+      "costPerRequest": "单次请求均价",
+      "tokensPerRequest": "单次请求 Tokens",
+      "dailyRequests": "日均请求",
+      "dailyCost": "日均成本"
+    },
+    "kpiHint": {
+      "stable": "运行稳定",
+      "checkErrors": "存在失败请求",
+      "weightedByRequests": "按请求数加权",
+      "costPerRequest": "总成本 ÷ 请求数",
+      "tokensPerRequest": "含缓存读写",
+      "perDay": "按 {{value}} 天摊平"
+    },
+    "columns": {
+      "time": "时间",
+      "target": "应用 / 模型",
+      "status": "状态",
+      "cost": "成本",
+      "latency": "延迟"
+    },
+    "assets": {
+      "title": "配置资产盘点",
+      "providers": "供应商",
+      "providersHint": "去重后 · 配置 {{value}} 次",
+      "mcp": "MCP 服务器",
+      "mcpHint": "已接入 {{value}} 个客户端",
+      "skills": "Skills",
+      "skillsHint": "已安装的技能包",
+      "prompts": "Prompts",
+      "promptsHint": "各 Agent 提示词合计",
+      "emptyApps": "{{value}} 个 Agent 未配置供应商",
+      "colAgent": "Agent",
+      "colProviders": "供应商",
+      "colCurrent": "当前在用",
+      "colFailover": "备用",
+      "colPrompts": "提示词",
+      "notConfigured": "未配置",
+      "notSelected": "未选择"
+    },
+    "insights": {
+      "title": "交叉洞察",
+      "cacheSaved": "缓存省下",
+      "cacheSavedHint": "{{value}} tokens 命中",
+      "monthForecast": "按此速度月末",
+      "monthForecastHint": "日均 {{value}}",
+      "idleProviders": "闲置供应商",
+      "idleProvidersHint": "本区间无请求",
+      "cheapest": "最低单价",
+      "cheapestHint": "{{value}} · 每百万 tokens",
+      "noPricingData": "暂无计价数据",
+      "tipIdle": "有 {{value}} 家供应商配了却没在用，可以清理了",
+      "tipEmpty": "还有 Agent 没配供应商，切换时会空转",
+      "tipPriceGap": "最贵与最便宜的供应商单价差 {{value}} 倍"
+    },
+    "health": {
+      "title": "健康与告警",
+      "allGood": "一切正常",
+      "envConflicts": "环境变量冲突",
+      "envConflictsClean": "未检测到会覆盖配置的环境变量",
+      "failingProviders": "失败请求",
+      "noFailures": "本区间没有失败请求"
+    },
+    "runtime": {
+      "title": "运行状态",
+      "proxyRunning": "代理运行中",
+      "proxyStopped": "代理未启动",
+      "port": "监听端口",
+      "uptime": "已运行 {{value}}",
+      "proxyRequests": "代理累计请求",
+      "failovers": "故障转移 {{value}} 次",
+      "peak": "用量高峰",
+      "peakCount": "{{value}} 次请求",
+      "failedRequests": "失败请求",
+      "failedRatio": "占 {{value}}",
+      "takenOver": "已接管",
+      "noTakeover": "没有 App 走本地代理"
+    }
   }
 }

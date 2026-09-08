@@ -188,6 +188,13 @@ export interface UsageRangeSelection {
  * `opencode` and `pi` have no proxy handler; their usage reaches this
  * dashboard through session importers. `openclaw` / `hermes` appear only as
  * managed apps elsewhere.
+ * `workbuddy` likewise has no proxy handler (not in the takeover whitelist);
+ * its usage reaches this dashboard through the WorkBuddy session importer
+ * (`session_usage_workbuddy.rs`, data_source `workbuddy_session`). Unlike
+ * Codex/Gemini/Grok Build its JSONL `input_tokens` is stored Anthropic-style
+ * (fresh input + separate cache-read column) at import time, so it is NOT in
+ * `CACHE_INCLUSIVE_APP_TYPES` — the SQL normalizer must not subtract cache
+ * twice.
  */
 export type AppType =
   | "claude"
@@ -195,7 +202,8 @@ export type AppType =
   | "gemini"
   | "grokbuild"
   | "opencode"
-  | "pi";
+  | "pi"
+  | "workbuddy";
 
 export type AppTypeFilter = "all" | AppType;
 
@@ -206,6 +214,7 @@ export const KNOWN_APP_TYPES: ReadonlyArray<AppType> = [
   "grokbuild",
   "opencode",
   "pi",
+  "workbuddy",
 ];
 
 /**
