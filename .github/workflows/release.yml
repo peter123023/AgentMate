@@ -322,16 +322,16 @@ jobs:
           DMG_STAGE_DIR="$RUNNER_TEMP/dmg-stage"
           rm -rf "$DMG_STAGE_DIR"
           mkdir -p "$DMG_STAGE_DIR"
-          ditto "$APP_PATH" "$DMG_STAGE_DIR/ModelBoard.app"
+          ditto "$APP_PATH" "$DMG_STAGE_DIR/AgentMate.app"
 
           create-dmg \
-            --volname "ModelBoard" \
+            --volname "AgentMate" \
             --background "src-tauri/icons/dmg-background.png" \
             --window-size 660 400 \
             --window-pos 200 120 \
             --icon-size 80 \
-            --icon "ModelBoard.app" 180 220 \
-            --hide-extension "ModelBoard.app" \
+            --icon "AgentMate.app" 180 220 \
+            --hide-extension "AgentMate.app" \
             --app-drop-link 480 220 \
             --codesign "$APPLE_SIGNING_IDENTITY" \
             --no-internet-enable \
@@ -468,11 +468,11 @@ jobs:
 
           # 绿色版（portable）：仅可执行文件打 zip（不参与 Updater）
           $exeCandidates = if ($isArm64) {
-            @('src-tauri/target/aarch64-pc-windows-msvc/release/ModelBoard.exe')
+            @('src-tauri/target/aarch64-pc-windows-msvc/release/AgentMate.exe')
           } else {
             @(
-              'src-tauri/target/release/ModelBoard.exe',
-              'src-tauri/target/x86_64-pc-windows-msvc/release/ModelBoard.exe'
+              'src-tauri/target/release/AgentMate.exe',
+              'src-tauri/target/x86_64-pc-windows-msvc/release/AgentMate.exe'
             )
           }
           $exePath = $exeCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
@@ -483,13 +483,13 @@ jobs:
             $portableIniPath = Join-Path $portableDir 'portable.ini'
             $portableContent = if ($isArm64) {
               @(
-                '# ModelBoard portable ARM64 build marker',
+                '# AgentMate portable ARM64 build marker',
                 'portable=true',
                 'arch=arm64'
               )
             } else {
               @(
-                '# ModelBoard portable build marker',
+                '# AgentMate portable build marker',
                 'portable=true'
               )
             }
@@ -600,12 +600,12 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
-          name: ModelBoard ${{ github.ref_name }}
+          name: AgentMate ${{ github.ref_name }}
           prerelease: true
           body: |
-            ## ModelBoard ${{ github.ref_name }}
+            ## AgentMate ${{ github.ref_name }}
 
-            🌐 **Only Official Website / 唯一官方网站 / 唯一の公式サイト**: [modelboard.io](https://modelboard.io)
+            🌐 **Only Official Website / 唯一官方网站 / 唯一の公式サイト**: [agentmate.app](https://github.com/peter123023/llm-switch)
 
             Claude Code 供应商切换工具
 

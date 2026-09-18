@@ -123,7 +123,7 @@ impl SkillApps {
             AppType::Pi => self.pi,
             AppType::OpenClaw => false, // OpenClaw doesn't support Skills
             AppType::ClaudeDesktop => false,
-            AppType::WorkBuddy => false, // WorkBuddy doesn't use ModelBoard skill sync.
+            AppType::WorkBuddy => false, // WorkBuddy doesn't use AgentMate skill sync.
             AppType::DeepSeekHarness => false, // DSH: Skills 本期不接入
         }
     }
@@ -139,8 +139,8 @@ impl SkillApps {
             AppType::Hermes => self.hermes = enabled,
             AppType::Pi => self.pi = enabled,
             AppType::OpenClaw => {} // OpenClaw doesn't support Skills, ignore
-            AppType::ClaudeDesktop => {} // Claude Desktop 3P profiles don't use ModelBoard skill sync
-            AppType::WorkBuddy => {} // WorkBuddy doesn't use ModelBoard skill sync
+            AppType::ClaudeDesktop => {} // Claude Desktop 3P profiles don't use AgentMate skill sync
+            AppType::WorkBuddy => {} // WorkBuddy doesn't use AgentMate skill sync
             AppType::DeepSeekHarness => {} // DSH: Skills 本期不接入
         }
     }
@@ -242,7 +242,7 @@ pub struct InstalledSkill {
     pub updated_at: i64,
 }
 
-/// 未管理的 Skill（在应用目录中发现但未被 ModelBoard 管理）
+/// 未管理的 Skill（在应用目录中发现但未被 AgentMate 管理）
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UnmanagedSkill {

@@ -14,7 +14,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Mutex, MutexGuard};
 use tempfile::{Builder, NamedTempFile};
 
-const CC_SWITCH_SQL_EXPORT_HEADER: &str = "-- ModelBoard SQLite 导出";
+const CC_SWITCH_SQL_EXPORT_HEADER: &str = "-- AgentMate SQLite 导出";
 
 /// Bound combined INSERT batches while still amortizing statement parsing.
 /// A row larger than this cap is emitted alone because it cannot be split.
@@ -286,8 +286,8 @@ impl Database {
 
         Err(AppError::localized(
             "backup.sql.invalid_format",
-            "仅支持导入由 ModelBoard 导出的 SQL 备份文件。",
-            "Only SQL backups exported by ModelBoard are supported.",
+            "仅支持导入由 AgentMate 导出的 SQL 备份文件。",
+            "Only SQL backups exported by AgentMate are supported.",
         ))
     }
 
@@ -669,7 +669,7 @@ impl Database {
         ))
     }
 
-    /// Validate that the external SQL created a recognizable ModelBoard schema.
+    /// Validate that the external SQL created a recognizable AgentMate schema.
     ///
     /// These tables all existed in the oldest supported SQL-export schema
     /// (v3.8.x). Checking before migrations keeps header-only/truncated files
@@ -696,8 +696,8 @@ impl Database {
             let names = missing.join(", ");
             return Err(AppError::localized(
                 "backup.sql.invalid_schema",
-                format!("导入的 SQL 缺少 ModelBoard 必需表：{names}"),
-                format!("The imported SQL is missing required ModelBoard tables: {names}"),
+                format!("导入的 SQL 缺少 AgentMate 必需表：{names}"),
+                format!("The imported SQL is missing required AgentMate tables: {names}"),
             ));
         }
         Ok(())
@@ -712,7 +712,7 @@ impl Database {
             .unwrap_or(0);
 
         output.push_str(&format!(
-            "-- ModelBoard SQLite 导出\n-- 生成时间: {timestamp}\n-- user_version: {user_version}\n"
+            "-- AgentMate SQLite 导出\n-- 生成时间: {timestamp}\n-- user_version: {user_version}\n"
         ));
         output.push_str("PRAGMA foreign_keys=OFF;\n");
         output.push_str(&format!("PRAGMA user_version={user_version};\n"));
@@ -1264,7 +1264,7 @@ mod tests {
         for (label, template) in cases {
             let target = test_home
                 .path()
-                .join(format!("model-board-authorizer-{label}.sqlite"));
+                .join(format!("agentmate-authorizer-{label}.sqlite"));
 
             // 合法的导出头 + 越界语句。头部校验只比前缀，这份输入过得了它，
             // 真正拦下来的必须是 authorizer。
@@ -1396,8 +1396,8 @@ mod tests {
             .import_sql_string(&header_only)
             .expect_err("缺少原始 schema 的文件必须被拒绝");
         assert!(
-            error.to_string().contains("required ModelBoard tables")
-                || error.to_string().contains("ModelBoard 必需表"),
+            error.to_string().contains("required AgentMate tables")
+                || error.to_string().contains("AgentMate 必需表"),
             "应由原始 schema 校验拒绝，实际错误: {error}"
         );
 
@@ -1542,7 +1542,7 @@ mod tests {
         let exported = source.export_sql_string()?;
         let truncated = exported
             .strip_suffix("COMMIT;\nPRAGMA foreign_keys=ON;\n")
-            .expect("ModelBoard export should end with a committed transaction");
+            .expect("AgentMate export should end with a committed transaction");
 
         let target = Database::memory()?;
         {

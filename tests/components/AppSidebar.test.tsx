@@ -16,7 +16,7 @@ vi.mock("@/components/AppSwitcher", () => ({
   AppGlyph: () => <span data-testid="app-glyph" />,
 }));
 
-const PINNED_KEY = "model-board-sidebar-pinned-apps";
+const PINNED_KEY = "agentmate-sidebar-pinned-apps";
 
 function renderSidebar() {
   const onSwitch = vi.fn();

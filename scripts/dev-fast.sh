@@ -3,7 +3,7 @@
 #
 # 原理：
 #   - `vite` 起本地 dev server（localhost:3000），监听 src/ 下所有文件的变更并推 HMR
-#   - `target/debug/ModelBoard` 在 debug 构建下把窗口指向 devUrl(http://localhost:3000)，
+#   - `target/debug/AgentMate` 在 debug 构建下把窗口指向 devUrl(http://localhost:3000)，
 #     而不是打包进去的 dist/；因此前端改动保存即刷新，无需 cargo/tauri 重编。
 #
 # 何时仍然需要重新构建（只有改这些时才需要）：
@@ -19,10 +19,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-VITE_LOG="/tmp/modelboard-vite.log"
-APP_LOG="/tmp/modelboard-dev.log"
+VITE_LOG="/tmp/agentmate-vite.log"
+APP_LOG="/tmp/agentmate-dev.log"
 VITE_PATTERN="vite"
-APP_BIN="src-tauri/target/debug/ModelBoard"
+APP_BIN="src-tauri/target/debug/AgentMate"
 
 is_vite_up() {
   curl -s -o /dev/null --max-time 2 http://localhost:3000/
@@ -30,7 +30,7 @@ is_vite_up() {
 
 stop_all() {
   echo "→ 停止 debug 应用…"
-  pkill -f "target/debug/ModelBoard" 2>/dev/null || true
+  pkill -f "target/debug/AgentMate" 2>/dev/null || true
   echo "→ 停止 vite dev server…"
   pkill -f "node.*vite" 2>/dev/null || true
   sleep 1
@@ -69,13 +69,13 @@ else
 fi
 
 # ---- 3. 启动 debug 应用并连上 dev server ----
-if pgrep -f "target/debug/ModelBoard" > /dev/null; then
+if pgrep -f "target/debug/AgentMate" > /dev/null; then
   echo "✓ debug 应用已在运行"
 else
   echo "→ 启动 debug 应用（连接 dev server）…"
-  ( cd src-tauri && nohup ./target/debug/ModelBoard > "$APP_LOG" 2>&1 & )
+  ( cd src-tauri && nohup ./target/debug/AgentMate > "$APP_LOG" 2>&1 & )
   sleep 5
-  if pgrep -f "target/debug/ModelBoard" > /dev/null; then
+  if pgrep -f "target/debug/AgentMate" > /dev/null; then
     echo "✓ debug 应用已启动，日志：$APP_LOG"
   else
     echo "✗ 应用启动失败，请查看 $APP_LOG"

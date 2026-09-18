@@ -1,6 +1,6 @@
 //! MCP server import from deep link
 //!
-//! Handles batch import of MCP server configurations via modelboard:// URLs.
+//! Handles batch import of MCP server configurations via agentmate:// URLs.
 
 use super::utils::decode_base64_param;
 use super::DeepLinkImportRequest;

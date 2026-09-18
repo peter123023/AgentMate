@@ -45,7 +45,7 @@ export const translatePiProviderMutationError = (
 
   if (
     message.includes("models.json changed") ||
-    message.includes("changed outside ModelBoard") ||
+    message.includes("changed outside AgentMate") ||
     message.includes("no longer present in models.json") ||
     message.includes("another value now owns the key")
   ) {

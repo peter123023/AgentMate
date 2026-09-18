@@ -21,7 +21,7 @@ pub(crate) struct PiAgentsFileSnapshot {
     pub revision: String,
 }
 
-/// Coordinates every ModelBoard read-modify-write operation on Pi's AGENTS.md.
+/// Coordinates every AgentMate read-modify-write operation on Pi's AGENTS.md.
 ///
 /// Keeping the guard alive across the database update lets callers compare the
 /// file revision immediately before an atomic replacement and roll back their
@@ -285,7 +285,7 @@ fn ensure_revision(path: &Path, expected: &str, label: &str) -> Result<(), AppEr
         Ok(())
     } else {
         Err(AppError::Conflict(format!(
-            "{label} changed outside ModelBoard: {}",
+            "{label} changed outside AgentMate: {}",
             path.display()
         )))
     }

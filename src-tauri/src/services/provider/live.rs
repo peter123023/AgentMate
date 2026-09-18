@@ -1116,7 +1116,7 @@ fn restore_live_settings_for_provider_backfill(
         }
     }
 
-    // `modelCatalog` is a model-board–private field whose SSOT is the DB. Live's
+    // `modelCatalog` is a agentmate–private field whose SSOT is the DB. Live's
     // `config.toml` only carries a lossy projection (`model_catalog_json` →
     // generated catalog file) that proxy takeover/restore cycles and Codex.app
     // config rewrites can drop, so `read_live_settings` may reconstruct it as
@@ -1434,7 +1434,7 @@ pub(crate) fn write_live_snapshot(app_type: &AppType, provider: &Provider) -> Re
             log::debug!("Hermes provider '{}' written to live config", provider.id);
         }
         AppType::WorkBuddy => {
-            // Keep the entry's `name` in sync with the ModelBoard provider
+            // Keep the entry's `name` in sync with the AgentMate provider
             // name — WorkBuddy renders the entry `name` in its model picker.
             let mut config = provider.settings_config.clone();
             if let Some(obj) = config.as_object_mut() {
@@ -1727,8 +1727,8 @@ pub fn read_live_settings(app_type: AppType) -> Result<Value, AppError> {
     match app_type {
         AppType::Codex => {
             let mut result = crate::codex_config::read_codex_live_settings()?;
-            // `modelCatalog` is a model-board private field that lives only in
-            // the DB SSOT plus the `model-board-model-catalog.json` projection
+            // `modelCatalog` is a agentmate private field that lives only in
+            // the DB SSOT plus the `agentmate-model-catalog.json` projection
             // file — it is never inlined into `auth.json` or `config.toml`.
             // Reverse-parse the projection so the edit form for the active
             // Codex provider doesn't see an empty mapping table.
@@ -2137,7 +2137,7 @@ pub(crate) fn remove_opencode_provider_from_live(provider_id: &str) -> Result<()
 /// Import all providers from OpenCode live config to database
 ///
 /// This imports existing providers from ~/.config/opencode/opencode.json
-/// into the ModelBoard database. Each provider found will be added to the
+/// into the AgentMate database. Each provider found will be added to the
 /// database with is_current set to false.
 pub fn import_opencode_providers_from_live(state: &AppState) -> Result<usize, AppError> {
     use crate::opencode_config;
@@ -2212,7 +2212,7 @@ pub fn import_opencode_providers_from_live(state: &AppState) -> Result<usize, Ap
 /// Import all providers from OpenClaw live config to database
 ///
 /// This imports existing providers from ~/.openclaw/openclaw.json
-/// into the ModelBoard database. Each provider found will be added to the
+/// into the AgentMate database. Each provider found will be added to the
 /// database with is_current set to false.
 pub fn import_openclaw_providers_from_live(state: &AppState) -> Result<usize, AppError> {
     use crate::openclaw_config;
@@ -2300,7 +2300,7 @@ pub fn import_openclaw_providers_from_live(state: &AppState) -> Result<usize, Ap
 /// Import all providers from Hermes live config to database
 ///
 /// This imports existing providers from ~/.hermes/config.yaml
-/// into the ModelBoard database. Each provider found will be added to the
+/// into the AgentMate database. Each provider found will be added to the
 /// database with is_current set to false.
 pub fn import_hermes_providers_from_live(state: &AppState) -> Result<usize, AppError> {
     use crate::hermes_config;
@@ -2499,7 +2499,7 @@ fn workbuddy_entry_url(config: &serde_json::Value) -> &str {
 /// Import all models from WorkBuddy live config to database
 ///
 /// WorkBuddy stores models as a JSON array in ~/.workbuddy/models.json. Each
-/// entry becomes one ModelBoard provider keyed by the entry's `id`; the entry
+/// entry becomes one AgentMate provider keyed by the entry's `id`; the entry
 /// object itself is stored as settings_config.
 pub fn import_workbuddy_providers_from_live(state: &AppState) -> Result<usize, AppError> {
     let entries = crate::workbuddy_config::get_providers()?;

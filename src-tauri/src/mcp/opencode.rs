@@ -1,10 +1,10 @@
 //! OpenCode MCP 同步和导入模块
 //!
-//! 本模块处理 ModelBoard 统一 MCP 格式与 OpenCode 格式之间的转换。
+//! 本模块处理 AgentMate 统一 MCP 格式与 OpenCode 格式之间的转换。
 //!
 //! ## 格式差异
 //!
-//! | ModelBoard 统一格式    | OpenCode 格式       |
+//! | AgentMate 统一格式    | OpenCode 格式       |
 //! |----------------------|---------------------|
 //! | `type: "stdio"`      | `type: "local"`     |
 //! | `command` + `args`   | `command: [cmd, ...args]` |
@@ -32,10 +32,10 @@ fn should_sync_opencode_mcp() -> bool {
 }
 
 // ============================================================================
-// Format Conversion: ModelBoard → OpenCode
+// Format Conversion: AgentMate → OpenCode
 // ============================================================================
 
-/// Convert ModelBoard unified format to OpenCode format
+/// Convert AgentMate unified format to OpenCode format
 ///
 /// Conversion rules:
 /// - `stdio` → `local`, command+args → command array, env → environment
@@ -104,10 +104,10 @@ pub fn convert_to_opencode_format(spec: &Value) -> Result<Value, AppError> {
 }
 
 // ============================================================================
-// Format Conversion: OpenCode → ModelBoard
+// Format Conversion: OpenCode → AgentMate
 // ============================================================================
 
-/// Convert OpenCode format to ModelBoard unified format
+/// Convert OpenCode format to AgentMate unified format
 ///
 /// Conversion rules:
 /// - `local` → `stdio`, command array → command+args, environment → env

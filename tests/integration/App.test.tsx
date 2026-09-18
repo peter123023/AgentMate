@@ -209,8 +209,8 @@ describe("App integration with MSW", () => {
     toastErrorMock.mockReset();
     skillsPanelMocks.checkUpdates.mockReset();
     skillsPanelMocks.openDiscovery.mockReset();
-    localStorage.removeItem("model-board-last-view");
-    localStorage.removeItem("model-board-last-app");
+    localStorage.removeItem("agentmate-last-view");
+    localStorage.removeItem("agentmate-last-app");
   });
 
   it("covers basic provider flows via real hooks", async () => {
@@ -356,7 +356,7 @@ describe("App integration with MSW", () => {
   });
 
   it("warns without blocking when removing Pi's global default provider", async () => {
-    localStorage.setItem("model-board-last-app", "pi");
+    localStorage.setItem("agentmate-last-app", "pi");
     setProviders("pi", {
       custom: {
         id: "custom",
@@ -449,7 +449,7 @@ describe("App integration with MSW", () => {
   });
 
   it("hosts the Skills check-update action in the App toolbar", async () => {
-    localStorage.setItem("model-board-last-view", "skills");
+    localStorage.setItem("agentmate-last-view", "skills");
     const { default: App } = await import("@/App");
     renderApp(App);
 
@@ -466,7 +466,7 @@ describe("App integration with MSW", () => {
   });
 
   it("routes the Skills discover toolbar action through the panel guard", async () => {
-    localStorage.setItem("model-board-last-view", "skills");
+    localStorage.setItem("agentmate-last-view", "skills");
     const { default: App } = await import("@/App");
     renderApp(App);
 
@@ -496,7 +496,7 @@ describe("App integration with MSW", () => {
     fireEvent.click(screen.getByText("switch-codex"));
 
     await waitFor(() =>
-      expect(localStorage.getItem("model-board-last-app")).toBe("codex"),
+      expect(localStorage.getItem("agentmate-last-app")).toBe("codex"),
     );
   });
 });

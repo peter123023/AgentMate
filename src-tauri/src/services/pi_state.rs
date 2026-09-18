@@ -58,7 +58,7 @@ mod tests {
             models_path,
             r#"{
                 "providers": {
-                    "model-board-managed": {
+                    "agentmate-managed": {
                         "name": "Managed",
                         "baseUrl": "https://api.example.com/v1",
                         "api": "openai-completions",
@@ -81,7 +81,7 @@ mod tests {
         let settings_path = crate::pi_config::get_pi_settings_path().expect("settings path");
         fs::write(
             settings_path,
-            r#"{"defaultProvider":"model-board-managed","defaultModel":"model-a"}"#,
+            r#"{"defaultProvider":"agentmate-managed","defaultModel":"model-a"}"#,
         )
         .expect("write settings");
 
@@ -89,7 +89,7 @@ mod tests {
         assert_eq!(
             current.enabled_provider_ids,
             vec![
-                "model-board-managed".to_string(),
+                "agentmate-managed".to_string(),
                 "native-oauth".to_string(),
                 "anthropic".to_string(),
                 "unsupported".to_string(),
@@ -97,7 +97,7 @@ mod tests {
         );
         assert_eq!(
             current.default_provider_id.as_deref(),
-            Some("model-board-managed")
+            Some("agentmate-managed")
         );
     }
 
@@ -115,7 +115,7 @@ mod tests {
             models_path,
             r#"{
                 "providers": {
-                    "model-board-managed": {
+                    "agentmate-managed": {
                         "name": "Managed",
                         "baseUrl": "https://api.example.com/v1",
                         "api": "openai-completions",
@@ -131,7 +131,7 @@ mod tests {
         let current = PiStateService::current(&state).expect("read membership");
         assert_eq!(
             current.enabled_provider_ids,
-            vec!["model-board-managed".to_string()]
+            vec!["agentmate-managed".to_string()]
         );
         assert_eq!(current.default_provider_id, None);
     }

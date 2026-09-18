@@ -176,7 +176,7 @@ interface SyncStatusUpdatedPayload {
 const TOP_BAR_HEIGHT = 30; // px（全平台统一；Windows 系统自带边框不受影响）
 const HEADER_HEIGHT = 64; // px
 
-const STORAGE_KEY = "model-board-last-app";
+const STORAGE_KEY = "agentmate-last-app";
 const getInitialApp = (): AppId => {
   const saved = localStorage.getItem(STORAGE_KEY) as AppId | null;
   if (saved && APP_IDS.includes(saved)) {
@@ -185,7 +185,7 @@ const getInitialApp = (): AppId => {
   return "claude";
 };
 
-const VIEW_STORAGE_KEY = "model-board-last-view";
+const VIEW_STORAGE_KEY = "agentmate-last-view";
 const VALID_VIEWS: View[] = [
   "home",
   "providers",
@@ -248,7 +248,7 @@ function App() {
   const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_EXPANDED_WIDTH);
   // 侧边栏收起状态提升到这里：顶部横栏的品牌行与侧边栏本体需要共享同一状态
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    () => localStorage.getItem("model-board-sidebar-collapsed") === "true",
+    () => localStorage.getItem("agentmate-sidebar-collapsed") === "true",
   );
   const toggleSidebarCollapsed = () => {
     // 打字声由 interval 回调播放（不在手势栈内），需在点击时预热
@@ -256,7 +256,7 @@ function App() {
     warmupAudioFeedback();
     setSidebarCollapsed((v) => {
       const next = !v;
-      localStorage.setItem("model-board-sidebar-collapsed", String(next));
+      localStorage.setItem("agentmate-sidebar-collapsed", String(next));
       return next;
     });
   };

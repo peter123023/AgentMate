@@ -1,10 +1,10 @@
 [package]
-name = "model-board"
+name = "agentmate"
 version = "3.20.1"
 description = "All-in-One Assistant for Claude Code, Codex & Gemini CLI"
 authors = ["Jason Young"]
 license = "MIT"
-repository = "https://github.com/farion1231/model-board"
+repository = "https://github.com/peter123023/llm-switch"
 edition = "2021"
 rust-version = "1.85.0"
 
@@ -16,10 +16,10 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 doctest = false
 
 # 显式二进制名：dev 模式（tauri dev）下 macOS Dock 悬停显示的是进程名，
-# 若跟随 package name（model-board）会显示成 "Model-Board"。
+# 若跟随 package name（agentmate）会显示成 "Agent-Mate"。
 # 打包版不受影响（bundle 内二进制名由 productName 决定）。
 [[bin]]
-name = "ModelBoard"
+name = "AgentMate"
 path = "src/main.rs"
 
 [features]

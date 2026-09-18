@@ -10,8 +10,8 @@ body:
       label: Self Checks / 自检
       options:
         - label: |
-            I have searched for [existing issues](https://github.com/farion1231/model-board/issues), including closed ones.
-            我已搜索过[已有的 Issue](https://github.com/farion1231/model-board/issues)，包括已关闭的。
+            I have searched for [existing issues](https://github.com/peter123023/llm-switch/issues), including closed ones.
+            我已搜索过[已有的 Issue](https://github.com/peter123023/llm-switch/issues)，包括已关闭的。
           required: true
 
   - type: dropdown

@@ -8,7 +8,7 @@ import { AppGlyph } from "@/components/AppSwitcher";
 import { OverviewIcon } from "@/components/OverviewIcon";
 import { APP_IDS } from "@/config/appConfig";
 
-const PINNED_APPS_STORAGE_KEY = "model-board-sidebar-pinned-apps";
+const PINNED_APPS_STORAGE_KEY = "agentmate-sidebar-pinned-apps";
 
 // 打字/擦除逐字间隔；侧边栏宽度过渡时长 = 字数 × 间隔，保证两者同步。
 // 顶部横栏的品牌行（App.tsx）复用同一组间隔，使两处动画节奏一致。

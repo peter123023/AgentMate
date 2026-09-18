@@ -546,7 +546,7 @@ fn tier_name_for_reset(resets_at: Option<i64>, now_secs: i64) -> &'static str {
 /// 参数化 `tool_label` / `relogin_hint` 让该函数可被两个调用点共用（与
 /// `query_codex_quota` 的双调用点设计一致）：
 /// - `"grokbuild"` + "grok login"（Grok CLI 凭据路径）
-/// - `"xai_oauth"` + "re-login via model-board"（model-board 自管 xAI OAuth 路径，
+/// - `"xai_oauth"` + "re-login via agentmate"（agentmate 自管 xAI OAuth 路径，
 ///   见 `commands::xai_oauth::get_xai_oauth_quota`；两者是同一个 OAuth client，
 ///   token 对 grok.com 账单端点等效）
 pub(crate) async fn query_grok_quota(
@@ -952,7 +952,7 @@ mod tests {
         let determinate = grpc_status_failure(13, "internal", "grokbuild", RELOGIN_HINT)
             .expect("determinate is Ok");
         assert!(!determinate.success);
-        // tool_label 参数化：两条链路（CLI / model-board 自管 OAuth）标签正确落到快照
+        // tool_label 参数化：两条链路（CLI / agentmate 自管 OAuth）标签正确落到快照
         let auth =
             grpc_status_failure(16, "", "xai_oauth", "re-login").expect("auth failure is Ok");
         assert!(matches!(auth.credential_status, CredentialStatus::Expired));

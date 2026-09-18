@@ -634,7 +634,7 @@ export const providerPresets: ProviderPreset[] = [
     nameKey: "providerForm.presets.ucloud",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_agentmate",
     settingsConfig: {
       env: {
         ANTHROPIC_BASE_URL: "https://api.modelverse.cn",
@@ -653,7 +653,7 @@ export const providerPresets: ProviderPreset[] = [
     nameKey: "providerForm.presets.ucloudCoding",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_agentmate",
     settingsConfig: {
       env: {
         ANTHROPIC_BASE_URL: "https://cp.compshare.cn",

@@ -190,8 +190,8 @@ jobs:
       - name: Prepare WSL2-backed test environment
         shell: pwsh
         run: |
-          wsl.exe -d Ubuntu-24.04 -- bash -lc "rm -rf /tmp/model-board-windows-test-root && mkdir -p /tmp/model-board-windows-test-root/{home,temp} && chmod -R 0777 /tmp/model-board-windows-test-root"
-          $testRoot = "\\wsl.localhost\Ubuntu-24.04\tmp\model-board-windows-test-root"
+          wsl.exe -d Ubuntu-24.04 -- bash -lc "rm -rf /tmp/agentmate-windows-test-root && mkdir -p /tmp/agentmate-windows-test-root/{home,temp} && chmod -R 0777 /tmp/agentmate-windows-test-root"
+          $testRoot = "\\wsl.localhost\Ubuntu-24.04\tmp\agentmate-windows-test-root"
           $testHome = Join-Path $testRoot "home"
           $testTemp = Join-Path $testRoot "temp"
           foreach ($path in @($testRoot, $testHome, $testTemp)) {

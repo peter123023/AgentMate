@@ -10,7 +10,7 @@
   <!-- rounded-square app background -->
   <rect x="32" y="32" width="960" height="960" rx="208" ry="208" fill="url(#bg)"/>
 
-  <!-- ModelBoard "M" monogram -->
+  <!-- AgentMate "M" monogram -->
   <path d="M 296 712 L 296 392 L 512 560 L 728 392 L 728 712"
         fill="none" stroke="#FFFFFF" stroke-width="104"
         stroke-linecap="round" stroke-linejoin="round"/>

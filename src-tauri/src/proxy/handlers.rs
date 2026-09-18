@@ -78,12 +78,12 @@ pub async fn get_status(State(state): State<ProxyState>) -> Result<Json<ProxySta
 /// GET /v1/models — Codex model list (reachability check)
 ///
 /// Codex CLI probes this endpoint at startup and deserializes the response as a
-/// catalog with a top-level `models` field.  Return the model-board–managed model
+/// catalog with a top-level `models` field.  Return the agentmate–managed model
 /// catalog file directly so the format always matches what the current version
 /// of Codex expects.
 ///
 /// Only serves the catalog when the live config.toml still references the
-/// model-board–owned `model_catalog_json`, using the same path ownership rules as
+/// agentmate–owned `model_catalog_json`, using the same path ownership rules as
 /// Codex live-setting import.
 pub async fn handle_models() -> Result<Json<Value>, ProxyError> {
     let config_dir = crate::codex_config::get_codex_config_dir();
@@ -107,7 +107,7 @@ pub async fn handle_models() -> Result<Json<Value>, ProxyError> {
     } else {
         if active_catalog_path.is_none() {
             log::debug!(
-                "[models] stale guard: catalog not served (model_catalog_json not set to model-board catalog)"
+                "[models] stale guard: catalog not served (model_catalog_json not set to agentmate catalog)"
             );
         }
         json!({"models": []})
@@ -1926,12 +1926,12 @@ fn codex_proxy_error_json(
         // 413 来自上游渠道商的网关（典型是 nginx 的 client_max_body_size），不是 CC
         // Switch 本地代理的限制（本地 DefaultBodyLimit 已放到 200MB）。上游响应体往往是
         // 一整段 nginx HTML，对用户毫无价值，这里替换成明确指向上游 + 可操作的指引，
-        // 避免「以为是 ModelBoard 封装了 nginx / 是本地代理的锅」这种反复出现的误解。
+        // 避免「以为是 AgentMate 封装了 nginx / 是本地代理的锅」这种反复出现的误解。
         format!(
             concat!(
                 "Upstream provider rejected the request with HTTP 413 (Payload Too Large). ",
                 "The request body exceeds the upstream gateway's size limit; this is the ",
-                "provider's server-side limit, not a ModelBoard limit. ",
+                "provider's server-side limit, not a AgentMate limit. ",
                 "Provider: {provider}; model: {model}; endpoint: {endpoint}. ",
                 "To recover, shrink the request: run /compact, remove large pasted logs or ",
                 "inline images, or ask the provider to raise its request body limit ",
@@ -1952,7 +1952,7 @@ fn codex_proxy_error_json(
             .map(|status| format!("; upstream_status: HTTP {status}"))
             .unwrap_or_default();
         format!(
-            "ModelBoard local proxy failed while handling Codex endpoint {endpoint}. Provider: {provider_name}; model: {request_model}{status_fragment}; cause: {cause}"
+            "AgentMate local proxy failed while handling Codex endpoint {endpoint}. Provider: {provider_name}; model: {request_model}{status_fragment}; cause: {cause}"
         )
     };
 
@@ -3516,7 +3516,7 @@ data: {\"type\":\"response.output_item.done\",\"item\":{\"type\":\"message\"}}\n
         let body = codex_proxy_error_json("DeepSeek", "deepseek-chat", "/responses", &error);
 
         let message = body["error"]["message"].as_str().unwrap();
-        assert!(message.contains("ModelBoard local proxy failed"));
+        assert!(message.contains("AgentMate local proxy failed"));
         assert!(message.contains("DeepSeek"));
         assert!(message.contains("deepseek-chat"));
         assert!(message.contains("/responses"));
@@ -3561,7 +3561,7 @@ data: {\"type\":\"response.output_item.done\",\"item\":{\"type\":\"message\"}}\n
 
         let message = body["error"]["message"].as_str().unwrap();
         // 不再误导成「本地代理失败」
-        assert!(!message.contains("ModelBoard local proxy failed"));
+        assert!(!message.contains("AgentMate local proxy failed"));
         // 明确指向上游 + 体积超限 + 可操作指引
         assert!(message.contains("413"));
         assert!(message.to_lowercase().contains("upstream"));

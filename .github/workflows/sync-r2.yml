@@ -1,5 +1,5 @@
-# Mirror release assets to Cloudflare R2 so modelboard.io/download can serve
-# them directly (dl.modelboard.io), and mirror the Tauri updater manifest and
+# Mirror release assets to Cloudflare R2 so agentmate.app/download can serve
+# them directly (dl.agentmate.app), and mirror the Tauri updater manifest and
 # artifacts so in-app updates avoid GitHub too (the updater verifies minisign
 # signatures client-side, so the mirror is untrusted).
 #
@@ -45,8 +45,8 @@ jobs:
     name: Sync release to R2
     runs-on: ubuntu-22.04
     env:
-      R2_BUCKET: model-board-releases
-      R2_PUBLIC_BASE_URL: https://dl.modelboard.io
+      R2_BUCKET: agentmate-releases
+      R2_PUBLIC_BASE_URL: https://dl.agentmate.app
       KEEP_VERSIONS: "5"
       AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
@@ -68,7 +68,7 @@ jobs:
           fi
           if [ -n "$R2_ACCOUNT_ID" ] && [ -n "$AWS_ACCESS_KEY_ID" ] && [ -n "$AWS_SECRET_ACCESS_KEY" ]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
-          elif [ "$GITHUB_REPOSITORY" = "farion1231/model-board" ]; then
+          elif [ "$GITHUB_REPOSITORY" = "farion1231/agentmate" ]; then
             # A silently stale mirror strands updater users on old versions
             # (the R2 endpoint wins as long as its manifest parses), so the
             # official repo must never skip this sync.

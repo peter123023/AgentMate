@@ -96,7 +96,7 @@ describe("Codex preset pre-filled reasoning levels", () => {
     // 智谱官方 Codex 接入页自带 models.json（docs.bigmodel.cn/cn/coding-plan/tool/
     // codex、docs.z.ai/devpack/tool/codex，2026-09-04 核对）：glm-5.3 档位
     // low/high/max、默认 max（≠ 后端回落的模板默认 high，故显式声明）；
-    // glm-5-turbo 官方档位为空、默认 max——model-board 表达不了空档位（会回落
+    // glm-5-turbo 官方档位为空、默认 max——agentmate 表达不了空档位（会回落
     // 到模板 none/high，而 none 在原生直连下没有转换层兜底、会原样发给严格
     // 网关），按官方默认收成单档 max
     ["Zhipu GLM", "glm-5.3", ["low", "high", "max"], "max"],

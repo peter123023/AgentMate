@@ -618,7 +618,7 @@ export const claudeDesktopProviderPresets: ClaudeDesktopProviderPreset[] = [
     nameKey: "providerForm.presets.ucloud",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_agentmate",
     category: "aggregator",
     baseUrl: "https://api.modelverse.cn",
     mode: "direct",
@@ -635,7 +635,7 @@ export const claudeDesktopProviderPresets: ClaudeDesktopProviderPreset[] = [
     nameKey: "providerForm.presets.ucloudCoding",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_agentmate",
     category: "aggregator",
     baseUrl: "https://cp.compshare.cn",
     mode: "direct",

@@ -23,7 +23,7 @@ const OPENCODE_MODELS_TIMEOUT: std::time::Duration = std::time::Duration::from_s
 pub async fn get_opencode_models() -> Result<Vec<OpenCodeModelRef>, String> {
     tokio::task::spawn_blocking(|| {
         // Align runtime discovery with the OpenCode config directory that
-        // model-board already uses for live read/write (settings override included).
+        // agentmate already uses for live read/write (settings override included).
         let config_dir = crate::opencode_config::get_opencode_dir();
         let config_dir_env = config_dir.to_string_lossy().into_owned();
         let extra_env = [

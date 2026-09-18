@@ -58,27 +58,27 @@ describe("OpenCodeFormFields", () => {
   it("surfaces existing provider headers", () => {
     renderOpenCodeForm({
       headers: {
-        "HTTP-Referer": "https://model-board.app",
-        "X-Title": "ModelBoard",
+        "HTTP-Referer": "https://agentmate.app",
+        "X-Title": "AgentMate",
       },
     });
 
     expect(screen.getByDisplayValue("HTTP-Referer")).toBeInTheDocument();
     expect(
-      screen.getByDisplayValue("https://model-board.app"),
+      screen.getByDisplayValue("https://agentmate.app"),
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue("X-Title")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("ModelBoard")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("AgentMate")).toBeInTheDocument();
   });
 
   it("updates provider headers", () => {
     const onHeadersChange = vi.fn();
     renderOpenCodeForm({
-      headers: { "X-Title": "ModelBoard" },
+      headers: { "X-Title": "AgentMate" },
       onHeadersChange,
     });
 
-    fireEvent.change(screen.getByDisplayValue("ModelBoard"), {
+    fireEvent.change(screen.getByDisplayValue("AgentMate"), {
       target: { value: "OpenCode" },
     });
 
@@ -109,7 +109,7 @@ describe("OpenCodeFormFields", () => {
   it("removes provider headers", () => {
     const onHeadersChange = vi.fn();
     renderOpenCodeForm({
-      headers: { "X-Title": "ModelBoard" },
+      headers: { "X-Title": "AgentMate" },
       onHeadersChange,
     });
 
@@ -136,7 +136,7 @@ describe("OpenCodeFormFields", () => {
   it("restores an existing header name when it is cleared", () => {
     const onHeadersChange = vi.fn();
     renderOpenCodeForm({
-      headers: { "X-Title": "ModelBoard" },
+      headers: { "X-Title": "AgentMate" },
       onHeadersChange,
     });
 

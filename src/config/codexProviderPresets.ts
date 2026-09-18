@@ -175,7 +175,7 @@ export const codexProviderPresets: CodexProviderPreset[] = [
       },
     ]),
     // supportsEffort:true（2026-08-15 盘点）：Kimi 官方 Codex 接入文档
-    //（platform.kimi.com/docs/guide/codex-kimi.md，直接以 ModelBoard 为例）
+    //（platform.kimi.com/docs/guide/codex-kimi.md，直接以 AgentMate 为例）
     // 要求「支持思考模式 开启 / 支持推理强度 开启」；k3 的 reasoning_effort
     // 是顶层字符串。effortValueMode 不声明=passthrough 原值透传（勿用
     // deepseek 模式，会把 low 压成 high）。注：官方参数页写 k3"不应传入
@@ -243,7 +243,7 @@ export const codexProviderPresets: CodexProviderPreset[] = [
       },
     ]),
     // 官方 Codex 接入文档（kimi.com/code/docs/third-party-tools/codex.html，
-    // 以 ModelBoard 为例）：「支持思考模式 开启（必须——关闭后 K3/K2.7 Code
+    // 以 AgentMate 为例）：「支持思考模式 开启（必须——关闭后 K3/K2.7 Code
     // 都会被路由到 K2.6）/ 支持思考等级 开启」。effortValueMode 不声明=
     // passthrough；网关自身对 effort 做归一映射（null→high、none→关思考）
     codexChatReasoning: {
@@ -848,7 +848,7 @@ requires_openai_auth = true`,
     nameKey: "providerForm.presets.ucloud",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_agentmate",
     auth: generateThirdPartyAuth(""),
     config: generateThirdPartyConfig(
       "compshare",
@@ -867,7 +867,7 @@ requires_openai_auth = true`,
     nameKey: "providerForm.presets.ucloudCoding",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_agentmate",
     auth: generateThirdPartyAuth(""),
     config: generateThirdPartyConfig(
       "compshare_coding",
@@ -1189,7 +1189,7 @@ requires_openai_auth = true`,
     // 官方目录虽声明 freeform，无真机验证前按保守口径，不引入 400 风险）
     apiFormat: "openai_responses",
     // 档位/上下文/模态照抄官方 models.json：glm-5.3 low/high/max 默认 max；
-    // glm-5-turbo 官方档位为空、默认 max——model-board 表达不了空档位（回落会得到
+    // glm-5-turbo 官方档位为空、默认 max——agentmate 表达不了空档位（回落会得到
     // 模板 none/high，none 在原生直连下没有转换层兜底、会原样发给严格网关），
     // 按官方默认收成单档 max。两模型 input_modalities=["text"]、并行工具调用 true
     modelCatalog: modelCatalog([

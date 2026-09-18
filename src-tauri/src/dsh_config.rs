@@ -38,7 +38,7 @@
 //! ```
 //!
 //! 供应商列表是全局的（settings.yaml），而"当前激活"按 profile 各自记录。
-//! ModelBoard 切换供应商时写入**所有** profile，保证无论用哪个 profile 启动，
+//! AgentMate 切换供应商时写入**所有** profile，保证无论用哪个 profile 启动，
 //! 当前模型都是用户的选择。
 
 use crate::config::{atomic_write, get_home_dir};
@@ -54,7 +54,7 @@ const PROVIDERS_KEY: &str = "providers";
 /// 当前模型条目在 cordis.patch.yml 中的 id 与插件名
 const DEFAULT_MODEL_ID: &str = "agent-default-model";
 const DEFAULT_MODEL_PLUGIN: &str = "@deepseek-ai/dsh-agent-default-model";
-/// ModelBoard 写入凭证时使用的前缀（避免与用户自己的环境变量冲突）
+/// AgentMate 写入凭证时使用的前缀（避免与用户自己的环境变量冲突）
 const CREDENTIAL_PREFIX: &str = "DSH_MB_";
 
 // ============================================================================

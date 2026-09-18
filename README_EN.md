@@ -1,6 +1,6 @@
 <div align="center">
 
-# ModelBoard
+# AgentMate
 
 ### All-in-one desktop manager for LLM configurations, API keys, MCP services, and usage statistics
 
@@ -12,13 +12,13 @@ English | [中文](README.md) | [日本語](README_JA.md) | [Deutsch](README_DE.
 
 ## Acknowledgements
 
-> **ModelBoard** is based on [farion1231](https://github.com/farion1231)'s [CC Switch](https://github.com/farion1231/cc-switch) (this repository is a fork of it). We are deeply grateful to the original author for creating such a powerful and well-architected tool — ModelBoard was made possible by building on the solid foundation of CC Switch.
+> **AgentMate** is based on [farion1231](https://github.com/farion1231)'s [CC Switch](https://github.com/farion1231/cc-switch) (this repository is a fork of it). We are deeply grateful to the original author for creating such a powerful and well-architected tool — AgentMate was made possible by building on the solid foundation of CC Switch.
 
-## Why ModelBoard?
+## Why AgentMate?
 
 Modern AI-powered coding relies on tools like Claude Code, Claude Desktop, Codex, Gemini CLI, Grok Build, OpenCode, OpenClaw, and Hermes — but each has its own configuration format. Switching API providers means manually editing JSON, TOML, or `.env` files, and there is no unified way to manage MCP and Skills across multiple tools.
 
-**ModelBoard** gives you a single desktop app to manage all supported AI tools. Instead of editing config files by hand, you get a visual interface to import providers with one click, switch between them instantly, with 50+ built-in provider presets, unified MCP and Skills management, and system tray quick switching — all backed by a reliable SQLite database with atomic writes that protect your configs from corruption.
+**AgentMate** gives you a single desktop app to manage all supported AI tools. Instead of editing config files by hand, you get a visual interface to import providers with one click, switch between them instantly, with 50+ built-in provider presets, unified MCP and Skills management, and system tray quick switching — all backed by a reliable SQLite database with atomic writes that protect your configs from corruption.
 
 - **One App, Eight Tools** — Manage Claude Code, Claude Desktop, Codex, Gemini CLI, Grok Build, OpenCode, OpenClaw, and Hermes from a single interface
 - **No More Manual Editing** — 50+ provider presets including AWS Bedrock, NVIDIA NIM, and community relays; just pick and switch
@@ -67,15 +67,15 @@ Modern AI-powered coding relies on tools like Claude Code, Claude Desktop, Codex
 ### System & Platform
 
 - **Cloud sync** — Custom config directory (Dropbox, OneDrive, iCloud, NAS) and WebDAV server sync
-- **Deep Link** (`modelboard://`) — Import providers, MCP servers, prompts, and skills via URL
+- **Deep Link** (`agentmate://`) — Import providers, MCP servers, prompts, and skills via URL
 - Dark / Light / System theme, auto-launch, auto-updater, atomic writes, auto-backups, i18n (zh/zh-TW/en/ja)
 
 ## FAQ
 
 <details>
-<summary><strong>Which AI tools does ModelBoard support?</strong></summary>
+<summary><strong>Which AI tools does AgentMate support?</strong></summary>
 
-ModelBoard supports eight tools: **Claude Code**, **Claude Desktop**, **Codex**, **Gemini CLI**, **Grok Build**, **OpenCode**, **OpenClaw**, and **Hermes**. Each tool has dedicated provider presets and configuration management.
+AgentMate supports eight tools: **Claude Code**, **Claude Desktop**, **Codex**, **Gemini CLI**, **Grok Build**, **OpenCode**, **OpenClaw**, and **Hermes**. Each tool has dedicated provider presets and configuration management.
 
 </details>
 
@@ -89,21 +89,21 @@ For most tools, yes — restart your terminal or the CLI tool for changes to tak
 <details>
 <summary><strong>My plugin configuration disappeared after switching providers — what happened?</strong></summary>
 
-ModelBoard provides a "Shared Config Snippet" feature to pass common data (beyond API keys and endpoints) between providers. Go to "Edit Provider" → "Shared Config Panel" → click "Extract from Current Provider" to save all common data. When creating a new provider, check "Write Shared Config" (enabled by default) to include plugin data in the new provider. All your configuration items are preserved in the default provider imported when you first launched the app.
+AgentMate provides a "Shared Config Snippet" feature to pass common data (beyond API keys and endpoints) between providers. Go to "Edit Provider" → "Shared Config Panel" → click "Extract from Current Provider" to save all common data. When creating a new provider, check "Write Shared Config" (enabled by default) to include plugin data in the new provider. All your configuration items are preserved in the default provider imported when you first launched the app.
 
 </details>
 
 <details>
 <summary><strong>macOS installation</strong></summary>
 
-ModelBoard for macOS is code-signed and notarized by Apple. You can download and install it directly — no extra steps needed. We recommend using the `.dmg` installer.
+AgentMate for macOS is code-signed and notarized by Apple. You can download and install it directly — no extra steps needed. We recommend using the `.dmg` installer.
 
 </details>
 
 <details>
 <summary><strong>Why can't I delete the currently active provider?</strong></summary>
 
-ModelBoard follows a "minimal intrusion" design principle — even if you uninstall the app, your CLI tools will continue to work normally. The system always keeps one active configuration, because deleting all configurations would make the corresponding CLI tool unusable. If you rarely use a specific CLI tool, you can hide it in Settings. To switch back to official login, see the next question.
+AgentMate follows a "minimal intrusion" design principle — even if you uninstall the app, your CLI tools will continue to work normally. The system always keeps one active configuration, because deleting all configurations would make the corresponding CLI tool unusable. If you rarely use a specific CLI tool, you can hide it in Settings. To switch back to official login, see the next question.
 
 </details>
 
@@ -175,27 +175,27 @@ For detailed guides on every feature, check out the **[User Manual](docs/user-ma
 **Method 1: Install via Homebrew (Recommended)**
 
 ```bash
-brew install --cask model-board
+brew install --cask agentmate
 ```
 
 Update:
 
 ```bash
-brew upgrade --cask model-board
+brew upgrade --cask agentmate
 ```
 
 **Method 2: Manual Download**
 
 Download `CC-Switch-v{version}-macOS.dmg` (recommended) or `.zip` from the [Releases](../../releases) page.
 
-> **Note**: ModelBoard for macOS is code-signed and notarized by Apple. You can install and open it directly.
+> **Note**: AgentMate for macOS is code-signed and notarized by Apple. You can install and open it directly.
 
 ### Arch Linux Users
 
 **Install via paru (Recommended)**
 
 ```bash
-paru -S model-board-bin
+paru -S agentmate-bin
 ```
 
 ### Linux Users

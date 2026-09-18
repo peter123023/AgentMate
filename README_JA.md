@@ -1,6 +1,6 @@
 <div align="center">
 
-# ModelBoard
+# AgentMate
 
 ### Claude Code、Claude Desktop、Codex、Gemini CLI、Grok Build、OpenCode、OpenClaw、Hermes Agent のオールインワン管理ツール
 
@@ -12,13 +12,13 @@
 
 ## 謝辞
 
-> **ModelBoard** は [farion1231](https://github.com/farion1231) 氏の [CC Switch](https://github.com/farion1231/cc-switch) をベースに開発されています（本リポジトリはそのフォークです）。強力で設計の優れたツールを生み出した原作者に深く感謝いたします——ModelBoard は CC Switch の堅実な基盤の上に成り立っています。
+> **AgentMate** は [farion1231](https://github.com/farion1231) 氏の [CC Switch](https://github.com/farion1231/cc-switch) をベースに開発されています（本リポジトリはそのフォークです）。強力で設計の優れたツールを生み出した原作者に深く感謝いたします——AgentMate は CC Switch の堅実な基盤の上に成り立っています。
 
-## ModelBoard を選ぶ理由
+## AgentMate を選ぶ理由
 
 最新の AI コーディングは Claude Code、Claude Desktop、Codex、Gemini CLI、Grok Build、OpenCode、OpenClaw、Hermes などのツールに依存していますが、各ツールの設定形式はバラバラです。API プロバイダを切り替えるたびに JSON、TOML、`.env` ファイルを手動で編集する必要があり、複数ツール間で MCP や Skills を統一的に管理する手段もありません。
 
-**ModelBoard** は、対応する AI ツールを 1 つのデスクトップアプリで一元管理できます。設定ファイルを手作業で編集する代わりに、ワンクリックでプロバイダをインポートし、瞬時に切り替えられるビジュアルインターフェースを提供します。50 以上の組み込みプリセット、統一 MCP・Skills 管理、システムトレイからの即時切り替え機能を搭載。すべてはアトミック書き込みによる信頼性の高い SQLite データベースに支えられており、設定の破損を防ぎます。
+**AgentMate** は、対応する AI ツールを 1 つのデスクトップアプリで一元管理できます。設定ファイルを手作業で編集する代わりに、ワンクリックでプロバイダをインポートし、瞬時に切り替えられるビジュアルインターフェースを提供します。50 以上の組み込みプリセット、統一 MCP・Skills 管理、システムトレイからの即時切り替え機能を搭載。すべてはアトミック書き込みによる信頼性の高い SQLite データベースに支えられており、設定の破損を防ぎます。
 
 - **1 つのアプリで 8 つのツール** -- Claude Code、Claude Desktop、Codex、Gemini CLI、Grok Build、OpenCode、OpenClaw、Hermes を単一インターフェースで管理
 - **手動編集は不要** -- AWS Bedrock、NVIDIA NIM、コミュニティリレーなど 50 以上のプロバイダプリセットを内蔵。選んで切り替えるだけ
@@ -67,15 +67,15 @@
 ### システム & プラットフォーム
 
 - **クラウド同期** -- カスタム設定ディレクトリ（Dropbox、OneDrive、iCloud、NAS）および WebDAV サーバー同期
-- **Deep Link** (`modelboard://`) -- URL 経由でプロバイダ、MCP サーバー、Prompts、Skills をワンクリックインポート
+- **Deep Link** (`agentmate://`) -- URL 経由でプロバイダ、MCP サーバー、Prompts、Skills をワンクリックインポート
 - ダーク / ライト / システムテーマ、自動起動、自動アップデーター、アトミック書き込み、自動バックアップ、多言語対応（簡体中文/繁體中文/英/日）
 
 ## よくある質問
 
 <details>
-<summary><strong>ModelBoard はどの AI ツールに対応していますか？</strong></summary>
+<summary><strong>AgentMate はどの AI ツールに対応していますか？</strong></summary>
 
-ModelBoard は **Claude Code**、**Claude Desktop**、**Codex**、**Gemini CLI**、**Grok Build**、**OpenCode**、**OpenClaw**、**Hermes** の 8 つのツールに対応しています。各ツールに専用のプロバイダプリセットと設定管理が用意されています。
+AgentMate は **Claude Code**、**Claude Desktop**、**Codex**、**Gemini CLI**、**Grok Build**、**OpenCode**、**OpenClaw**、**Hermes** の 8 つのツールに対応しています。各ツールに専用のプロバイダプリセットと設定管理が用意されています。
 
 </details>
 
@@ -89,21 +89,21 @@ ModelBoard は **Claude Code**、**Claude Desktop**、**Codex**、**Gemini CLI**
 <details>
 <summary><strong>プロバイダを切り替えた後、プラグイン設定が消えてしまいました。どうすればよいですか？</strong></summary>
 
-ModelBoard には「共有設定スニペット」機能があり、APIキーやエンドポイント以外の共通データをプロバイダ間で引き継ぐことができます。「プロバイダ編集」→「共有設定パネル」→「現在のプロバイダから抽出」をクリックして、すべての共通データを保存してください。新しいプロバイダを作成する際に「共有設定を適用」にチェック（デフォルトで有効）を入れれば、プラグインなどのデータが新しいプロバイダ設定に含まれます。すべての設定項目は、アプリ初回起動時にインポートされたデフォルトプロバイダに保存されており、失われることはありません。
+AgentMate には「共有設定スニペット」機能があり、APIキーやエンドポイント以外の共通データをプロバイダ間で引き継ぐことができます。「プロバイダ編集」→「共有設定パネル」→「現在のプロバイダから抽出」をクリックして、すべての共通データを保存してください。新しいプロバイダを作成する際に「共有設定を適用」にチェック（デフォルトで有効）を入れれば、プラグインなどのデータが新しいプロバイダ設定に含まれます。すべての設定項目は、アプリ初回起動時にインポートされたデフォルトプロバイダに保存されており、失われることはありません。
 
 </details>
 
 <details>
 <summary><strong>macOS のインストールについて</strong></summary>
 
-ModelBoard の macOS 版は Apple によるコード署名と公証が完了しています。直接ダウンロードしてインストールできます — 追加の手順は不要です。`.dmg` インストーラの使用を推奨します。
+AgentMate の macOS 版は Apple によるコード署名と公証が完了しています。直接ダウンロードしてインストールできます — 追加の手順は不要です。`.dmg` インストーラの使用を推奨します。
 
 </details>
 
 <details>
 <summary><strong>現在アクティブなプロバイダを削除できないのはなぜですか？</strong></summary>
 
-ModelBoard は「最小限の介入」という設計原則に従っています。アプリをアンインストールしても、CLI ツールは正常に動作し続けます。すべての設定を削除すると対応する CLI ツールが使用できなくなるため、システムは常にアクティブな設定を 1 つ保持します。特定の CLI ツールをあまり使用しない場合は、設定で非表示にできます。公式ログインに戻す方法は、次の質問をご覧ください。
+AgentMate は「最小限の介入」という設計原則に従っています。アプリをアンインストールしても、CLI ツールは正常に動作し続けます。すべての設定を削除すると対応する CLI ツールが使用できなくなるため、システムは常にアクティブな設定を 1 つ保持します。特定の CLI ツールをあまり使用しない場合は、設定で非表示にできます。公式ログインに戻す方法は、次の質問をご覧ください。
 
 </details>
 
@@ -175,13 +175,13 @@ CC_SWITCH_GDK_BACKEND=wayland ./CC-Switch-*.AppImage
 **方法 1: Homebrew でインストール（推奨）**
 
 ```bash
-brew install --cask model-board
+brew install --cask agentmate
 ```
 
 アップデート:
 
 ```bash
-brew upgrade --cask model-board
+brew upgrade --cask agentmate
 ```
 
 **方法 2: 手動ダウンロード**
@@ -195,7 +195,7 @@ brew upgrade --cask model-board
 **paru でインストール（推奨）**
 
 ```bash
-paru -S model-board-bin
+paru -S agentmate-bin
 ```
 
 ### Linux ユーザー

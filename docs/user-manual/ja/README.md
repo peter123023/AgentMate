@@ -1,11 +1,11 @@
-# ModelBoard ユーザーマニュアル
+# AgentMate ユーザーマニュアル
 
 > Claude Code / Claude Desktop / Codex / Gemini CLI / OpenCode / OpenClaw / Hermes オールインワンアシスタント
 
 ## 目次構成
 
 ```
-ModelBoard ユーザーマニュアル
+AgentMate ユーザーマニュアル
 │
 ├── 1. はじめに
 │   ├── 1.1 ソフトウェア紹介
@@ -90,7 +90,7 @@ ModelBoard ユーザーマニュアル
 
 | ファイル | 内容 |
 |------|------|
-| [5.1-config-files.md](./5-faq/5.1-config-files.md) | ModelBoard のストレージ、CLI 設定ファイル形式 |
+| [5.1-config-files.md](./5-faq/5.1-config-files.md) | AgentMate のストレージ、CLI 設定ファイル形式 |
 | [5.2-questions.md](./5-faq/5.2-questions.md) | よくある質問と回答 |
 | [5.3-deeplink.md](./5-faq/5.3-deeplink.md) | ディープリンクプロトコル、生成と使用方法 |
 | [5.4-env-conflict.md](./5-faq/5.4-env-conflict.md) | 環境変数の競合検出と対処 |
@@ -108,7 +108,7 @@ ModelBoard ユーザーマニュアル
 
 - ドキュメントバージョン：v3.16.0
 - 最終更新：2026-05-29
-- ModelBoard v3.16.0+ 対応
+- AgentMate v3.16.0+ 対応
 
 ### v3.16.0 の注目機能
 
@@ -130,5 +130,5 @@ ModelBoard ユーザーマニュアル
 
 Issue や PR でドキュメントの改善にご協力ください：
 
-- [GitHub Issues](https://github.com/farion1231/model-board/issues)
-- [GitHub Repository](https://github.com/farion1231/model-board)
+- [GitHub Issues](https://github.com/peter123023/llm-switch/issues)
+- [GitHub Repository](https://github.com/peter123023/llm-switch)

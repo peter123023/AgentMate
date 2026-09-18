@@ -2,7 +2,7 @@ use crate::error::AppError;
 use auto_launch::{AutoLaunch, AutoLaunchBuilder};
 
 /// 获取 macOS 上的 .app bundle 路径
-/// 将 `/path/to/ModelBoard.app/Contents/MacOS/ModelBoard` 转换为 `/path/to/ModelBoard.app`
+/// 将 `/path/to/AgentMate.app/Contents/MacOS/AgentMate` 转换为 `/path/to/AgentMate.app`
 #[cfg(target_os = "macos")]
 fn get_macos_app_bundle_path(exe_path: &std::path::Path) -> Option<std::path::PathBuf> {
     let path_str = exe_path.to_string_lossy();
@@ -17,7 +17,7 @@ fn get_macos_app_bundle_path(exe_path: &std::path::Path) -> Option<std::path::Pa
 
 /// 初始化 AutoLaunch 实例
 fn get_auto_launch() -> Result<AutoLaunch, AppError> {
-    let app_name = "ModelBoard";
+    let app_name = "AgentMate";
     let exe_path =
         std::env::current_exe().map_err(|e| AppError::Message(format!("无法获取应用路径: {e}")))?;
 
@@ -76,11 +76,11 @@ mod tests {
     #[cfg(target_os = "macos")]
     #[test]
     fn test_get_macos_app_bundle_path_valid() {
-        let exe_path = std::path::Path::new("/Applications/ModelBoard.app/Contents/MacOS/ModelBoard");
+        let exe_path = std::path::Path::new("/Applications/AgentMate.app/Contents/MacOS/AgentMate");
         let result = get_macos_app_bundle_path(exe_path);
         assert_eq!(
             result,
-            Some(std::path::PathBuf::from("/Applications/ModelBoard.app"))
+            Some(std::path::PathBuf::from("/Applications/AgentMate.app"))
         );
     }
 
@@ -88,12 +88,12 @@ mod tests {
     #[test]
     fn test_get_macos_app_bundle_path_with_spaces() {
         let exe_path =
-            std::path::Path::new("/Users/test/My Apps/ModelBoard.app/Contents/MacOS/ModelBoard");
+            std::path::Path::new("/Users/test/My Apps/AgentMate.app/Contents/MacOS/AgentMate");
         let result = get_macos_app_bundle_path(exe_path);
         assert_eq!(
             result,
             Some(std::path::PathBuf::from(
-                "/Users/test/My Apps/ModelBoard.app"
+                "/Users/test/My Apps/AgentMate.app"
             ))
         );
     }
@@ -101,7 +101,7 @@ mod tests {
     #[cfg(target_os = "macos")]
     #[test]
     fn test_get_macos_app_bundle_path_not_in_bundle() {
-        let exe_path = std::path::Path::new("/usr/local/bin/model-board");
+        let exe_path = std::path::Path::new("/usr/local/bin/agentmate");
         let result = get_macos_app_bundle_path(exe_path);
         assert_eq!(result, None);
     }
@@ -110,7 +110,7 @@ mod tests {
     #[test]
     fn test_get_macos_app_bundle_path_dev_build() {
         // 开发环境下的路径通常不在 .app bundle 内
-        let exe_path = std::path::Path::new("/Users/dev/project/target/debug/model-board");
+        let exe_path = std::path::Path::new("/Users/dev/project/target/debug/agentmate");
         let result = get_macos_app_bundle_path(exe_path);
         assert_eq!(result, None);
     }

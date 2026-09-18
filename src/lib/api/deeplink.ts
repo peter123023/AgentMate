@@ -81,7 +81,7 @@ export type ImportResult =
 export const deeplinkApi = {
   /**
    * Parse a deep link URL
-   * @param url The modelboard:// URL to parse
+   * @param url The agentmate:// URL to parse
    * @returns Parsed deep link request
    */
   parseDeeplink: async (url: string): Promise<DeepLinkImportRequest> => {

@@ -1,6 +1,6 @@
-# 在 Codex 中用 DeepSeek 这类 Chat 格式 API：ModelBoard 本地路由攻略
+# 在 Codex 中用 DeepSeek 这类 Chat 格式 API：AgentMate 本地路由攻略
 
-> 适用版本：ModelBoard 3.19.1 及以上。本文根据仓库内文档与代码整理。截图使用去敏示例数据生成，避免泄露真实 API Key 或账户余额。
+> 适用版本：AgentMate 3.19.1 及以上。本文根据仓库内文档与代码整理。截图使用去敏示例数据生成，避免泄露真实 API Key 或账户余额。
 >
 > **3.19.1 起有重要变化**：DeepSeek 预设已改为原生 Responses 直连，不再需要本地路由。但这条路由转换的路径并没有作废——它仍是 `deepseek-v4-pro`、升级前已保存的供应商，以及 Kimi、智谱 GLM 等 Chat 格式供应商的必经之路。请先读下一节，确认你属于哪种情况。
 
@@ -12,9 +12,9 @@
 
 - **带 `需要路由` 徽章** → 这个供应商走 Chat 格式，本文全部适用。
 - **没有徽章** → 它已经是 Responses 原生直连，本文的路由步骤对它没有意义，可以直接用。
-- **带 `不支持路由` 徽章** → 这是官方供应商，ModelBoard 会阻止它走本地路由（见文末常见问题）。
+- **带 `不支持路由` 徽章** → 这是官方供应商，AgentMate 会阻止它走本地路由（见文末常见问题）。
 
-徽章由供应商保存时记录的 API 格式决定，所以升级 ModelBoard **不会**改变已有供应商的行为。具体到 DeepSeek，升级到 3.19.1 之后有三种情况：
+徽章由供应商保存时记录的 API 格式决定，所以升级 AgentMate **不会**改变已有供应商的行为。具体到 DeepSeek，升级到 3.19.1 之后有三种情况：
 
 | 你的情况 | 是否需要路由 | 说明 |
 |---|---|---|
@@ -28,7 +28,7 @@
 
 新版 Codex CLI 面向的是 OpenAI Responses API，而很多供应商实际暴露的是 OpenAI Chat Completions 形态，也就是 `/chat/completions`。这两种协议的请求体、流式事件和返回结构不同，直接把 Chat 接口填进 Codex 配置里，常见结果就是模型列表不对、请求 404/400，或者流式响应无法被 Codex 正确解析。
 
-ModelBoard 的做法是让 Codex 始终连本机路由，仍以 Responses API 发送请求；路由在内部识别当前供应商是否是 Chat 格式，再把请求改写成 Chat Completions 发给上游，最后把 Chat 响应转换回 Responses 形态返回给 Codex。
+AgentMate 的做法是让 Codex 始终连本机路由，仍以 Responses API 发送请求；路由在内部识别当前供应商是否是 Chat 格式，再把请求改写成 Chat Completions 发给上游，最后把 Chat 响应转换回 Responses 形态返回给 Codex。
 
 这条链路主要分成四步：
 
@@ -43,15 +43,15 @@ ModelBoard 的做法是让 Codex 始终连本机路由，仍以 Responses API �
 
 你需要先准备好三样东西：
 
-- 已安装并能启动的 ModelBoard。
+- 已安装并能启动的 AgentMate。
 - 已安装 Codex CLI，并至少运行过一次，让 `~/.codex/config.toml` 目录结构存在。
 - 目标供应商的 API Key。
 
-以 DeepSeek 为例，官方文档写明 OpenAI 兼容 base URL 是 `https://api.deepseek.com`（其他供应商常见的是带 `/v1` 或更长路径的 base URL，例如智谱 GLM 是 `https://open.bigmodel.cn/api/coding/paas/v4`），Chat API 路径是 `/chat/completions`。ModelBoard 的预设已按这些信息配好，请优先使用预设，不需要手动拼接口路径。
+以 DeepSeek 为例，官方文档写明 OpenAI 兼容 base URL 是 `https://api.deepseek.com`（其他供应商常见的是带 `/v1` 或更长路径的 base URL，例如智谱 GLM 是 `https://open.bigmodel.cn/api/coding/paas/v4`），Chat API 路径是 `/chat/completions`。AgentMate 的预设已按这些信息配好，请优先使用预设，不需要手动拼接口路径。
 
 ## 第一步：添加 Codex 供应商
 
-打开 ModelBoard，切到顶部的 `Codex` 标签，点击右上角的加号添加供应商。
+打开 AgentMate，切到顶部的 `Codex` 标签，点击右上角的加号添加供应商。
 
 **用预设**（推荐）：在预设列表里选中目标供应商，填入 API Key，保存即可。预设已经内置请求地址、默认模型、模型菜单，并会自动设好上游格式；Chat 格式的预设保存后卡片上就会出现 `需要路由` 徽章。思考参数（thinking / reasoning）预设已自动配置好，不需要手动填。
 
@@ -61,15 +61,15 @@ ModelBoard 的做法是让 Codex 始终连本机路由，仍以 Responses API �
 - `Chat Completions（需开启路由）`——本文讲的情况。
 - `Anthropic Messages（需开启路由）`——上游只提供原生 Anthropic 协议，同样由路由转换。
 
-只有 `Responses（原生）` 不需要开启路由接管，另外两个都需要。自定义供应商的思考参数由 ModelBoard 按名称与地址自动推断，只有在识别不准时才需要展开 `思考能力` 手动覆盖。
+只有 `Responses（原生）` 不需要开启路由接管，另外两个都需要。自定义供应商的思考参数由 AgentMate 按名称与地址自动推断，只有在识别不准时才需要展开 `思考能力` 手动覆盖。
 
-> **改造已有的 DeepSeek 供应商**：把 `上游格式` 改成 `Responses（原生）` 即可，不必删掉重建。下次切换到它时，ModelBoard 会认出 `deepseek.com` 地址并套用 DeepSeek 官方的模型目录，freeform `apply_patch`、GPT-5 harness、low/high/max 思考档与 web_search 都会照常生效。
+> **改造已有的 DeepSeek 供应商**：把 `上游格式` 改成 `Responses（原生）` 即可，不必删掉重建。下次切换到它时，AgentMate 会认出 `deepseek.com` 地址并套用 DeepSeek 官方的模型目录，freeform `apply_patch`、GPT-5 harness、low/high/max 思考档与 web_search 都会照常生效。
 >
 > 唯一的小差别是上下文窗口：供应商自己保存的模型行优先级更高，3.19.1 之前存下的 `1000000` 会盖掉官方声明的 `1048576`，少 4 万多 token。介意的话，在 `高级选项` → `模型映射` 里把该行的 `上下文窗口` 改成 `1048576` 就行，或者干脆用预设新建一个。
 >
 > 反过来，想用 `deepseek-v4-pro`，就把 `上游格式` 改回 `Chat Completions`。
 >
-> 另外，直连所用的官方模型目录要求 Codex CLI **0.144.0 或更新**（它带的 freeform `apply_patch` 注册需要这个版本），ModelBoard 不会替你校验；生成的目录文件也会涨到 75 KB 左右，因为其中包含完整的 GPT-5 harness 文本。
+> 另外，直连所用的官方模型目录要求 Codex CLI **0.144.0 或更新**（它带的 freeform `apply_patch` 注册需要这个版本），AgentMate 不会替你校验；生成的目录文件也会涨到 75 KB 左右，因为其中包含完整的 GPT-5 harness 文本。
 
 ## 第二步：开启本地路由并接管 Codex
 
@@ -80,11 +80,11 @@ ModelBoard 的做法是让 Codex 始终连本机路由，仍以 Responses API �
 
 ![本地路由页面中启用 Codex 接管](../images/codex-deepseek-routing/03-local-route-codex-takeover.png)
 
-接管后，ModelBoard 会把 Codex 的 live 配置指向本机路由，并用占位符管理认证。真实 API Key 仍保存在 ModelBoard 的 Provider 配置里，由本地路由在转发时注入，不需要你把 Key 暴露给 Codex live 配置。
+接管后，AgentMate 会把 Codex 的 live 配置指向本机路由，并用占位符管理认证。真实 API Key 仍保存在 AgentMate 的 Provider 配置里，由本地路由在转发时注入，不需要你把 Key 暴露给 Codex live 配置。
 
 ## 第三步：切换供应商并重启 Codex
 
-回到 Codex 供应商列表，点击目标供应商的 `启用`。如果它带 `需要路由` 标记而路由没有启动，ModelBoard 会弹出“需要路由服务才能正常使用”的提示。
+回到 Codex 供应商列表，点击目标供应商的 `启用`。如果它带 `需要路由` 标记而路由没有启动，AgentMate 会弹出“需要路由服务才能正常使用”的提示。
 
 切换后建议重启当前 Codex 终端会话。原因是：
 
@@ -117,7 +117,7 @@ DeepSeek 官方尚未为该模型开通 Codex 集成。把这个供应商的 `�
 
 **`/model` 看不到供应商的模型**
 
-保存供应商后重启 Codex。ModelBoard 会生成 `model-board-model-catalog.json` 并把路径写入 `model_catalog_json`，但正在运行的 Codex 进程不一定会热加载模型目录。
+保存供应商后重启 Codex。AgentMate 会生成 `agentmate-model-catalog.json` 并把路径写入 `model_catalog_json`，但正在运行的 Codex 进程不一定会热加载模型目录。
 目前 Codex app 不支持多模型选择，默认使用配置的第一个模型。
 
 **开了路由但请求仍走错供应商**
@@ -126,13 +126,13 @@ DeepSeek 官方尚未为该模型开通 Codex 集成。把这个供应商的 `�
 
 **可以用官方 OpenAI Codex 账号走本地路由吗**
 
-不建议。ModelBoard 会在本地路由接管模式下阻止切到官方供应商，因为用代理访问官方 API 可能带来账号风险。路由主要用于第三方、聚合或协议转换场景。
+不建议。AgentMate 会在本地路由接管模式下阻止切到官方供应商，因为用代理访问官方 API 可能带来账号风险。路由主要用于第三方、聚合或协议转换场景。
 
 ## 参考链接
 
-- [ModelBoard 用户手册：添加供应商](../user-manual/zh/2-providers/2.1-add.md)
-- [ModelBoard 用户手册：代理服务](../user-manual/zh/4-proxy/4.1-service.md)
-- [ModelBoard 用户手册：应用路由](../user-manual/zh/4-proxy/4.2-routing.md)
+- [AgentMate 用户手册：添加供应商](../user-manual/zh/2-providers/2.1-add.md)
+- [AgentMate 用户手册：代理服务](../user-manual/zh/4-proxy/4.1-service.md)
+- [AgentMate 用户手册：应用路由](../user-manual/zh/4-proxy/4.2-routing.md)
 - [DeepSeek API 文档：Integrate with Codex](https://api-docs.deepseek.com/quick_start/agent_integrations/codex/)（官方 Codex 集成说明，含 `wire_api = "responses"` 与模型支持范围）
 - [DeepSeek API 文档：Using the Responses API](https://api-docs.deepseek.com/guides/responses_api/)
 - [DeepSeek API 文档：Your First API Call](https://api-docs.deepseek.com/)

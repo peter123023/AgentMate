@@ -905,7 +905,7 @@ fn provider_service_switch_codex_preserved_login_normalizes_legacy_reroute_confi
     // has no provider table to carry the bearer token — since 0.149 the
     // built-in provider would keep using the preserved official OAuth from
     // auth.json and send it to the third-party base URL. The switch must
-    // normalize the config into a model-board-owned custom table with the key
+    // normalize the config into a agentmate-owned custom table with the key
     // injected, leaving the official login untouched.
     let _home = ensure_test_home();
     enable_codex_official_auth_preservation();
@@ -956,10 +956,10 @@ openai_base_url = "https://relay.example/v1"
         "the top-level reroute must be rewritten away; got:\n{live_config}"
     );
     assert!(
-        live_config.contains("[model_providers.model-board]")
+        live_config.contains("[model_providers.agentmate]")
             && live_config.contains("base_url = \"https://relay.example/v1\"")
             && live_config.contains("experimental_bearer_token = \"third-party-key\""),
-        "routing and key must move into the model-board provider table; got:\n{live_config}"
+        "routing and key must move into the agentmate provider table; got:\n{live_config}"
     );
 
     let auth_value: serde_json::Value =
@@ -1021,8 +1021,8 @@ experimental_bearer_token = "config-carried-key"
         "the top-level reroute must be rewritten away; got:\n{live_config}"
     );
     assert!(
-        live_config.contains("[model_providers.model-board]"),
-        "a model-board provider table must be created; got:\n{live_config}"
+        live_config.contains("[model_providers.agentmate]"),
+        "a agentmate provider table must be created; got:\n{live_config}"
     );
     assert_eq!(
         cc_switch_lib::extract_codex_experimental_bearer_token(&live_config).as_deref(),
@@ -1078,9 +1078,9 @@ openai_base_url = "https://relay.example/v1"
         std::fs::read_to_string(cc_switch_lib::get_codex_config_path()).expect("read config.toml");
     assert!(
         !live_config.contains("openai_base_url")
-            && live_config.contains("[model_providers.model-board]")
+            && live_config.contains("[model_providers.agentmate]")
             && live_config.contains("experimental_bearer_token = \"third-party-key\""),
-        "routing and key must move into the model-board provider table; got:\n{live_config}"
+        "routing and key must move into the agentmate provider table; got:\n{live_config}"
     );
 }
 
@@ -2850,7 +2850,7 @@ fn switch_claude_syncs_deletions_from_live_into_common_config() {
 }
 
 /// Codex 版切换自动回写：live 里新增的共享键被捕获进通用配置片段并传递给
-/// 下一个供应商；供应商专属字段、密钥与 model-board 注入产物绝不进片段；
+/// 下一个供应商；供应商专属字段、密钥与 agentmate 注入产物绝不进片段；
 /// 回填后旧供应商的存储配置不残留片段内容（autosync 先于 strip，值必然匹配）。
 #[test]
 fn switch_codex_syncs_shared_keys_from_live_into_common_config() {
@@ -2859,14 +2859,14 @@ fn switch_codex_syncs_shared_keys_from_live_into_common_config() {
     let _home = ensure_test_home();
 
     // A 激活状态下的 live：A 专属路由 + 已共享的 [tui] + 用户刚加的
-    // disable_response_storage + model-board 注入产物 + MCP 同步投影
+    // disable_response_storage + agentmate 注入产物 + MCP 同步投影
     // + 顶层 wire_api（无 model_provider 时的 fallback 写法，属 A 的路由语义）
     // + 历史错误格式 [mcp.servers]（sync_all_enabled 清不掉的孤儿形态）
     let live_config = r#"model = "gpt-5.5"
 model_provider = "aprov"
 wire_api = "chat"
 experimental_bearer_token = "sk-a-live-secret"
-model_catalog_json = "model-board-model-catalog.json"
+model_catalog_json = "agentmate-model-catalog.json"
 web_search = "disabled"
 disable_response_storage = true
 

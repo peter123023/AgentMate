@@ -1104,7 +1104,7 @@ mod tests {
 
     #[test]
     fn test_collect_jsonl_files_includes_subagents() {
-        let tmp = std::env::temp_dir().join(format!("model-board-test-{}", uuid::Uuid::new_v4()));
+        let tmp = std::env::temp_dir().join(format!("agentmate-test-{}", uuid::Uuid::new_v4()));
         let project = tmp.join("project");
         let session_dir = project.join("test-session");
         let subagents_dir = session_dir.join("subagents");
@@ -1129,7 +1129,7 @@ mod tests {
     fn test_collect_jsonl_files_includes_workflow_subagents() {
         // Claude Code Workflow 把子 agent transcript 嵌在
         // 项目/SESSION_ID/subagents/workflows/wf_<ID>/ 下，比普通子 agent 深一层。
-        let tmp = std::env::temp_dir().join(format!("model-board-test-{}", uuid::Uuid::new_v4()));
+        let tmp = std::env::temp_dir().join(format!("agentmate-test-{}", uuid::Uuid::new_v4()));
         let project = tmp.join("project");
         let session_dir = project.join("test-session");
         let subagents_dir = session_dir.join("subagents");
@@ -1192,7 +1192,7 @@ mod tests {
     #[test]
     fn test_incremental_append_advances_byte_cursor() -> Result<(), AppError> {
         let db = Database::memory()?;
-        let tmp = std::env::temp_dir().join(format!("model-board-test-{}", uuid::Uuid::new_v4()));
+        let tmp = std::env::temp_dir().join(format!("agentmate-test-{}", uuid::Uuid::new_v4()));
         fs::create_dir_all(&tmp).unwrap();
         let file = tmp.join("session.jsonl");
 
@@ -1230,7 +1230,7 @@ mod tests {
         // 尾段是完整 JSON 但没有换行符：应当导入（不丢数据），但游标停在
         // 上一个完整行末尾；补全换行后重扫靠 request_id 去重不双算
         let db = Database::memory()?;
-        let tmp = std::env::temp_dir().join(format!("model-board-test-{}", uuid::Uuid::new_v4()));
+        let tmp = std::env::temp_dir().join(format!("agentmate-test-{}", uuid::Uuid::new_v4()));
         fs::create_dir_all(&tmp).unwrap();
         let file = tmp.join("session.jsonl");
 
@@ -1268,7 +1268,7 @@ mod tests {
         // 计入行号游标，补全后该行因 line_offset 已计数被永久跳过。字节
         // 游标只推进到最后一个完整行，补全后必须导入
         let db = Database::memory()?;
-        let tmp = std::env::temp_dir().join(format!("model-board-test-{}", uuid::Uuid::new_v4()));
+        let tmp = std::env::temp_dir().join(format!("agentmate-test-{}", uuid::Uuid::new_v4()));
         fs::create_dir_all(&tmp).unwrap();
         let file = tmp.join("session.jsonl");
 
@@ -1309,7 +1309,7 @@ mod tests {
         // msg_a 会重导并在下次 rollup 二次累加。代价（刻意）：msg_a 也
         // 不再重放，丢行优于双算
         let db = Database::memory()?;
-        let tmp = std::env::temp_dir().join(format!("model-board-test-{}", uuid::Uuid::new_v4()));
+        let tmp = std::env::temp_dir().join(format!("agentmate-test-{}", uuid::Uuid::new_v4()));
         fs::create_dir_all(&tmp).unwrap();
         let file = tmp.join("session.jsonl");
 
@@ -1370,7 +1370,7 @@ mod tests {
         // 的尾部指纹能发现。检出后同样钉 EOF 不重放：重写内容里可能混着
         // 已剪的旧事件，从旧偏移切入或回头重扫都会双算
         let db = Database::memory()?;
-        let tmp = std::env::temp_dir().join(format!("model-board-test-{}", uuid::Uuid::new_v4()));
+        let tmp = std::env::temp_dir().join(format!("agentmate-test-{}", uuid::Uuid::new_v4()));
         fs::create_dir_all(&tmp).unwrap();
         let file = tmp.join("session.jsonl");
 
@@ -1431,7 +1431,7 @@ mod tests {
         // 去重对它失明——若退化为全量重读，msg_a 会被重导并在下次 rollup
         // 时二次累加
         let db = Database::memory()?;
-        let tmp = std::env::temp_dir().join(format!("model-board-test-{}", uuid::Uuid::new_v4()));
+        let tmp = std::env::temp_dir().join(format!("agentmate-test-{}", uuid::Uuid::new_v4()));
         fs::create_dir_all(&tmp).unwrap();
         let file = tmp.join("session.jsonl");
         let file_path_str = file.to_string_lossy().to_string();
@@ -1485,7 +1485,7 @@ mod tests {
         // 行号游标超过文件行数（截断/重写后变短）：转换停在 EOF，不导入
         // 任何行——等价旧行号游标对截断文件的"新内容行号偏小被跳过"语义
         let db = Database::memory()?;
-        let tmp = std::env::temp_dir().join(format!("model-board-test-{}", uuid::Uuid::new_v4()));
+        let tmp = std::env::temp_dir().join(format!("agentmate-test-{}", uuid::Uuid::new_v4()));
         fs::create_dir_all(&tmp).unwrap();
         let file = tmp.join("session.jsonl");
         let file_path_str = file.to_string_lossy().to_string();
@@ -1515,7 +1515,7 @@ mod tests {
         // 子 agent 常见的「只有 message_start 快照、没写最终块」形态）必须被计入，
         // 不能因缺 stop_reason 或 output==0 而整条丢弃；全 0 token 的占位行仍应跳过。
         let db = Database::memory()?;
-        let tmp = std::env::temp_dir().join(format!("model-board-test-{}", uuid::Uuid::new_v4()));
+        let tmp = std::env::temp_dir().join(format!("agentmate-test-{}", uuid::Uuid::new_v4()));
         fs::create_dir_all(&tmp).unwrap();
         let file = tmp.join("agent-wf.jsonl");
 

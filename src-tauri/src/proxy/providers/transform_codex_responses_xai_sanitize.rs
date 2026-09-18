@@ -2,7 +2,7 @@
 //!
 //! Codex 0.142+ sends `wire_api="responses"` requests carrying a handful of
 //! OpenAI-backend-private fields and tool carriers that xAI's strict
-//! `api.x.ai/v1/responses` serde parser rejects (HTTP 400/422). model-board's
+//! `api.x.ai/v1/responses` serde parser rejects (HTTP 400/422). agentmate's
 //! Chat/Anthropic transforms already drop these on the way through, but the
 //! *native* Responses passthrough forwards the body verbatim, so we scrub them
 //! here.
@@ -550,7 +550,7 @@ fn normalize_xai_function_tool_parameters(tool: &mut Value) -> bool {
 
     // Codex Desktop always injects automation_update with a root oneOf/anyOf
     // that includes a non-object (null) branch. xAI rejects the whole turn
-    // (farion1231/model-board#6815). Keep the tool callable, but force a plain
+    // (farion1231/agentmate#6815). Keep the tool callable, but force a plain
     // object root the way CLIProxyAPI does.
     if is_automation_update_tool(function_tool_name(tool)) {
         let safe = xai_safe_empty_object_schema();

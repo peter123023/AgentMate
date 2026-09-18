@@ -61,7 +61,7 @@ pub async fn get_codex_oauth_quota(
         &token,
         Some(&chatgpt_account_id),
         "codex_oauth",
-        "Codex OAuth access token expired or rejected. Please re-login via model-board.",
+        "Codex OAuth access token expired or rejected. Please re-login via agentmate.",
     )
     .await
 }

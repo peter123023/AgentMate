@@ -96,7 +96,7 @@ async function bootstrap() {
       ReactDOM.createRoot(document.getElementById("root")!).render(
         <React.StrictMode>
           <FrontendErrorBoundary>
-            <ThemeProvider defaultTheme="system" storageKey="model-board-theme">
+            <ThemeProvider defaultTheme="system" storageKey="agentmate-theme">
               <DatabaseUpgrade payload={initError} />
               <Toaster />
             </ThemeProvider>
@@ -121,7 +121,7 @@ async function bootstrap() {
     <React.StrictMode>
       <FrontendErrorBoundary>
         <QueryClientProvider client={queryClient}>
-          <ThemeProvider defaultTheme="system" storageKey="model-board-theme">
+          <ThemeProvider defaultTheme="system" storageKey="agentmate-theme">
             <UpdateProvider>
               <App />
               <Toaster />

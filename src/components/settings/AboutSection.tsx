@@ -844,7 +844,7 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-8">
             <div className="flex flex-col items-center gap-2">
-              <img src={appIcon} alt="ModelBoard" className="h-8 w-8" />
+              <img src={appIcon} alt="AgentMate" className="h-8 w-8" />
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="gap-1.5 bg-background/80">
                   <span className="text-muted-foreground">

@@ -16,7 +16,7 @@ export const HERMES_PROVIDER_SOURCE_DICT = "providers_dict";
 
 /**
  * True when the provider was sourced from Hermes' v12+ `providers:` dict —
- * ModelBoard renders those read-only and routes edits to Hermes Web UI.
+ * AgentMate renders those read-only and routes edits to Hermes Web UI.
  */
 export function isHermesReadOnlyProvider(settingsConfig: unknown): boolean {
   if (!settingsConfig || typeof settingsConfig !== "object") {
@@ -810,7 +810,7 @@ export const hermesProviderPresets: HermesProviderPreset[] = [
     nameKey: "providerForm.presets.ucloud",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_agentmate",
     settingsConfig: {
       name: "compshare",
       base_url: "https://api.modelverse.cn/v1",
@@ -832,7 +832,7 @@ export const hermesProviderPresets: HermesProviderPreset[] = [
     nameKey: "providerForm.presets.ucloudCoding",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_agentmate",
     settingsConfig: {
       name: "compshare_coding",
       base_url: "https://cp.compshare.cn/v1",

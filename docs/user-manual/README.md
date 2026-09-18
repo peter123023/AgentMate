@@ -1,4 +1,4 @@
-# ModelBoard User Manual / 用户手册 / ユーザーマニュアル
+# AgentMate User Manual / 用户手册 / ユーザーマニュアル
 
 > Claude Code / Claude Desktop / Codex / Gemini CLI / OpenCode / OpenClaw / Hermes
 
@@ -14,9 +14,9 @@
 
 - Documentation version: v3.16.0
 - Last updated: 2026-05-29
-- Compatible with ModelBoard v3.16.0+
+- Compatible with AgentMate v3.16.0+
 
 ## Links
 
-- [GitHub Issues](https://github.com/farion1231/model-board/issues)
-- [GitHub Repository](https://github.com/farion1231/model-board)
+- [GitHub Issues](https://github.com/peter123023/llm-switch/issues)
+- [GitHub Repository](https://github.com/peter123023/llm-switch)

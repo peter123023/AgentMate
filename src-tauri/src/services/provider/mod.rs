@@ -1655,7 +1655,7 @@ GEMINI_TIMEOUT_MS=30000
     #[test]
     fn extract_codex_common_config_strips_provider_fields_and_injected_artifacts() {
         // 顶层 experimental_bearer_token 模拟无活跃路由时的 fallback 注入；
-        // web_search = "disabled" 是 model-board 对黑名单网关注入的哨兵；
+        // web_search = "disabled" 是 agentmate 对黑名单网关注入的哨兵；
         // 顶层 wire_api 模拟无 model_provider 时的 fallback 写法；
         // [mcp.servers] 是历史错误格式，sync_all_enabled 清不掉它。
         let config_toml = r#"model_provider = "azure"
@@ -1663,7 +1663,7 @@ model = "gpt-4"
 wire_api = "chat"
 disable_response_storage = true
 experimental_bearer_token = "sk-live-secret"
-model_catalog_json = "model-board-model-catalog.json"
+model_catalog_json = "agentmate-model-catalog.json"
 web_search = "disabled"
 
 [model_providers.azure]
@@ -1725,7 +1725,7 @@ command = "legacy-cmd"
         );
         assert!(
             !extracted.contains("web_search"),
-            "should strip the model-board web_search disabled sentinel, got: {extracted}"
+            "should strip the agentmate web_search disabled sentinel, got: {extracted}"
         );
         // 真正可共享的键保留
         assert!(
@@ -5089,7 +5089,7 @@ impl ProviderService {
 
         // DSH：供应商是全局 settings.yaml 的 route；当前模型写入
         // 每个 profile 的 cordis.patch.yml（agent-default-model），保证无论用
-        // 哪个 profile 启动，DSH agent 都使用 ModelBoard 选中的供应商。
+        // 哪个 profile 启动，DSH agent 都使用 AgentMate 选中的供应商。
         if app_type == AppType::DeepSeekHarness {
             let providers = state.db.get_all_providers(app_type.as_str())?;
             let provider = providers
@@ -5602,7 +5602,7 @@ impl ProviderService {
     /// 不会误删其它供应商共享的内容。
     ///
     /// **作用域**：Claude + Codex。Codex 提取器（`extract_codex_common_config`）
-    /// 已剥离全部供应商专属与 model-board 注入内容：`model` / `model_provider` /
+    /// 已剥离全部供应商专属与 agentmate 注入内容：`model` / `model_provider` /
     /// 顶层 `base_url` / 整张 `model_providers` 表（含端点与统一会话桶）、
     /// `mcp_servers`（SSOT 在 DB 表）、顶层 `experimental_bearer_token`
     /// fallback、`model_catalog_json`、`web_search = "disabled"` 哨兵——密钥与
@@ -5933,14 +5933,14 @@ impl ProviderService {
             }
         }
 
-        // model-board 写 live 时注入的产物一律不进共享片段：
+        // agentmate 写 live 时注入的产物一律不进共享片段：
         // - experimental_bearer_token 正常写在 [model_providers.<id>] 内（上面
         //   整表已剥），但无活跃路由 / 内建保留 id / 路由表缺失三种 fallback
         //   会落在顶层——不剥等于把 API 密钥写进共享片段。
         root.remove("experimental_bearer_token");
         // - model_catalog_json 指向按供应商生成的 catalog 投影文件（DB 为 SSOT）。
         root.remove("model_catalog_json");
-        // - web_search 只剥 model-board 注入的 "disabled" 哨兵；用户手设的其它值
+        // - web_search 只剥 agentmate 注入的 "disabled" 哨兵；用户手设的其它值
         //   属于可共享偏好，保留。
         if root
             .get(crate::codex_config::CODEX_WEB_SEARCH_FIELD)

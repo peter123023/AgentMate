@@ -32,16 +32,16 @@ describe("useOpencodeFormState", () => {
       npm: "@ai-sdk/openai-compatible",
       options: {
         headers: {
-          "HTTP-Referer": "https://model-board.app",
-          "X-Title": "ModelBoard",
+          "HTTP-Referer": "https://agentmate.app",
+          "X-Title": "AgentMate",
         },
       },
       models: {},
     });
 
     expect(result.current.opencodeHeaders).toEqual({
-      "HTTP-Referer": "https://model-board.app",
-      "X-Title": "ModelBoard",
+      "HTTP-Referer": "https://agentmate.app",
+      "X-Title": "AgentMate",
     });
   });
 
@@ -54,12 +54,12 @@ describe("useOpencodeFormState", () => {
 
     act(() => {
       result.current.handleOpencodeHeadersChange({
-        "X-Title": "ModelBoard",
+        "X-Title": "AgentMate",
       });
     });
 
     expect(JSON.parse(getSettingsConfig()).options.headers).toEqual({
-      "X-Title": "ModelBoard",
+      "X-Title": "AgentMate",
     });
   });
 
@@ -68,7 +68,7 @@ describe("useOpencodeFormState", () => {
       npm: "@ai-sdk/openai-compatible",
       options: {
         headers: {
-          "X-Title": "ModelBoard",
+          "X-Title": "AgentMate",
         },
       },
       models: {},

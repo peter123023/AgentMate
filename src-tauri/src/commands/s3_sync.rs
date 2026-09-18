@@ -331,7 +331,7 @@ mod tests {
     #[test]
     #[serial]
     fn persist_sync_error_updates_status_without_overwriting_credentials() {
-        let test_home = std::env::temp_dir().join("model-board-s3-sync-error-status-test");
+        let test_home = std::env::temp_dir().join("agentmate-s3-sync-error-status-test");
         let _ = std::fs::remove_dir_all(&test_home);
         std::fs::create_dir_all(&test_home).expect("create test home");
         std::env::set_var("CC_SWITCH_TEST_HOME", &test_home);
@@ -377,7 +377,7 @@ mod tests {
     #[test]
     #[serial]
     fn require_enabled_s3_settings_rejects_disabled_config() {
-        let test_home = std::env::temp_dir().join("model-board-s3-sync-enabled-disabled-test");
+        let test_home = std::env::temp_dir().join("agentmate-s3-sync-enabled-disabled-test");
         let _ = std::fs::remove_dir_all(&test_home);
         std::fs::create_dir_all(&test_home).expect("create test home");
         std::env::set_var("CC_SWITCH_TEST_HOME", &test_home);
@@ -403,7 +403,7 @@ mod tests {
     #[test]
     #[serial]
     fn require_enabled_s3_settings_returns_settings_when_enabled() {
-        let test_home = std::env::temp_dir().join("model-board-s3-sync-enabled-ok-test");
+        let test_home = std::env::temp_dir().join("agentmate-s3-sync-enabled-ok-test");
         let _ = std::fs::remove_dir_all(&test_home);
         std::fs::create_dir_all(&test_home).expect("create test home");
         std::env::set_var("CC_SWITCH_TEST_HOME", &test_home);

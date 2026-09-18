@@ -1,6 +1,6 @@
 //! Skill import from deep link
 //!
-//! Handles importing skill repository configurations via modelboard:// URLs.
+//! Handles importing skill repository configurations via agentmate:// URLs.
 
 use super::DeepLinkImportRequest;
 use crate::error::AppError;

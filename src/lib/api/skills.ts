@@ -24,7 +24,7 @@ export interface SkillApps {
   openclaw: boolean;
   hermes: boolean;
   pi: boolean;
-  /** WorkBuddy doesn't use ModelBoard skill sync. */
+  /** WorkBuddy doesn't use AgentMate skill sync. */
   workbuddy?: boolean;
 }
 

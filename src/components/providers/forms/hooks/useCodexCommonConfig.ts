@@ -26,7 +26,7 @@ const applyTomlSnippet = async (
   }
 };
 
-const LEGACY_STORAGE_KEY = "model-board:codex-common-config-snippet";
+const LEGACY_STORAGE_KEY = "agentmate:codex-common-config-snippet";
 const DEFAULT_CODEX_COMMON_CONFIG_SNIPPET = `# Common Codex config
 # Add your common TOML configuration here`;
 

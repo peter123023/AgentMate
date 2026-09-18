@@ -78,9 +78,9 @@ import {
 } from "./utils";
 
 const SESSION_LIST_VIEW_MODE_STORAGE_KEY =
-  "model-board.sessionManager.listViewMode";
+  "agentmate.sessionManager.listViewMode";
 const SESSION_GROUP_EXPANSION_STORAGE_KEY =
-  "model-board.sessionManager.groupExpansionState";
+  "agentmate.sessionManager.groupExpansionState";
 
 type ProviderFilter =
   | "all"

@@ -1195,7 +1195,7 @@ export const openclawProviderPresets: OpenClawProviderPreset[] = [
     nameKey: "providerForm.presets.ucloud",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_agentmate",
     settingsConfig: {
       baseUrl: "https://api.modelverse.cn/v1",
       apiKey: "",
@@ -1235,7 +1235,7 @@ export const openclawProviderPresets: OpenClawProviderPreset[] = [
     nameKey: "providerForm.presets.ucloudCoding",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_agentmate",
     settingsConfig: {
       baseUrl: "https://cp.compshare.cn/v1",
       apiKey: "",

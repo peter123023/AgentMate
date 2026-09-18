@@ -1,5 +1,5 @@
 {
-  "name": "model-board",
+  "name": "agentmate",
   "version": "3.20.1",
   "description": "All-in-One Assistant for Claude Code, Codex & Gemini CLI",
   "type": "module",

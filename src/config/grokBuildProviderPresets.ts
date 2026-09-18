@@ -324,7 +324,7 @@ export const grokBuildProviderPresets: GrokBuildProviderPreset[] = [
     nameKey: "providerForm.presets.ucloud",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_agentmate",
     auth: grokAuth(),
     config: grokPresetConfig("Compshare", "https://api.modelverse.cn/v1"),
     endpointCandidates: ["https://api.modelverse.cn/v1"],
@@ -339,7 +339,7 @@ export const grokBuildProviderPresets: GrokBuildProviderPreset[] = [
     nameKey: "providerForm.presets.ucloudCoding",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_model-board",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_agentmate",
     auth: grokAuth(),
     config: grokPresetConfig(
       "Compshare Coding Plan",

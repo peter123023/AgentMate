@@ -1,6 +1,6 @@
-# Using DeepSeek-Style Chat APIs in Codex: ModelBoard Local Routing Guide
+# Using DeepSeek-Style Chat APIs in Codex: AgentMate Local Routing Guide
 
-> Applies to ModelBoard 3.19.1 and later. This guide is based on the repository documentation and code. Screenshots are generated with de-identified sample data to avoid exposing a real API key or account balance.
+> Applies to AgentMate 3.19.1 and later. This guide is based on the repository documentation and code. Screenshots are generated with de-identified sample data to avoid exposing a real API key or account balance.
 >
 > **Important change as of 3.19.1**: the DeepSeek preset now connects directly over native Responses and no longer needs local routing. The routing-conversion path is not obsolete, though — it remains the only way to reach `deepseek-v4-pro`, it still applies to providers saved before the upgrade, and it is how Chat-format providers such as Kimi and Zhipu GLM work. Read the next section first to find out which case you are in.
 
@@ -12,9 +12,9 @@ There is exactly one way to tell: look for the `Needs Routing` badge on the Code
 
 - **Has the `Needs Routing` badge** → this provider is Chat-format, and the whole guide applies.
 - **No badge** → it already connects directly over native Responses, so the routing steps here are pointless for it. Just use it.
-- **Has the `No Routing Support` badge** → this is an official provider, and ModelBoard blocks it from going through local routing (see the FAQ at the end).
+- **Has the `No Routing Support` badge** → this is an official provider, and AgentMate blocks it from going through local routing (see the FAQ at the end).
 
-The badge is driven by the API format recorded when the provider was saved, so upgrading ModelBoard **does not** change how an existing provider behaves. For DeepSeek specifically, there are three cases after upgrading to 3.19.1:
+The badge is driven by the API format recorded when the provider was saved, so upgrading AgentMate **does not** change how an existing provider behaves. For DeepSeek specifically, there are three cases after upgrading to 3.19.1:
 
 | Your situation | Routing needed? | Notes |
 |---|---|---|
@@ -28,7 +28,7 @@ Beyond DeepSeek, plenty of providers are still Chat-format — Kimi, Zhipu GLM, 
 
 The newer Codex CLI targets the OpenAI Responses API, while many providers expose the OpenAI Chat Completions shape, usually `/chat/completions`. These two protocols use different request bodies, streaming events, and response structures. If you put a Chat endpoint directly into Codex configuration, common results include an incorrect model list, 404/400 requests, or streaming responses that Codex cannot parse correctly.
 
-ModelBoard solves this by making Codex always talk to a local route and continue sending Responses API requests. The route detects whether the active provider is Chat-format, rewrites the request into Chat Completions for the upstream provider, and finally converts the Chat response back into the Responses shape that Codex understands.
+AgentMate solves this by making Codex always talk to a local route and continue sending Responses API requests. The route detects whether the active provider is Chat-format, rewrites the request into Chat Completions for the upstream provider, and finally converts the Chat response back into the Responses shape that Codex understands.
 
 The chain has four main steps:
 
@@ -43,15 +43,15 @@ For a provider that is natively Responses — such as the current DeepSeek prese
 
 Prepare these three things first:
 
-- ModelBoard installed and able to start.
+- AgentMate installed and able to start.
 - Codex CLI installed and run at least once, so the `~/.codex/config.toml` directory structure exists.
 - An API key for the provider you want to use.
 
-Taking DeepSeek as the example, its official documentation lists the OpenAI-compatible base URL as `https://api.deepseek.com` (other providers commonly use a base URL with a `/v1` suffix or a longer path — Zhipu GLM, for instance, uses `https://open.bigmodel.cn/api/coding/paas/v4`), and the Chat API path as `/chat/completions`. ModelBoard's presets already carry these details, so prefer a preset and do not manually assemble the endpoint path.
+Taking DeepSeek as the example, its official documentation lists the OpenAI-compatible base URL as `https://api.deepseek.com` (other providers commonly use a base URL with a `/v1` suffix or a longer path — Zhipu GLM, for instance, uses `https://open.bigmodel.cn/api/coding/paas/v4`), and the Chat API path as `/chat/completions`. AgentMate's presets already carry these details, so prefer a preset and do not manually assemble the endpoint path.
 
 ## Step 1: Add a Codex provider
 
-Open ModelBoard, switch to the top-level `Codex` tab, and click the plus button in the upper-right corner to add a provider.
+Open AgentMate, switch to the top-level `Codex` tab, and click the plus button in the upper-right corner to add a provider.
 
 **Using a preset** (recommended): select the provider in the preset list, enter your API key, and save. The preset already carries the request base URL, default model, and model menu, and sets the upstream format for you; once a Chat-format preset is saved, the `Needs Routing` badge appears on its card. Thinking/reasoning parameters are preconfigured by the preset — you do not need to fill them in.
 
@@ -61,15 +61,15 @@ Open ModelBoard, switch to the top-level `Codex` tab, and click the plus button 
 - `Chat Completions (routing required)` — the case this guide covers.
 - `Anthropic Messages (routing required)` — the upstream only offers the native Anthropic protocol, which the route converts as well.
 
-Only `Responses (native)` works without routing takeover; the other two require it. For custom providers, ModelBoard infers the thinking parameters from the provider name and address; you only need to expand `Reasoning Capability` and override them manually when that inference is wrong.
+Only `Responses (native)` works without routing takeover; the other two require it. For custom providers, AgentMate infers the thinking parameters from the provider name and address; you only need to expand `Reasoning Capability` and override them manually when that inference is wrong.
 
-> **Converting an existing DeepSeek provider**: change `Upstream Format` to `Responses (native)` — there is no need to delete and recreate it. The next time you switch to it, ModelBoard recognises the `deepseek.com` address and applies DeepSeek's official model catalog, so freeform `apply_patch`, the GPT-5 harness, the low/high/max reasoning levels, and web_search all take effect as usual.
+> **Converting an existing DeepSeek provider**: change `Upstream Format` to `Responses (native)` — there is no need to delete and recreate it. The next time you switch to it, AgentMate recognises the `deepseek.com` address and applies DeepSeek's official model catalog, so freeform `apply_patch`, the GPT-5 harness, the low/high/max reasoning levels, and web_search all take effect as usual.
 >
 > The one small difference is the context window: a provider's own saved model rows take priority, so the `1000000` stored before 3.19.1 overrides the officially declared `1048576`, costing you a little over 40k tokens. If that bothers you, open `Advanced Options` → `Model Mapping` and change that row's `Context Window` to `1048576`, or simply create a fresh provider from the preset.
 >
 > Conversely, to use `deepseek-v4-pro`, change `Upstream Format` back to `Chat Completions`.
 >
-> One more thing: the official model catalog used by the direct connection requires Codex CLI **0.144.0 or newer** (the freeform `apply_patch` registration it carries needs that release), and ModelBoard does not verify this for you. The generated catalog file also grows to roughly 75 KB, because it contains the full GPT-5 harness text.
+> One more thing: the official model catalog used by the direct connection requires Codex CLI **0.144.0 or newer** (the freeform `apply_patch` registration it carries needs that release), and AgentMate does not verify this for you. The generated catalog file also grows to roughly 75 KB, because it contains the full GPT-5 harness text.
 
 ## Step 2: Enable local routing and route Codex
 
@@ -80,11 +80,11 @@ Go to the `Routing` page in Settings, expand `Local Routing`, and complete two t
 
 ![Enabling Codex routing on the local routing page](../images/codex-deepseek-routing/03-local-route-codex-takeover.png)
 
-After routing is enabled, ModelBoard points Codex's live configuration to the local route and manages authentication with a placeholder. The real API key stays in the ModelBoard provider configuration and is injected by the local route while forwarding requests, so you do not need to expose the key in Codex's live configuration.
+After routing is enabled, AgentMate points Codex's live configuration to the local route and manages authentication with a placeholder. The real API key stays in the AgentMate provider configuration and is injected by the local route while forwarding requests, so you do not need to expose the key in Codex's live configuration.
 
 ## Step 3: Switch providers and restart Codex
 
-Return to the Codex provider list and click `Enable` on the provider you want. If it carries the `Needs Routing` marker while routing is not running, ModelBoard shows a prompt saying the routing service is required.
+Return to the Codex provider list and click `Enable` on the provider you want. If it carries the `Needs Routing` marker while routing is not running, AgentMate shows a prompt saying the routing service is required.
 
 After switching, restart the current Codex terminal session. This is recommended because:
 
@@ -117,7 +117,7 @@ DeepSeek has not opened its Codex integration for that model yet. Change that pr
 
 **`/model` does not show the provider's models**
 
-Restart Codex after saving the provider. ModelBoard generates `model-board-model-catalog.json` and writes its path to `model_catalog_json`, but a running Codex process may not hot-load the model catalog.
+Restart Codex after saving the provider. AgentMate generates `agentmate-model-catalog.json` and writes its path to `model_catalog_json`, but a running Codex process may not hot-load the model catalog.
 The Codex app currently does not support multi-model selection, so it uses the first configured model by default.
 
 **Routing is enabled, but requests still go to the wrong provider**
@@ -126,13 +126,13 @@ Confirm that all three states match: the current provider under the Codex tab is
 
 **Can I use an official OpenAI Codex account through local routing?**
 
-Not recommended. ModelBoard blocks switching to official providers while local routing takeover is enabled, because accessing official APIs through a proxy may create account risk. Routing is mainly intended for third-party, aggregator, or protocol-conversion scenarios.
+Not recommended. AgentMate blocks switching to official providers while local routing takeover is enabled, because accessing official APIs through a proxy may create account risk. Routing is mainly intended for third-party, aggregator, or protocol-conversion scenarios.
 
 ## References
 
-- [ModelBoard User Manual: Add Provider](../user-manual/en/2-providers/2.1-add.md)
-- [ModelBoard User Manual: Proxy Service](../user-manual/en/4-proxy/4.1-service.md)
-- [ModelBoard User Manual: App Routing](../user-manual/en/4-proxy/4.2-routing.md)
+- [AgentMate User Manual: Add Provider](../user-manual/en/2-providers/2.1-add.md)
+- [AgentMate User Manual: Proxy Service](../user-manual/en/4-proxy/4.1-service.md)
+- [AgentMate User Manual: App Routing](../user-manual/en/4-proxy/4.2-routing.md)
 - [DeepSeek API Docs: Integrate with Codex](https://api-docs.deepseek.com/quick_start/agent_integrations/codex/) (official Codex integration notes, including `wire_api = "responses"` and model coverage)
 - [DeepSeek API Docs: Using the Responses API](https://api-docs.deepseek.com/guides/responses_api/)
 - [DeepSeek API Docs: Your First API Call](https://api-docs.deepseek.com/)

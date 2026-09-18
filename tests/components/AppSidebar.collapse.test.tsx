@@ -8,7 +8,7 @@ import {
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string) => (key === "app.title" ? "ModelBoard" : key),
+    t: (key: string) => (key === "app.title" ? "AgentMate" : key),
   }),
 }));
 

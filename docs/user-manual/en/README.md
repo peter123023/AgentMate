@@ -1,11 +1,11 @@
-# ModelBoard User Manual
+# AgentMate User Manual
 
 > All-in-One Assistant for Claude Code / Claude Desktop / Codex / Gemini CLI / OpenCode / OpenClaw / Hermes
 
 ## Table of Contents
 
 ```
-ModelBoard User Manual
+AgentMate User Manual
 │
 ├── 1. Getting Started
 │   ├── 1.1 Introduction
@@ -90,7 +90,7 @@ ModelBoard User Manual
 
 | File | Description |
 |------|-------------|
-| [5.1-config-files.md](./5-faq/5.1-config-files.md) | ModelBoard storage, CLI configuration file formats |
+| [5.1-config-files.md](./5-faq/5.1-config-files.md) | AgentMate storage, CLI configuration file formats |
 | [5.2-questions.md](./5-faq/5.2-questions.md) | Frequently asked questions |
 | [5.3-deeplink.md](./5-faq/5.3-deeplink.md) | Deep link protocol, generation and usage |
 | [5.4-env-conflict.md](./5-faq/5.4-env-conflict.md) | Environment variable conflict detection and resolution |
@@ -108,7 +108,7 @@ ModelBoard User Manual
 
 - Documentation version: v3.16.0
 - Last updated: 2026-05-29
-- Applicable to ModelBoard v3.16.0+
+- Applicable to AgentMate v3.16.0+
 
 ### v3.16.0 Highlights
 
@@ -130,5 +130,5 @@ ModelBoard User Manual
 
 Feel free to submit Issues or PRs to improve the documentation:
 
-- [GitHub Issues](https://github.com/farion1231/model-board/issues)
-- [GitHub Repository](https://github.com/farion1231/model-board)
+- [GitHub Issues](https://github.com/peter123023/llm-switch/issues)
+- [GitHub Repository](https://github.com/peter123023/llm-switch)

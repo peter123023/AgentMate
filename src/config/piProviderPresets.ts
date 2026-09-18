@@ -86,7 +86,7 @@ const KIMI_K3_COMPAT = {
 const piProviderPresetDefinitions: PiProviderPreset[] = [
   {
     name: "Kimi",
-    providerKey: "model-board-kimi",
+    providerKey: "agentmate-kimi",
     websiteUrl: "https://platform.kimi.com?aff=model-board",
     apiKeyUrl: "https://platform.kimi.com/console/api-keys?aff=model-board",
     settingsConfig: {
@@ -116,7 +116,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "Kimi For Coding",
-    providerKey: "model-board-kimi-for-coding",
+    providerKey: "agentmate-kimi-for-coding",
     websiteUrl: "https://www.kimi.com/code/?aff=model-board",
     apiKeyUrl: "https://platform.kimi.com/console/api-keys?aff=model-board",
     settingsConfig: {
@@ -139,7 +139,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "PackyCode",
-    providerKey: "model-board-packy-code",
+    providerKey: "agentmate-packy-code",
     websiteUrl: "https://www.packyapi.ai",
     apiKeyUrl: "https://www.packyapi.ai/register?aff=model-board",
     settingsConfig: {
@@ -163,7 +163,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "ZetaAPI",
-    providerKey: "model-board-zeta-api",
+    providerKey: "agentmate-zeta-api",
     websiteUrl: "https://zetaapi.ai",
     apiKeyUrl: "https://zetaapi.ai/go/u117",
     settingsConfig: {
@@ -184,7 +184,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "APINebula",
-    providerKey: "model-board-apinebula",
+    providerKey: "agentmate-apinebula",
     websiteUrl: "https://apinebula.ai",
     apiKeyUrl: "https://apinebula.ai/VjM74M",
     settingsConfig: {
@@ -205,7 +205,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "AICodeMirror",
-    providerKey: "model-board-aicode-mirror",
+    providerKey: "agentmate-aicode-mirror",
     websiteUrl: "https://www.aicodemirror.ai",
     apiKeyUrl: "https://www.aicodemirror.ai/register?invitecode=9915W3",
     settingsConfig: {
@@ -230,7 +230,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "FennoAI",
-    providerKey: "model-board-fenno-ai",
+    providerKey: "agentmate-fenno-ai",
     websiteUrl: "https://api.fenno.ai",
     apiKeyUrl:
       "https://api.fenno.ai/register?redirect=/purchase?tab=subscription%26group=16&aff=P9MR3D3PLCNL",
@@ -252,7 +252,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "RunAPI",
-    providerKey: "model-board-run-api",
+    providerKey: "agentmate-run-api",
     websiteUrl: "https://runapi.co",
     apiKeyUrl: "https://runapi.co/register?aff=iOKB",
     settingsConfig: {
@@ -280,7 +280,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   {
     name: "Shengsuanyun",
     nameKey: "providerForm.presets.shengsuanyun",
-    providerKey: "model-board-shengsuanyun",
+    providerKey: "agentmate-shengsuanyun",
     websiteUrl: "https://www.shengsuanyun.com/?from=CH_4HHXMRYF",
     apiKeyUrl: "https://www.shengsuanyun.com/?from=CH_4HHXMRYF",
     settingsConfig: {
@@ -304,7 +304,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "AIGoCode",
-    providerKey: "model-board-aigo-code",
+    providerKey: "agentmate-aigo-code",
     websiteUrl: "https://aigocode.app",
     apiKeyUrl: "https://aigocode.app/invite/CC-SWITCH",
     settingsConfig: {
@@ -330,7 +330,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   {
     name: "Qiniu",
     nameKey: "providerForm.presets.qiniu",
-    providerKey: "model-board-qiniu",
+    providerKey: "agentmate-qiniu",
     websiteUrl: "https://s.qiniu.com/nMvAvy",
     apiKeyUrl: "https://s.qiniu.com/nMvAvy",
     settingsConfig: {
@@ -351,7 +351,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "AICoding",
-    providerKey: "model-board-aicoding",
+    providerKey: "agentmate-aicoding",
     websiteUrl: "https://aicoding.inc",
     apiKeyUrl: "https://aicoding.inc/i/CCSWITCH",
     settingsConfig: {
@@ -376,7 +376,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "SubRouter",
-    providerKey: "model-board-sub-router",
+    providerKey: "agentmate-sub-router",
     websiteUrl: "https://subrouter.ai",
     apiKeyUrl: "https://subrouter.ai/register?aff=l3ri",
     settingsConfig: {
@@ -397,7 +397,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "APIKEY.FUN",
-    providerKey: "model-board-apikey-fun",
+    providerKey: "agentmate-apikey-fun",
     websiteUrl: "https://apikey.fun",
     apiKeyUrl: "https://apikey.fun/register?aff=CCSwitch",
     settingsConfig: {
@@ -424,7 +424,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "9527CODE",
-    providerKey: "model-board-9527-code",
+    providerKey: "agentmate-9527-code",
     websiteUrl: "https://9527.codes",
     apiKeyUrl: "https://9527.codes/register?aff=e5zI",
     settingsConfig: {
@@ -451,7 +451,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "Code0",
-    providerKey: "model-board-code0",
+    providerKey: "agentmate-code0",
     websiteUrl: "https://code0.ai",
     apiKeyUrl: "https://code0.ai/agent/register/B2XHxGjGmRvqgznY",
     settingsConfig: {
@@ -472,7 +472,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "TeamoRouter",
-    providerKey: "model-board-teamo-router",
+    providerKey: "agentmate-teamo-router",
     websiteUrl: "https://teamorouter.cn",
     apiKeyUrl:
       "https://teamorouter.cn/?utm_source=cc_switch&utm_medium=referral&utm_campaign=ai_directory",
@@ -494,7 +494,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "ClaudeCN",
-    providerKey: "model-board-claude-cn",
+    providerKey: "agentmate-claude-cn",
     websiteUrl: "https://claudecn.top",
     apiKeyUrl: "https://claudecn.ai/register?aff=HEL9",
     settingsConfig: {
@@ -521,7 +521,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "火山Agentplan",
-    providerKey: "model-board-agentplan",
+    providerKey: "agentmate-agentplan",
     websiteUrl:
       "https://www.volcengine.com/activity/codingplan?ac=MMAP8JTTCAQ2&rc=6J6FV5N2&utm_campaign=hw&utm_content=modelboard&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=modelboard",
     apiKeyUrl:
@@ -545,7 +545,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "BytePlus",
-    providerKey: "model-board-byte-plus",
+    providerKey: "agentmate-byte-plus",
     websiteUrl:
       "https://www.byteplus.com/en/product/modelark?utm_campaign=hw&utm_content=modelboard&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=modelboard",
     apiKeyUrl:
@@ -569,7 +569,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "DouBaoSeed",
-    providerKey: "model-board-dou-bao-seed",
+    providerKey: "agentmate-dou-bao-seed",
     websiteUrl:
       "https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D&utm_campaign=hw&utm_content=modelboard&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=modelboard",
     apiKeyUrl:
@@ -593,7 +593,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "A6API",
-    providerKey: "model-board-a6-api",
+    providerKey: "agentmate-a6-api",
     websiteUrl: "https://www.a6api.com",
     apiKeyUrl: "https://a6api.com/register?aff=AqNr",
     settingsConfig: {
@@ -614,7 +614,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "AtlasCloud",
-    providerKey: "model-board-atlas-cloud",
+    providerKey: "agentmate-atlas-cloud",
     websiteUrl: "https://www.atlascloud.ai/console/coding-plan",
     apiKeyUrl: "https://www.atlascloud.ai/console/coding-plan",
     settingsConfig: {
@@ -636,7 +636,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "CCSub",
-    providerKey: "model-board-ccsub",
+    providerKey: "agentmate-ccsub",
     websiteUrl: "https://www.ccsub.net",
     apiKeyUrl: "https://www.ccsub.net/register?ref=Y6Z8DXEA",
     settingsConfig: {
@@ -657,7 +657,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "SSSAiCode",
-    providerKey: "model-board-sssai-code",
+    providerKey: "agentmate-sssai-code",
     websiteUrl: "https://sssaicodeapi.com",
     apiKeyUrl: "https://sssaicodeapi.com/register?ref=DCP0SM",
     settingsConfig: {
@@ -682,7 +682,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "Micu",
-    providerKey: "model-board-micu",
+    providerKey: "agentmate-micu",
     websiteUrl: "https://www.micuapi.ai",
     apiKeyUrl: "https://www.micuapi.ai/register?aff=aOYQ",
     settingsConfig: {
@@ -707,7 +707,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "RightCode",
-    providerKey: "model-board-right-code",
+    providerKey: "agentmate-right-code",
     websiteUrl: "https://www.rightapi.ai",
     apiKeyUrl: "https://www.rightapi.ai/register?aff=CCSWITCH",
     settingsConfig: {
@@ -729,7 +729,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "ETok.ai",
-    providerKey: "model-board-etok-ai",
+    providerKey: "agentmate-etok-ai",
     websiteUrl: "https://etok.ai",
     apiKeyUrl: "https://etok.ai",
     settingsConfig: {
@@ -754,7 +754,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "Cubence",
-    providerKey: "model-board-cubence",
+    providerKey: "agentmate-cubence",
     websiteUrl: "https://cubence.com",
     apiKeyUrl: "https://cubence.com/signup?code=CCSWITCH&source=ccs",
     settingsConfig: {
@@ -779,7 +779,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "CrazyRouter",
-    providerKey: "model-board-crazy-router",
+    providerKey: "agentmate-crazy-router",
     websiteUrl: "https://www.crazyrouter.com",
     apiKeyUrl: "https://www.crazyrouter.com/register?aff=OZcm&ref=model-board",
     settingsConfig: {
@@ -804,7 +804,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "DMXAPI",
-    providerKey: "model-board-dmxapi",
+    providerKey: "agentmate-dmxapi",
     websiteUrl: "https://www.dmxapi.cn",
     apiKeyUrl: "https://www.dmxapi.cn",
     settingsConfig: {
@@ -827,7 +827,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "SudoCode.chat",
-    providerKey: "model-board-sudo-code-chat",
+    providerKey: "agentmate-sudo-code-chat",
     websiteUrl: "https://sudocode.chat",
     apiKeyUrl:
       "https://sudocode.chat/sign-up?aff=CC-SWITCH&utm_source=model-board&utm_medium=sponsor&utm_campaign=modelboard",
@@ -849,7 +849,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "SudoCode.us",
-    providerKey: "model-board-sudo-code-us",
+    providerKey: "agentmate-sudo-code-us",
     websiteUrl: "https://sudocode.us",
     apiKeyUrl: "https://sudocode.us",
     settingsConfig: {
@@ -869,7 +869,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "Amux",
-    providerKey: "model-board-amux",
+    providerKey: "agentmate-amux",
     websiteUrl: "https://amux.ai",
     apiKeyUrl: "https://amux.ai",
     settingsConfig: {
@@ -888,7 +888,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "DeepSeek",
-    providerKey: "model-board-deep-seek",
+    providerKey: "agentmate-deep-seek",
     websiteUrl: "https://platform.deepseek.com",
     apiKeyUrl: "https://platform.deepseek.com/api_keys",
     settingsConfig: {
@@ -913,7 +913,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "Zhipu GLM",
-    providerKey: "model-board-zhipu-glm",
+    providerKey: "agentmate-zhipu-glm",
     websiteUrl: "https://open.bigmodel.cn",
     apiKeyUrl: "https://www.bigmodel.cn/claude-code?ic=RRVJPB5SII",
     settingsConfig: {
@@ -933,7 +933,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "Zhipu GLM en",
-    providerKey: "model-board-zhipu-glm-en",
+    providerKey: "agentmate-zhipu-glm-en",
     websiteUrl: "https://z.ai",
     apiKeyUrl: "https://z.ai/subscribe?ic=8JVLJQFSKB",
     settingsConfig: {
@@ -953,7 +953,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "Bailian",
-    providerKey: "model-board-bailian",
+    providerKey: "agentmate-bailian",
     websiteUrl: "https://bailian.console.aliyun.com",
     apiKeyUrl: "https://bailian.console.aliyun.com/#/api-key",
     settingsConfig: {
@@ -976,7 +976,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   // （与 Pi 其余 anthropic-messages 预设一致，地址不带 /v1）。
   {
     name: "QwenCloud",
-    providerKey: "model-board-qwencloud",
+    providerKey: "agentmate-qwencloud",
     websiteUrl: "https://www.qwencloud.com",
     apiKeyUrl: "https://home.qwencloud.com/api-keys",
     settingsConfig: {
@@ -995,7 +995,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "QwenCloud For Coding",
-    providerKey: "model-board-qwencloud-coding",
+    providerKey: "agentmate-qwencloud-coding",
     websiteUrl: "https://www.qwencloud.com",
     apiKeyUrl: "https://home.qwencloud.com/api-keys",
     settingsConfig: {
@@ -1017,7 +1017,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "QwenCloud Token Plan",
-    providerKey: "model-board-qwencloud-token-plan",
+    providerKey: "agentmate-qwencloud-token-plan",
     websiteUrl: "https://www.qwencloud.com",
     apiKeyUrl: "https://home.qwencloud.com/api-keys",
     settingsConfig: {
@@ -1037,7 +1037,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "StepFun",
-    providerKey: "model-board-step-fun",
+    providerKey: "agentmate-step-fun",
     websiteUrl: "https://platform.stepfun.com/step-plan",
     apiKeyUrl: "https://platform.stepfun.com/interface-key",
     settingsConfig: {
@@ -1061,7 +1061,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "StepFun en",
-    providerKey: "model-board-step-fun-en",
+    providerKey: "agentmate-step-fun-en",
     websiteUrl: "https://platform.stepfun.ai/step-plan",
     apiKeyUrl: "https://platform.stepfun.ai/interface-key",
     settingsConfig: {
@@ -1085,7 +1085,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "StepFun Step Plan",
-    providerKey: "model-board-step-fun-step-plan",
+    providerKey: "agentmate-step-fun-step-plan",
     websiteUrl: "https://platform.stepfun.com/docs/zh/step-plan/overview",
     apiKeyUrl: "https://platform.stepfun.com/interface-key",
     settingsConfig: {
@@ -1105,7 +1105,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "ModelScope",
-    providerKey: "model-board-model-scope",
+    providerKey: "agentmate-model-scope",
     websiteUrl: "https://modelscope.cn",
     apiKeyUrl: "https://modelscope.cn/my/myaccesstoken",
     settingsConfig: {
@@ -1125,7 +1125,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "KAT-Coder",
-    providerKey: "model-board-kat-coder",
+    providerKey: "agentmate-kat-coder",
     websiteUrl: "https://console.streamlake.ai",
     apiKeyUrl: "https://console.streamlake.ai/console/api-key",
     settingsConfig: {
@@ -1145,7 +1145,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "Longcat",
-    providerKey: "model-board-longcat",
+    providerKey: "agentmate-longcat",
     websiteUrl: "https://longcat.chat/platform",
     apiKeyUrl: "https://longcat.chat/platform/api_keys",
     settingsConfig: {
@@ -1165,7 +1165,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "MiniMax",
-    providerKey: "model-board-mini-max",
+    providerKey: "agentmate-mini-max",
     websiteUrl: "https://platform.minimaxi.com",
     apiKeyUrl: "https://platform.minimaxi.com/subscribe/coding-plan",
     settingsConfig: {
@@ -1190,7 +1190,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "MiniMax en",
-    providerKey: "model-board-mini-max-en",
+    providerKey: "agentmate-mini-max-en",
     websiteUrl: "https://platform.minimax.io",
     apiKeyUrl: "https://platform.minimax.io/subscribe/coding-plan",
     settingsConfig: {
@@ -1215,7 +1215,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "BaiLing",
-    providerKey: "model-board-bai-ling",
+    providerKey: "agentmate-bai-ling",
     websiteUrl: "https://alipaytbox.yuque.com/sxs0ba/ling/get_started",
     settingsConfig: {
       name: "BaiLing",
@@ -1232,7 +1232,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "Xiaomi MiMo",
-    providerKey: "model-board-xiaomi-mi-mo",
+    providerKey: "agentmate-xiaomi-mi-mo",
     websiteUrl: "https://platform.xiaomimimo.com",
     apiKeyUrl: "https://platform.xiaomimimo.com/#/console/api-keys",
     settingsConfig: {
@@ -1261,7 +1261,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "Xiaomi MiMo Token Plan (China)",
-    providerKey: "model-board-xiaomi-mi-mo-token-plan-china",
+    providerKey: "agentmate-xiaomi-mi-mo-token-plan-china",
     websiteUrl: "https://platform.xiaomimimo.com/#/token-plan",
     apiKeyUrl: "https://platform.xiaomimimo.com/#/console/plan-manage",
     settingsConfig: {
@@ -1284,7 +1284,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "OpenCode Go",
-    providerKey: "model-board-open-code-go",
+    providerKey: "agentmate-open-code-go",
     websiteUrl: "https://opencode.ai/go",
     apiKeyUrl: "https://opencode.ai/go?ref=2YTRG2NGTX",
     settingsConfig: {
@@ -1336,7 +1336,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "AiHubMix",
-    providerKey: "model-board-ai-hub-mix",
+    providerKey: "agentmate-ai-hub-mix",
     websiteUrl: "https://aihubmix.com",
     apiKeyUrl: "https://aihubmix.com",
     settingsConfig: {
@@ -1359,7 +1359,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "CherryIN",
-    providerKey: "model-board-cherry-in",
+    providerKey: "agentmate-cherry-in",
     websiteUrl: "https://open.cherryin.ai",
     apiKeyUrl: "https://open.cherryin.ai/console/token",
     settingsConfig: {
@@ -1381,7 +1381,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "OpenRouter",
-    providerKey: "model-board-open-router",
+    providerKey: "agentmate-open-router",
     websiteUrl: "https://openrouter.ai",
     apiKeyUrl: "https://openrouter.ai/keys",
     settingsConfig: {
@@ -1404,7 +1404,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "TheRouter",
-    providerKey: "model-board-the-router",
+    providerKey: "agentmate-the-router",
     websiteUrl: "https://therouter.ai",
     apiKeyUrl: "https://dashboard.therouter.ai",
     settingsConfig: {
@@ -1434,7 +1434,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "Novita AI",
-    providerKey: "model-board-novita-ai",
+    providerKey: "agentmate-novita-ai",
     websiteUrl: "https://novita.ai",
     apiKeyUrl: "https://novita.ai",
     settingsConfig: {
@@ -1454,7 +1454,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "Nvidia",
-    providerKey: "model-board-nvidia",
+    providerKey: "agentmate-nvidia",
     websiteUrl: "https://build.nvidia.com",
     apiKeyUrl: "https://build.nvidia.com/settings/api-keys",
     settingsConfig: {
@@ -1474,7 +1474,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "PIPELLM",
-    providerKey: "model-board-pipellm",
+    providerKey: "agentmate-pipellm",
     websiteUrl: "https://code.pipellm.ai",
     apiKeyUrl: "https://code.pipellm.ai/login?ref=uvw650za",
     settingsConfig: {
@@ -1502,7 +1502,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "AICodeWith",
-    providerKey: "model-board-aicode-with",
+    providerKey: "agentmate-aicode-with",
     websiteUrl: "https://aicodewith.ai",
     apiKeyUrl: "https://aicodewith.ai/login?tab=register",
     settingsConfig: {
@@ -1523,7 +1523,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "E-FlowCode",
-    providerKey: "model-board-e-flow-code",
+    providerKey: "agentmate-e-flow-code",
     websiteUrl: "https://e-flowcode.cc",
     apiKeyUrl: "https://e-flowcode.cc",
     settingsConfig: {
@@ -1548,7 +1548,7 @@ const piProviderPresetDefinitions: PiProviderPreset[] = [
   },
   {
     name: "AWS Bedrock",
-    providerKey: "model-board-aws-bedrock",
+    providerKey: "agentmate-aws-bedrock",
     websiteUrl: "https://aws.amazon.com/bedrock/",
     settingsConfig: {
       name: "AWS Bedrock",

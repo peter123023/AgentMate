@@ -23,7 +23,7 @@ use std::path::PathBuf;
 /// }
 /// ```
 ///
-/// ModelBoard treats WorkBuddy in additive mode: every provider managed here maps
+/// AgentMate treats WorkBuddy in additive mode: every provider managed here maps
 /// 1:1 to an entry in `models.json` (keyed by the entry's `id`). Entries are
 /// handled as raw JSON values so unknown fields written by future WorkBuddy
 /// versions survive round-trips.

@@ -25,7 +25,7 @@ pub(crate) use super::webdav_sync::archive::{
 
 /// Wire-format identifier stored in remote manifests.
 /// Retains historic "webdav" naming for backward compatibility with existing remotes.
-pub(crate) const PROTOCOL_FORMAT: &str = "model-board-webdav-sync";
+pub(crate) const PROTOCOL_FORMAT: &str = "agentmate-webdav-sync";
 pub(crate) const PROTOCOL_VERSION: u32 = 2;
 pub(crate) const DB_COMPAT_VERSION: u32 = 6;
 pub(crate) const LEGACY_DB_COMPAT_VERSION: u32 = 5;

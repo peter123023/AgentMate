@@ -1,6 +1,6 @@
-//! Deep link import functionality for ModelBoard
+//! Deep link import functionality for AgentMate
 //!
-//! This module implements the modelboard:// protocol for importing configurations
+//! This module implements the agentmate:// protocol for importing configurations
 //! via deep links. Supports importing:
 //! - Provider configurations (Claude/Codex/Gemini)
 //! - MCP server configurations
@@ -29,7 +29,7 @@ pub use skill::import_skill_from_deeplink;
 
 /// Deep link import request model
 ///
-/// Represents a parsed modelboard:// URL ready for processing.
+/// Represents a parsed agentmate:// URL ready for processing.
 /// This struct contains all possible fields for all resource types.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

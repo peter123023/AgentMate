@@ -14,7 +14,7 @@ describe("error utilities", () => {
 
     expect(
       translatePiProviderMutationError(
-        "Pi models.json changed outside ModelBoard",
+        "Pi models.json changed outside AgentMate",
         t,
       ),
     ).toBe("pi.provider.writeConflict");

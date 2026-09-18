@@ -4,7 +4,7 @@ runtime: org.gnome.Platform
 runtime-version: '46'
 sdk: org.gnome.Sdk
 
-command: model-board
+command: agentmate
 
 finish-args:
   - --share=ipc
@@ -75,12 +75,12 @@ modules:
         url: https://github.com/AyatanaIndicators/libayatana-appindicator.git
         tag: 0.5.93
 
-  - name: model-board
+  - name: agentmate
     buildsystem: simple
     sources:
       # Placed in flatpak/ directory by CI or local build script
       - type: file
-        path: model-board.deb
+        path: agentmate.deb
       - type: file
         path: com.modelboard.desktop.desktop
       - type: file

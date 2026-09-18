@@ -2,9 +2,9 @@
 
 ## Supported Versions / 支持的版本
 
-Only the latest release of ModelBoard receives security updates.
+Only the latest release of AgentMate receives security updates.
 
-仅最新版本的 ModelBoard 会收到安全更新。
+仅最新版本的 AgentMate 会收到安全更新。
 
 | Version / 版本 | Supported / 是否支持 |
 |----------------|---------------------|
@@ -13,9 +13,9 @@ Only the latest release of ModelBoard receives security updates.
 
 ## Threat Model / 威胁模型
 
-ModelBoard is a local desktop application. It manages configuration files for AI coding CLIs on the user's own machine. There is no project-operated cloud backend, no multi-user model, and no privilege separation from the user who runs it.
+AgentMate is a local desktop application. It manages configuration files for AI coding CLIs on the user's own machine. There is no project-operated cloud backend, no multi-user model, and no privilege separation from the user who runs it.
 
-ModelBoard 是一个本地桌面应用，用于管理本机上各 AI 编程 CLI 的配置文件。本项目不运营任何云端后端，没有多用户模型，也不与运行它的用户之间存在权限隔离。
+AgentMate 是一个本地桌面应用，用于管理本机上各 AI 编程 CLI 的配置文件。本项目不运营任何云端后端，没有多用户模型，也不与运行它的用户之间存在权限隔离。
 
 It does, however, run a **local HTTP proxy** whose listen address and port are user-configurable and **may be bound to a non-loopback interface**. Requests arriving at that listener are untrusted input and are in scope — see Scope below.
 
@@ -40,9 +40,9 @@ The bundled WebView renderer is treated as a trusted component. This is a **scop
 
 **它排除什么、不排除什么。** 不在范围内的是：抵达 IPC 接口的**唯一途径**为**从 DevTools 或本地改造过的前端直接调用**的报告。处于该位置的人已经控制了这台机器。
 
-**Still in scope:** any complete, demonstrable chain in which an *untrusted* source — a `modelboard://` deep link, a remote sync payload, remote data, an inbound proxy request, or an XSS — reaches a high-privilege IPC command. The trust placed in the renderer covers the code we ship, not arbitrary values that flow through it.
+**Still in scope:** any complete, demonstrable chain in which an *untrusted* source — a `agentmate://` deep link, a remote sync payload, remote data, an inbound proxy request, or an XSS — reaches a high-privilege IPC command. The trust placed in the renderer covers the code we ship, not arbitrary values that flow through it.
 
-**仍在范围内**：任何完整、可演示的利用链，其中**不可信来源**——`modelboard://` deeplink、远程同步载荷、远程数据、代理入站请求或 XSS——抵达高权限 IPC 命令。对渲染进程的信任覆盖的是我们发布的代码，而非流经其中的任意值。
+**仍在范围内**：任何完整、可演示的利用链，其中**不可信来源**——`agentmate://` deeplink、远程同步载荷、远程数据、代理入站请求或 XSS——抵达高权限 IPC 命令。对渲染进程的信任覆盖的是我们发布的代码，而非流经其中的任意值。
 
 ### Invalidation triggers / 声明失效条件
 
@@ -69,7 +69,7 @@ Inputs that genuinely cross a trust boundary:
 
 真正跨越信任边界的输入：
 
-- `modelboard://` deep link payloads / deeplink 载荷（由第三方构造，经浏览器抵达）
+- `agentmate://` deep link payloads / deeplink 载荷（由第三方构造，经浏览器抵达）
 - **Inbound requests to the local HTTP proxy**, including from other hosts when it is configured to bind a non-loopback address / **抵达本地 HTTP 代理的入站请求**，包括配置为绑定非 loopback 地址时来自其他主机的请求
 - Remote sync payloads restored from WebDAV / S3 / 从 WebDAV、S3 还原的同步数据
 - Imported files: SQL import/export, provider and MCP config import / 导入文件：SQL 导入导出、供应商与 MCP 配置导入
@@ -104,9 +104,9 @@ Inputs that genuinely cross a trust boundary:
 
 **请不要通过公开的 GitHub Issue 报告安全漏洞。**
 
-Instead, please report them through [GitHub Security Advisories](https://github.com/farion1231/model-board/security/advisories/new).
+Instead, please report them through [GitHub Security Advisories](https://github.com/peter123023/llm-switch/security/advisories/new).
 
-请通过 [GitHub 安全公告](https://github.com/farion1231/model-board/security/advisories/new) 进行报告。
+请通过 [GitHub 安全公告](https://github.com/peter123023/llm-switch/security/advisories/new) 进行报告。
 
 When reporting, please include:
 
@@ -155,6 +155,6 @@ Severity is scored with CVSS (v3.1 or v4.0), and the vector will reflect any req
 
 ## Security Updates / 安全更新
 
-Security fixes are released as patch versions and announced via [GitHub Releases](https://github.com/farion1231/model-board/releases). We recommend always updating to the latest version.
+Security fixes are released as patch versions and announced via [GitHub Releases](https://github.com/peter123023/llm-switch/releases). We recommend always updating to the latest version.
 
-安全修复通过补丁版本发布，并通过 [GitHub Releases](https://github.com/farion1231/model-board/releases) 通知。建议始终更新到最新版本。
+安全修复通过补丁版本发布，并通过 [GitHub Releases](https://github.com/peter123023/llm-switch/releases) 通知。建议始终更新到最新版本。

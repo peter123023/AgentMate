@@ -111,7 +111,7 @@ pub async fn get_credits_balance() -> Result<Value, AppError> {
         // （403 code=10085「请求不合法」），reqwest 默认不带 UA，必须显式设置。
         .header(
             "User-Agent",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ModelBoard",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AgentMate",
         )
         .bearer_auth(&auth.access_token)
         .header("Accept-Language", "zh-CN")

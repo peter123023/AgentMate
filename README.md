@@ -1,6 +1,6 @@
 <div align="center">
 
-# ModelBoard
+# AgentMate
 
 ### Claude Code、Claude Desktop、Codex、Gemini CLI、Grok Build、OpenCode、OpenClaw 和 Hermes Agent 的全方位管理工具
 
@@ -12,13 +12,13 @@
 
 ## 致谢
 
-> **ModelBoard** 基于 [farion1231](https://github.com/farion1231) 的 [CC Switch](https://github.com/farion1231/cc-switch) 开发（本仓库为其 fork）。我们由衷感谢原作者打造出如此强大且架构优秀的工具——ModelBoard 正是站在 CC Switch 坚实的基础上才得以诞生。
+> **AgentMate** 基于 [farion1231](https://github.com/farion1231) 的 [CC Switch](https://github.com/farion1231/cc-switch) 开发（本仓库为其 fork）。我们由衷感谢原作者打造出如此强大且架构优秀的工具——AgentMate 正是站在 CC Switch 坚实的基础上才得以诞生。
 
-## 为什么选择 ModelBoard？
+## 为什么选择 AgentMate？
 
 现代 AI 编程依赖于 Claude Code、Claude Desktop、Codex、Gemini CLI、Grok Build、OpenCode、OpenClaw 和 Hermes 等工具——但每个工具都有自己的配置格式。切换 API 供应商意味着手动编辑 JSON、TOML 或 `.env` 文件，而在多个工具之间缺乏一个统一管理 MCP, SKILLS 的方式。
 
-**ModelBoard** 为你提供一个桌面应用来管理所有支持的 AI 工具。无需手动编辑配置文件，你将获得一个可视化界面，一键将供应商导入应用，一键在不同的供应商之间进行切换，内置 50+ 供应商预设、统一的 MCP, SKILLS 管理以及系统托盘即时切换功能——所有操作都基于可靠的 SQLite 数据库和原子写入机制，保护你的配置不被损坏。
+**AgentMate** 为你提供一个桌面应用来管理所有支持的 AI 工具。无需手动编辑配置文件，你将获得一个可视化界面，一键将供应商导入应用，一键在不同的供应商之间进行切换，内置 50+ 供应商预设、统一的 MCP, SKILLS 管理以及系统托盘即时切换功能——所有操作都基于可靠的 SQLite 数据库和原子写入机制，保护你的配置不被损坏。
 
 - **一个应用，八个工具** — 在单一界面中管理 Claude Code、Claude Desktop、Codex、Gemini CLI、Grok Build、OpenCode、OpenClaw 和 Hermes
 - **告别手动编辑** — 50+ 供应商预设，包括 AWS Bedrock、NVIDIA NIM 和社区中转服务；一键即可切换
@@ -67,15 +67,15 @@
 ### 系统与平台
 
 - **云同步** — 自定义配置目录（Dropbox、OneDrive、iCloud、坚果云、NAS）及 WebDAV 服务器同步
-- **Deep Link** (`modelboard://`) — 通过 URL 一键导入供应商、MCP 服务器、提示词和技能
+- **Deep Link** (`agentmate://`) — 通过 URL 一键导入供应商、MCP 服务器、提示词和技能
 - 深色 / 浅色 / 跟随系统主题、开机自启、自动更新、原子写入、自动备份、国际化（简中/繁中/英/日）
 
 ## 常见问题
 
 <details>
-<summary><strong>ModelBoard 支持哪些 AI 工具？</strong></summary>
+<summary><strong>AgentMate 支持哪些 AI 工具？</strong></summary>
 
-ModelBoard 支持八个工具：**Claude Code**、**Claude Desktop**、**Codex**、**Gemini CLI**、**Grok Build**、**OpenCode**、**OpenClaw** 和 **Hermes**。每个工具都有专属的供应商预设和配置管理。
+AgentMate 支持八个工具：**Claude Code**、**Claude Desktop**、**Codex**、**Gemini CLI**、**Grok Build**、**OpenCode**、**OpenClaw** 和 **Hermes**。每个工具都有专属的供应商预设和配置管理。
 
 </details>
 
@@ -89,14 +89,14 @@ ModelBoard 支持八个工具：**Claude Code**、**Claude Desktop**、**Codex**
 <details>
 <summary><strong>切换供应商之后我的插件配置怎么不见了？</strong></summary>
 
-ModelBoard 使用“通用配置片段”功能，在不同的供应商之间传递 Key 和请求地址之外的通用数据，您可以在“编辑供应商”菜单的“通用配置面板”里，点击“从当前供应商提取”，把所有的通用数据提取到通用配置中，之后在新建“供应商”的时候，只要勾选“应用通用配置”（默认勾选），就会把插件等数据写入到新的供应商配置中。您的所有配置项都会保存在运行本软件的时候，第一次导入的默认供应商里面，不会丢失。
+AgentMate 使用“通用配置片段”功能，在不同的供应商之间传递 Key 和请求地址之外的通用数据，您可以在“编辑供应商”菜单的“通用配置面板”里，点击“从当前供应商提取”，把所有的通用数据提取到通用配置中，之后在新建“供应商”的时候，只要勾选“应用通用配置”（默认勾选），就会把插件等数据写入到新的供应商配置中。您的所有配置项都会保存在运行本软件的时候，第一次导入的默认供应商里面，不会丢失。
 
 </details>
 
 <details>
 <summary><strong>macOS 安装</strong></summary>
 
-ModelBoard macOS 版本已通过 Apple 代码签名和公证，可直接下载安装，无需额外操作。推荐使用 `.dmg` 安装包。
+AgentMate macOS 版本已通过 Apple 代码签名和公证，可直接下载安装，无需额外操作。推荐使用 `.dmg` 安装包。
 
 </details>
 
@@ -177,27 +177,27 @@ CC_SWITCH_GDK_BACKEND=wayland ./CC-Switch-*.AppImage
 **方式一：通过 Homebrew 安装（推荐）**
 
 ```bash
-brew install --cask model-board
+brew install --cask agentmate
 ```
 
 更新：
 
 ```bash
-brew upgrade --cask model-board
+brew upgrade --cask agentmate
 ```
 
 **方式二：手动下载**
 
 从 [Releases](../../releases) 页面下载 `CC-Switch-v{版本号}-macOS.dmg`（推荐）或 `.zip`。
 
-> **注意**：ModelBoard macOS 版本已通过 Apple 代码签名和公证，可直接安装打开。
+> **注意**：AgentMate macOS 版本已通过 Apple 代码签名和公证，可直接安装打开。
 
 ### Arch Linux 用户
 
 **通过 paru 安装（推荐）**
 
 ```bash
-paru -S model-board-bin
+paru -S agentmate-bin
 ```
 
 ### Linux 用户

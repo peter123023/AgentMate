@@ -2,7 +2,7 @@
  * WorkBuddy provider presets configuration.
  *
  * WorkBuddy stores its model list as a JSON array in `~/.workbuddy/models.json`.
- * Each ModelBoard provider maps 1:1 to an entry in that array, so a preset's
+ * Each AgentMate provider maps 1:1 to an entry in that array, so a preset's
  * `settingsConfig` is exactly one models.json entry:
  *
  * ```json
@@ -20,7 +20,7 @@
  * ```
  *
  * `id` is filled in by the backend (`workbuddy_config::set_provider`) from the
- * provider id, and the entry `name` follows the ModelBoard provider name.
+ * provider id, and the entry `name` follows the AgentMate provider name.
  *
  * NOTE: WorkBuddy 客户端请求统一走 OpenAI 兼容协议（真实 models.json 中
  * vendor 均为 "Custom"，端点按各渠道官方 OpenAI 兼容 URL 填写）。

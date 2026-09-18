@@ -25,7 +25,7 @@ interface AppSwitcherProps {
   visibleApps?: VisibleApps;
 }
 
-const STORAGE_KEY = "model-board-last-app";
+const STORAGE_KEY = "agentmate-last-app";
 
 const APP_ICON_NAME: Record<AppId, string> = {
   claude: "claude",

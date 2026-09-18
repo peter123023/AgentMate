@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Generates the website download manifest (manifest.json) from a directory of
-// downloaded release assets. Consumed by modelboard.io/download. The manifest
+// downloaded release assets. Consumed by agentmate.app/download. The manifest
 // schema is mirrored in model-board-website/src/lib/downloads.ts — keep both in
 // sync when changing fields or classification rules.
 //

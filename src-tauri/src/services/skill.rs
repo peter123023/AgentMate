@@ -65,7 +65,7 @@ pub enum SyncMethod {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum SkillStorageLocation {
-    /// ModelBoard 管理目录 (~/.model-board/skills/)
+    /// AgentMate 管理目录 (~/.model-board/skills/)
     #[default]
     CcSwitch,
     /// Agent Skills 统一标准目录 (~/.agents/skills/)
@@ -1028,7 +1028,7 @@ impl SkillService {
                     .map(|path| path.to_string_lossy().to_string());
 
                     // Pi 目录可能包含用户自己维护的同名 Skill。删除 SSOT 前仅移除
-                    // 能验证为 ModelBoard 部署的副本；其余路径保留并返回警告。
+                    // 能验证为 AgentMate 部署的副本；其余路径保留并返回警告。
                     if let Some(destination) = pi_removal_path {
                         let removal =
                             Self::remove_verified_pi_destination(&source, &destination, &directory);
@@ -1873,7 +1873,7 @@ impl SkillService {
 
     /// 扫描未管理的 Skills
     ///
-    /// 扫描各应用目录，找出未被 ModelBoard 管理的 Skills
+    /// 扫描各应用目录，找出未被 AgentMate 管理的 Skills
     pub fn scan_unmanaged(db: &Arc<Database>) -> Result<Vec<UnmanagedSkill>> {
         let _state_guard = skill_state_read_guard();
         let managed_skills = db.get_all_installed_skills()?;
@@ -1937,7 +1937,7 @@ impl SkillService {
 
     /// 从应用目录导入 Skills
     ///
-    /// 将未管理的 Skills 导入到 ModelBoard 统一管理
+    /// 将未管理的 Skills 导入到 AgentMate 统一管理
     pub fn import_from_apps(
         db: &Arc<Database>,
         imports: Vec<ImportSkillSelection>,

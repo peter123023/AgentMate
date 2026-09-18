@@ -9,7 +9,7 @@ pub enum AppError {
     Config(String),
     #[error("无效输入: {0}")]
     InvalidInput(String),
-    /// Native files changed after ModelBoard last read them.
+    /// Native files changed after AgentMate last read them.
     #[error("并发冲突: {0}")]
     Conflict(String),
     #[error("IO 错误: {path}: {source}")]

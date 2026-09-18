@@ -407,7 +407,7 @@ describe("PiProviderForm", () => {
       target: { value: "json-provider" },
     });
     fireEvent.change(screen.getByLabelText("provider.name"), {
-      target: { value: "ModelBoard label" },
+      target: { value: "AgentMate label" },
     });
 
     const configEditor = screen.getByLabelText("provider.configJson");
@@ -703,8 +703,8 @@ describe("PiProviderForm", () => {
       api: "openai-completions",
       baseUrl: "https://api.example.com/v1",
       headers: {
-        "HTTP-Referer": "https://model-board.example",
-        "X-Title": "ModelBoard",
+        "HTTP-Referer": "https://agentmate.example",
+        "X-Title": "AgentMate",
       },
       models: [completeModel("model-a", "Model A")],
     };
@@ -732,7 +732,7 @@ describe("PiProviderForm", () => {
       screen
         .getAllByLabelText("Value")
         .map((element) => element.getAttribute("value")),
-    ).toEqual(["https://model-board.example", "ModelBoard"]);
+    ).toEqual(["https://agentmate.example", "AgentMate"]);
 
     fireEvent.click(
       screen.getByRole("button", { name: "Save existing headers" }),
@@ -765,7 +765,7 @@ describe("PiProviderForm", () => {
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit.mock.calls[0][0]).toMatchObject({
-      providerKey: "model-board-kimi",
+      providerKey: "agentmate-kimi",
       name: "Kimi",
       presetCategory: "cn_official",
     });
@@ -1959,7 +1959,7 @@ describe("PiProviderForm", () => {
     render(
       <PiProviderForm
         appId="pi"
-        providerId="model-board-kimi"
+        providerId="agentmate-kimi"
         submitLabel="Save external Kimi node"
         onSubmit={onSubmit}
         onCancel={() => {}}
@@ -2163,7 +2163,7 @@ describe("PiProviderForm", () => {
         submitLabel="Save unnamed provider"
         onSubmit={onSubmit}
         onCancel={() => {}}
-        initialData={{ name: "ModelBoard label", settingsConfig: input }}
+        initialData={{ name: "AgentMate label", settingsConfig: input }}
       />,
     );
 
@@ -2189,12 +2189,12 @@ describe("PiProviderForm", () => {
         submitLabel="Save independent name"
         onSubmit={onSubmit}
         onCancel={() => {}}
-        initialData={{ name: "ModelBoard label", settingsConfig: input }}
+        initialData={{ name: "AgentMate label", settingsConfig: input }}
       />,
     );
 
     expect(screen.getByLabelText("provider.name")).toHaveValue(
-      "ModelBoard label",
+      "AgentMate label",
     );
     fireEvent.click(
       screen.getByRole("button", { name: "Save independent name" }),
