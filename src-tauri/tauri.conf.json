@@ -65,7 +65,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IENGRDk4NzJDMTczNzM3QTYKUldTbU56Y1hMSWZaejkxNjJ6VDVGdHJLVlZseGZBdEwxOVlpTGYrZi9mNEJmV240RlFKSGRBd0gK",
       "endpoints": [
-        "https://github.com/peter123023/llm-switch/releases/latest/download/latest.json"
+        "https://github.com/peter123023/AgentMate/releases/latest/download/latest.json"
       ]
     }
   }

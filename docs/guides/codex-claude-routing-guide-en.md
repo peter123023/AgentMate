@@ -126,4 +126,4 @@ Before using this in the "company bans the client but keeps only the gateway" sc
 - [AgentMate User Manual: Proxy Service](../user-manual/en/4-proxy/4.1-service.md)
 - [AgentMate User Manual: App Routing](../user-manual/en/4-proxy/4.2-routing.md)
 - [AgentMate v3.17.0 Release Notes](../release-notes/v3.17.0-en.md)
-- This feature comes from community contribution [#5071](https://github.com/peter123023/llm-switch/pull/5071); thanks @yeeyzy.
+- This feature comes from community contribution [#5071](https://github.com/peter123023/AgentMate/pull/5071); thanks @yeeyzy.

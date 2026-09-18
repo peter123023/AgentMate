@@ -130,5 +130,5 @@
 
 欢迎提交 Issue 或 PR 改进文档：
 
-- [GitHub Issues](https://github.com/peter123023/llm-switch/issues)
-- [GitHub Repository](https://github.com/peter123023/llm-switch)
+- [GitHub Issues](https://github.com/peter123023/AgentMate/issues)
+- [GitHub Repository](https://github.com/peter123023/AgentMate)

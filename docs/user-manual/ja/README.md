@@ -130,5 +130,5 @@ AgentMate ユーザーマニュアル
 
 Issue や PR でドキュメントの改善にご協力ください：
 
-- [GitHub Issues](https://github.com/peter123023/llm-switch/issues)
-- [GitHub Repository](https://github.com/peter123023/llm-switch)
+- [GitHub Issues](https://github.com/peter123023/AgentMate/issues)
+- [GitHub Repository](https://github.com/peter123023/AgentMate)

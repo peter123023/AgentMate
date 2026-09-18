@@ -126,4 +126,4 @@ API エンドポイントを確認してください。ゲートウェイのル�
 - [AgentMate ユーザーマニュアル: プロキシサービス](../user-manual/ja/4-proxy/4.1-service.md)
 - [AgentMate ユーザーマニュアル: アプリケーションルーティング](../user-manual/ja/4-proxy/4.2-routing.md)
 - [AgentMate v3.17.0 リリースノート](../release-notes/v3.17.0-ja.md)
-- この機能はコミュニティからの貢献 [#5071](https://github.com/peter123023/llm-switch/pull/5071) によるものです。@yeeyzy に感謝します。
+- この機能はコミュニティからの貢献 [#5071](https://github.com/peter123023/AgentMate/pull/5071) によるものです。@yeeyzy に感謝します。

@@ -605,7 +605,7 @@ jobs:
           body: |
             ## AgentMate ${{ github.ref_name }}
 
-            🌐 **Only Official Website / 唯一官方网站 / 唯一の公式サイト**: [agentmate.app](https://github.com/peter123023/llm-switch)
+            🌐 **Only Official Website / 唯一官方网站 / 唯一の公式サイト**: [agentmate.app](https://github.com/peter123023/AgentMate)
 
             Claude Code 供应商切换工具
 

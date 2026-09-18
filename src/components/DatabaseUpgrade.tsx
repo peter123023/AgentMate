@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const RELEASES_URL = "https://github.com/peter123023/llm-switch/releases";
+const RELEASES_URL = "https://github.com/peter123023/AgentMate/releases";
 
 interface DatabaseUpgradeProps {
   payload: {

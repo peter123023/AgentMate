@@ -873,7 +873,7 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
               size="sm"
               onClick={() =>
                 settingsApi.openExternal(
-                  "https://github.com/peter123023/llm-switch",
+                  "https://github.com/peter123023/AgentMate",
                 )
               }
               className="h-8 gap-1.5 text-xs"

@@ -399,7 +399,7 @@ Eröffnen Sie für neue Funktionen bitte vor dem Einreichen eines PR ein Issue z
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=peter123023/llm-switch&type=Date)](https://www.star-history.com/#peter123023/llm-switch&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=peter123023/AgentMate&type=Date)](https://www.star-history.com/#peter123023/AgentMate&Date)
 
 ## Lizenz
 

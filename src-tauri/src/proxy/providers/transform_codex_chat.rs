@@ -4631,7 +4631,7 @@ mod tests {
         assert_eq!(result["error"]["type"], "upstream_error");
     }
     // Regression tests for tool_choice without tools guard
-    // https://github.com/peter123023/llm-switch/issues/3557
+    // https://github.com/peter123023/AgentMate/issues/3557
 
     #[test]
     fn responses_request_to_chat_drops_tool_choice_when_no_tools() {
