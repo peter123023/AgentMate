@@ -9,7 +9,8 @@
     "workspace": "ワークスペース",
     "env": "環境",
     "tools": "ツール",
-    "agents": "Agents"
+    "agents": "Agents",
+    "notify": "通知"
   },
   "app": {
     "title": "ModelBoard",
@@ -942,7 +943,24 @@
       "defaultCostMultiplierRequired": "デフォルト倍率は必須です",
       "defaultCostMultiplierInvalid": "デフォルト倍率の形式が正しくありません"
     },
-    "saveFailedGeneric": "保存に失敗しました。もう一度お試しください"
+    "saveFailedGeneric": "保存に失敗しました。もう一度お試しください",
+    "toolInstalledLabel": "インストール済み",
+    "toolStatusTitle": "インストール状態",
+    "toolStatusChecking": "確認中…",
+    "toolStatusBroken": "インストール済み・実行不可",
+    "toolInstallFailedShort": "インストール失敗",
+    "toolStatusInstalling": "インストール中…",
+    "toolStatusUpdating": "更新中…",
+    "toolStatusVersion": "バージョン",
+    "toolStatusRecheck": "再検出",
+    "toolStatusRetry": "再インストール",
+    "toolManualInstallHint": "ワンクリックインストールに失敗しました。ターミナルで次を実行してください:",
+    "toolStatusCopyCommand": "コマンドをコピー",
+    "toolStatusCopyFailed": "コピーに失敗",
+    "toolStatusDocs": "インストール手順",
+    "toolStatusInstallDone": "インストール完了",
+    "toolStatusUpdateDone": "更新完了",
+    "toolStatusInstalledButBroken": "インストール済みですが実行できません"
   },
   "apps": {
     "claude": "Claude",
@@ -979,6 +997,12 @@
     "collapse": "サイドバーを折りたたむ",
     "expand": "サイドバーを展開",
     "pin": "先頭に固定"
+  },
+  "window": {
+    "close": "ウインドウを閉じる",
+    "minimize": "最小化",
+    "maximize": "最大化/元に戻す",
+    "fullscreen": "フルスクリーン切替"
   },
   "pi": {
     "empty": {
@@ -2832,7 +2856,40 @@
     "skillsFailedDescription": "Skills 画面で「既存をインポート」をクリックして手動でインポートしてください（または再起動して再試行）。"
   },
   "agents": {
-    "title": "エージェント"
+    "title": "エージェント",
+    "completionNotice": {
+      "title": "{{provider}} のタスクが完了しました",
+      "subtitle": "{{project}}",
+      "noProject": "プロジェクトなし",
+      "open": "{{provider}} を開く",
+      "dismiss": "閉じる",
+      "justNow": "たった今",
+      "minutesAgo": "{{value}} 分前"
+    },
+    "notificationSettings": {
+      "title": "完了通知",
+      "subtitle": "エージェントごとに通知・通知音・色を設定",
+      "on": "オン",
+      "off": "オフ",
+      "enable": "タスク完了時に通知する",
+      "sound": "通知音",
+      "color": "通知の色",
+      "resetColor": "既定の色に戻す",
+      "sound_none": "ミュート",
+      "sound_system": "システム音",
+      "sound_chime": "チャイム",
+      "sound_bell": "ベル",
+      "sound_pop": "ポップ",
+      "sound_success": "成功音",
+      "color_default": "エージェントのブランド色",
+      "color_blue": "ブルー",
+      "color_violet": "バイオレット",
+      "color_cyan": "シアン",
+      "color_emerald": "エメラルド",
+      "color_amber": "アンバー",
+      "color_rose": "ローズ",
+      "color_slate": "スレート"
+    }
   },
   "health": {
     "operational": "正常",
@@ -2859,6 +2916,11 @@
   "proxy": {
     "routingStatusActive": "ルーティング有効",
     "routingStatusIdle": "ダイレクトモード",
+    "routingStatusActiveTip": "{{app}} はローカルルーティングが引き継いでいます",
+    "routingStatusActiveTipDesc": "リクエストはローカルプロキシ経由で転送され、使用プロバイダーはルーティングが決定します。フェイルオーバーも有効です。",
+    "routingStatusIdleTip": "{{app}} はダイレクトモードです",
+    "routingStatusIdleTipDesc": "リクエストはローカルプロキシを経由せず、プロバイダーへ直接送信されます。ルーティングとフェイルオーバーは適用されません。",
+    "routingStatusIdleTipDescUnavailable": "リクエストはローカルプロキシを経由せず、プロバイダーへ直接送信されます。このアプリはルーティング引き継ぎに対応していません。",
     "panel": {
       "serviceAddress": "サービスアドレス",
       "addressCopied": "アドレスをコピーしました",

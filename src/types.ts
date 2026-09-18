@@ -459,6 +459,10 @@ export interface Settings {
   // Linux: "gnome-terminal" | "konsole" | "xfce4-terminal" | "alacritty" | "kitty" | "ghostty"
   preferredTerminal?: string;
 
+  // ===== Agent 完成通知（按 provider 独立配置）=====
+  /** provider_id -> 通知配置；未出现的 provider 走默认（开启/无声音/品牌色） */
+  agentNotifications?: Record<string, AgentNotificationSetting>;
+
   // ===== 本机自动迁移状态 =====
   localMigrations?: {
     codexThirdPartyHistoryProviderBucketV1?: {
@@ -487,6 +491,41 @@ export interface SessionMessage {
   role: string;
   content: string;
   ts?: number;
+}
+
+/** 后端上报的「agent 完成一轮任务」通知，供菜单栏提示窗口渲染。 */
+export interface AgentCompletion {
+  providerId: string;
+  sessionId: string;
+  title: string;
+  summary?: string | null;
+  projectDir?: string | null;
+  sourcePath?: string | null;
+  resumeCommand?: string | null;
+  /** 完成时刻（毫秒时间戳） */
+  completedAt: number;
+  /** 该 agent 配置的提示音，见 AgentNotificationSound */
+  sound?: AgentNotificationSound | null;
+  /** 通知卡主题色覆盖（CSS 颜色）。缺省用 provider 品牌色 */
+  color?: string | null;
+}
+
+/** 完成提示音：none 静音；其余为内置音效（前端合成） */
+export type AgentNotificationSound =
+  | "none"
+  | "system"
+  | "chime"
+  | "bell"
+  | "pop"
+  | "success";
+
+/** 单个 agent 的完成通知配置（对应后端 AgentNotificationSetting） */
+export interface AgentNotificationSetting {
+  /** 是否在该 agent 任务完成后弹通知（默认开启） */
+  enabled: boolean;
+  sound: AgentNotificationSound;
+  /** 通知卡主题色覆盖，undefined 用品牌色 */
+  color?: string | null;
 }
 
 // MCP 服务器连接参数（宽松：允许扩展字段）

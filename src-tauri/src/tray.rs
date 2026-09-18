@@ -52,8 +52,11 @@ static TRAY_SECTION_SUBMENUS: Lazy<
 #[derive(Clone, Copy)]
 pub struct TrayTexts {
     pub show_main: &'static str,
+    // 以下两项对应已隐藏的「打开官方网站」「轻量模式」菜单项，恢复菜单时一并移除注解
+    #[allow(dead_code)]
     pub open_website: &'static str,
     pub no_providers_label: &'static str,
+    #[allow(dead_code)]
     pub lightweight_mode: &'static str,
     pub quit: &'static str,
     pub _auto_label: &'static str,
@@ -708,22 +711,19 @@ pub fn create_tray_menu(
     let mut section_handles: std::collections::HashMap<AppType, Submenu<tauri::Wry>> =
         std::collections::HashMap::new();
 
-    // 顶部：打开主界面 / 打开官方网站
+    // 顶部：打开主界面（「打开官方网站」暂时隐藏，恢复时取消下方注释）
     let show_main_item =
         MenuItem::with_id(app, "show_main", tray_texts.show_main, true, None::<&str>)
             .map_err(|e| AppError::Message(format!("创建打开主界面菜单失败: {e}")))?;
-    let open_website_item = MenuItem::with_id(
-        app,
-        "open_website",
-        tray_texts.open_website,
-        true,
-        None::<&str>,
-    )
-    .map_err(|e| AppError::Message(format!("创建打开官方网站菜单失败: {e}")))?;
-    menu_builder = menu_builder
-        .item(&show_main_item)
-        .item(&open_website_item)
-        .separator();
+    // let open_website_item = MenuItem::with_id(
+    //     app,
+    //     "open_website",
+    //     tray_texts.open_website,
+    //     true,
+    //     None::<&str>,
+    // )
+    // .map_err(|e| AppError::Message(format!("创建打开官方网站菜单失败: {e}")))?;
+    menu_builder = menu_builder.item(&show_main_item).separator();
 
     // Pre-compute proxy running state (used to disable official providers in tray menu)
     let is_proxy_running = futures::executor::block_on(app_state.proxy_service.is_running());
@@ -894,17 +894,18 @@ pub fn create_tray_menu(
         }
     }
 
-    let lightweight_item = CheckMenuItem::with_id(
-        app,
-        "lightweight_mode",
-        tray_texts.lightweight_mode,
-        true,
-        crate::lightweight::is_lightweight_mode(),
-        None::<&str>,
-    )
-    .map_err(|e| AppError::Message(format!("创建轻量模式菜单失败: {e}")))?;
-
-    menu_builder = menu_builder.item(&lightweight_item).separator();
+    // 「轻量模式」暂时隐藏，恢复时取消下方注释
+    // let lightweight_item = CheckMenuItem::with_id(
+    //     app,
+    //     "lightweight_mode",
+    //     tray_texts.lightweight_mode,
+    //     true,
+    //     crate::lightweight::is_lightweight_mode(),
+    //     None::<&str>,
+    // )
+    // .map_err(|e| AppError::Message(format!("创建轻量模式菜单失败: {e}")))?;
+    //
+    // menu_builder = menu_builder.item(&lightweight_item).separator();
 
     // 退出菜单（分隔符已在上面的 section 循环中添加）
     let quit_item = MenuItem::with_id(app, "quit", tray_texts.quit, true, None::<&str>)

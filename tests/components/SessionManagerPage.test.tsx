@@ -275,7 +275,7 @@ describe("SessionManagerPage", () => {
 
     openSearch();
 
-    fireEvent.change(screen.getByRole("textbox"), {
+    fireEvent.change(screen.getByRole("textbox", { name: /search|搜索/i }), {
       target: { value: "Alpha" },
     });
 
@@ -350,7 +350,7 @@ describe("SessionManagerPage", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /批量管理/i }));
     openSearch();
-    fireEvent.change(screen.getByRole("textbox"), {
+    fireEvent.change(screen.getByRole("textbox", { name: /search|搜索/i }), {
       target: { value: "NoSuchSession" },
     });
 
@@ -374,7 +374,7 @@ describe("SessionManagerPage", () => {
     expect(screen.getByText("已选 3 项")).toBeInTheDocument();
 
     openSearch();
-    fireEvent.change(screen.getByRole("textbox"), {
+    fireEvent.change(screen.getByRole("textbox", { name: /search|搜索/i }), {
       target: { value: "Alpha" },
     });
 

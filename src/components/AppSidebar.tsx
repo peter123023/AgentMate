@@ -1,30 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ArrowUpToLine,
-  ChevronsLeft,
-  ChevronsRight,
-  Settings,
-} from "lucide-react";
+import { ArrowUpToLine, Settings } from "lucide-react";
 import type { AppId } from "@/lib/api";
 import type { VisibleApps } from "@/types";
 import { cn } from "@/lib/utils";
 import { AppGlyph } from "@/components/AppSwitcher";
 import { OverviewIcon } from "@/components/OverviewIcon";
-import appIcon from "@/assets/icons/app-icon.png";
 import { APP_IDS } from "@/config/appConfig";
-import {
-  playTypeClick,
-  tickVibrate,
-  warmupAudioFeedback,
-} from "@/lib/typewriterFeedback";
 
-const COLLAPSE_STORAGE_KEY = "model-board-sidebar-collapsed";
 const PINNED_APPS_STORAGE_KEY = "model-board-sidebar-pinned-apps";
 
-// 打字/擦除逐字间隔；侧边栏宽度过渡时长 = 字数 × 间隔，保证两者同步
-const TYPE_INTERVAL_MS = 45;
-const ERASE_INTERVAL_MS = 100;
+// 打字/擦除逐字间隔；侧边栏宽度过渡时长 = 字数 × 间隔，保证两者同步。
+// 顶部横栏的品牌行（App.tsx）复用同一组间隔，使两处动画节奏一致。
+export const TYPE_INTERVAL_MS = 45;
+export const ERASE_INTERVAL_MS = 100;
 
 interface AppSidebarProps {
   activeApp: AppId;
@@ -34,9 +23,15 @@ interface AppSidebarProps {
   settingsActive?: boolean;
   onOpenHome: () => void;
   homeActive?: boolean;
-  /** 顶部拖拽标题栏高度：侧边栏向上延伸覆盖它，让右侧分割线贯通到窗口顶 */
-  dragBarHeight?: number;
+  /** 当前侧边栏宽度（展开 192 / 收起 48），供外部绘制需与栏宽对齐的装饰层 */
+  onWidthChange?: (width: number) => void;
+  /** 受控的收起状态：由 App 顶部横栏的品牌行切换按钮驱动，侧边栏与横栏共享 */
+  collapsed?: boolean;
 }
+
+/** 侧边栏展开/收起宽度，供外部对齐使用 */
+export const SIDEBAR_EXPANDED_WIDTH = 192;
+export const SIDEBAR_COLLAPSED_WIDTH = 48;
 
 export function AppSidebar({
   activeApp,
@@ -46,59 +41,22 @@ export function AppSidebar({
   settingsActive,
   onOpenHome,
   homeActive,
-  dragBarHeight = 0,
+  onWidthChange,
+  collapsed = false,
 }: AppSidebarProps) {
   const { t } = useTranslation();
-  const [collapsed, setCollapsed] = useState(
-    () => localStorage.getItem(COLLAPSE_STORAGE_KEY) === "true",
-  );
 
-  // 品牌标题打字机效果：展开时逐字打出，收起时逐字收回
+  // 宽度过渡时长：与标题字数联动，使栏宽动画与品牌行文字动画同步
   const title = t("app.title");
-  const [visibleChars, setVisibleChars] = useState(() =>
-    collapsed ? 0 : title.length,
-  );
+  const widthTransitionMs =
+    title.length * (collapsed ? ERASE_INTERVAL_MS : TYPE_INTERVAL_MS);
 
+  // 上报当前宽度，供外部绘制需与栏宽对齐的装饰层（如顶部横栏底色）
   useEffect(() => {
-    const target = collapsed ? 0 : title.length;
-    const interval = window.setInterval(
-      () => {
-        setVisibleChars((prev) => {
-          const next = collapsed
-            ? Math.max(target, prev - 1)
-            : Math.min(target, prev + 1);
-          if (next !== prev) {
-            playTypeClick();
-            tickVibrate();
-          }
-          if (next === target) window.clearInterval(interval);
-          return next;
-        });
-      },
-      collapsed ? ERASE_INTERVAL_MS : TYPE_INTERVAL_MS,
+    onWidthChange?.(
+      collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_EXPANDED_WIDTH,
     );
-    return () => window.clearInterval(interval);
-  }, [collapsed, title]);
-
-  // 宽度过渡时长与字母动画总时长一致，展开/收起时两者同步进行
-  const widthTransitionMs = title.length * (collapsed ? ERASE_INTERVAL_MS : TYPE_INTERVAL_MS);
-
-  // 箭头图标方向延迟切换：等字母动画和宽度动画到位后才翻转方向
-  const [iconCollapsed, setIconCollapsed] = useState(collapsed);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => setIconCollapsed(collapsed), widthTransitionMs);
-    return () => window.clearTimeout(timer);
-  }, [collapsed, widthTransitionMs]);
-
-  const handleToggle = () => {
-    const next = !collapsed;
-    setCollapsed(next);
-    localStorage.setItem(COLLAPSE_STORAGE_KEY, String(next));
-    // 打字声由 interval 回调播放（不在手势栈内），需在点击时预热
-    // AudioContext，否则 WebView 自动播放策略可能使其保持 suspended（静音）
-    warmupAudioFeedback();
-  };
+  }, [collapsed, onWidthChange]);
 
   // 置顶的 Agent 列表（有序，新的置顶插到最前），持久化到 localStorage
   const [pinnedApps, setPinnedApps] = useState<AppId[]>(() => {
@@ -136,58 +94,25 @@ export function AppSidebar({
   return (
     <aside
       className={cn(
-        "flex shrink-0 flex-col border-r border-border bg-sidebar",
-        // 负 margin 抵消根容器的 pb-4，配合负 marginTop 覆盖标题栏区，使 border-r 贯通窗口上下
-        "-mb-4 pb-4",
+        // 窗口骨架：位于 App.tsx 根容器（flex-col）的第二行，顶部横栏之外，
+        // 无需再做红绿灯/横栏避让；品牌行在横栏内，导航从侧边栏顶部直接开始。
+        "relative flex shrink-0 flex-col border-r border-border bg-sidebar",
         "transition-[width] ease-in-out",
         collapsed ? "w-12" : "w-48",
       )}
+      data-sidebar-width={
+        collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_EXPANDED_WIDTH
+      }
       style={{
         transitionDuration: `${widthTransitionMs}ms`,
-        marginTop: -dragBarHeight,
-        paddingTop: dragBarHeight,
       }}
     >
-      {/* 顶部：品牌 Logo + 标题（水平居中） + 收起按钮（右侧），始终单行 */}
-      <div className="relative flex h-12 shrink-0 items-center justify-end border-b border-border bg-sidebar px-2">
-        <div className="pointer-events-none absolute inset-y-0 left-0 right-8 flex items-center justify-center gap-2 overflow-hidden">
-          {!collapsed && (
-            <img
-              src={appIcon}
-              alt=""
-              aria-hidden="true"
-              className="h-5 w-5 shrink-0 rounded-[5px] object-contain shadow-sm ring-1 ring-border/60"
-            />
-          )}
-          <span
-            className="truncate text-base font-bold tracking-tight"
-            aria-label={title}
-          >
-            {title.slice(0, visibleChars)}
-          </span>
-        </div>
-        <button
-          type="button"
-          onClick={handleToggle}
-          aria-expanded={!collapsed}
-          title={iconCollapsed ? t("sidebar.expand") : t("sidebar.collapse")}
-          aria-label={iconCollapsed ? t("sidebar.expand") : t("sidebar.collapse")}
-          className={cn(
-            "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground",
-            "transition-colors duration-150 hover:bg-muted/50 hover:text-foreground",
-          )}
-        >
-          {iconCollapsed ? (
-            <ChevronsRight size={18} className="shrink-0" />
-          ) : (
-            <ChevronsLeft size={18} className="shrink-0" />
-          )}
-        </button>
-      </div>
+      {/* 品牌行已移至 App.tsx 的顶部横栏内渲染（与原生红绿灯同一栏），
+          此处不再渲染，导航直接从侧边栏顶部开始。 */}
 
       {/* 固定入口：概览（全局视图，不属于任何 Agent）已移至底部与设置并排 */}
 
-      <nav className="scrollbar-visible flex-1 space-y-0.5 overflow-y-auto p-2">
+      <nav className="scrollbar-visible relative z-10 flex-1 space-y-0.5 overflow-y-auto p-2">
         {orderedApps.map((app, index) => {
           const isActive = app === activeApp;
           const label = t(`apps.${app}`);
@@ -248,7 +173,7 @@ export function AppSidebar({
       {/* 底部固定入口：设置（左）+ 概览（右）并排 */}
       <div
         className={cn(
-          "flex shrink-0 bg-sidebar",
+          "relative z-10 flex shrink-0",
           collapsed ? "gap-0.5 p-1" : "gap-1 p-2",
         )}
       >

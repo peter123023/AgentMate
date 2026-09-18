@@ -9,7 +9,8 @@
     "workspace": "Workspace",
     "env": "Env",
     "tools": "Tools",
-    "agents": "Agents"
+    "agents": "Agents",
+    "notify": "Notify"
   },
   "app": {
     "title": "ModelBoard",
@@ -942,7 +943,24 @@
       "defaultCostMultiplierRequired": "Default multiplier is required",
       "defaultCostMultiplierInvalid": "Invalid multiplier format"
     },
-    "saveFailedGeneric": "Save failed, please try again"
+    "saveFailedGeneric": "Save failed, please try again",
+    "toolInstalledLabel": "Installed",
+    "toolStatusTitle": "Install status",
+    "toolStatusChecking": "Checking…",
+    "toolStatusBroken": "Installed · not runnable",
+    "toolInstallFailedShort": "Install failed",
+    "toolStatusInstalling": "Installing…",
+    "toolStatusUpdating": "Updating…",
+    "toolStatusVersion": "Version",
+    "toolStatusRecheck": "Re-check",
+    "toolStatusRetry": "Retry install",
+    "toolManualInstallHint": "One-click install didn't work — run this in a terminal instead:",
+    "toolStatusCopyCommand": "Copy command",
+    "toolStatusCopyFailed": "Copy failed",
+    "toolStatusDocs": "Install docs",
+    "toolStatusInstallDone": "Installed",
+    "toolStatusUpdateDone": "Updated",
+    "toolStatusInstalledButBroken": "Installed but cannot run"
   },
   "apps": {
     "claude": "Claude",
@@ -979,6 +997,12 @@
     "collapse": "Collapse sidebar",
     "expand": "Expand sidebar",
     "pin": "Pin to top"
+  },
+  "window": {
+    "close": "Close window",
+    "minimize": "Minimize",
+    "maximize": "Maximize/Restore",
+    "fullscreen": "Toggle fullscreen"
   },
   "pi": {
     "empty": {
@@ -2832,7 +2856,40 @@
     "skillsFailedDescription": "Open the Skills page and click \"Import Existing\" to import manually (or restart and try again)."
   },
   "agents": {
-    "title": "Agents"
+    "title": "Agents",
+    "completionNotice": {
+      "title": "{{provider}} task completed",
+      "subtitle": "{{project}}",
+      "noProject": "No project",
+      "open": "Open {{provider}}",
+      "dismiss": "Dismiss",
+      "justNow": "just now",
+      "minutesAgo": "{{value}} min ago"
+    },
+    "notificationSettings": {
+      "title": "Completion notification",
+      "subtitle": "Set per-agent notifications, sound and color",
+      "on": "On",
+      "off": "Off",
+      "enable": "Notify me when a task completes",
+      "sound": "Sound",
+      "color": "Notification color",
+      "resetColor": "Reset to default color",
+      "sound_none": "Muted",
+      "sound_system": "System alert",
+      "sound_chime": "Chime",
+      "sound_bell": "Bell",
+      "sound_pop": "Pop",
+      "sound_success": "Success",
+      "color_default": "Follow agent brand color",
+      "color_blue": "Blue",
+      "color_violet": "Violet",
+      "color_cyan": "Cyan",
+      "color_emerald": "Emerald",
+      "color_amber": "Amber",
+      "color_rose": "Rose",
+      "color_slate": "Slate"
+    }
   },
   "health": {
     "operational": "Operational",
@@ -2859,6 +2916,11 @@
   "proxy": {
     "routingStatusActive": "Routing active",
     "routingStatusIdle": "Direct mode",
+    "routingStatusActiveTip": "{{app}} is handled by local routing",
+    "routingStatusActiveTipDesc": "Requests go through the local proxy. The active provider is chosen by routing and failover applies.",
+    "routingStatusIdleTip": "{{app}} is in direct mode",
+    "routingStatusIdleTipDesc": "Requests go straight to the provider, bypassing the local proxy. Routing and failover do not apply.",
+    "routingStatusIdleTipDescUnavailable": "Requests go straight to the provider, bypassing the local proxy. This app does not support route takeover.",
     "panel": {
       "serviceAddress": "Service Address",
       "addressCopied": "Address copied",

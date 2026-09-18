@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm tauri dev",
+    "dev:fast": "./scripts/dev-fast.sh",
+    "dev:fast:stop": "./scripts/dev-fast.sh stop",
     "build": "pnpm tauri build",
     "tauri": "tauri",
     "dev:renderer": "vite",

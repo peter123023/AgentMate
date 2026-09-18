@@ -116,7 +116,28 @@ export const getProviderLabel = (
   const key = `apps.${providerId}`;
   const translated = t(key);
   return translated === key ? providerId : translated;
+}
+
+/**
+ * provider 品牌色，用于通知配置里的"跟随品牌色"预览与默认色板。
+ * 必须与弹窗 `agent-notify/NotifyCard.tsx` 的 PROVIDER_BRIDGE 保持一致，
+ * 否则配置时看到的颜色和实际弹窗颜色会对不上。
+ */
+export const PROVIDER_NOTIFY_COLORS: Record<string, string> = {
+  claude: "#D97757",
+  codex: "#10A37F",
+  opencode: "#6366F1",
+  openclaw: "#0EA5E9",
+  gemini: "#4285F4",
+  hermes: "#A855F7",
+  grokbuild: "#111827",
+  pi: "#EC4899",
+  workbuddy: "#2563EB",
+  "deepseek-harness": "#4D6BFE",
 };
+
+export const getProviderNotifyColor = (providerId: string): string =>
+  PROVIDER_NOTIFY_COLORS[providerId] ?? "#2563EB";;
 
 // 根据 providerId 获取对应的图标名称
 export const getProviderIconName = (providerId: string) => {

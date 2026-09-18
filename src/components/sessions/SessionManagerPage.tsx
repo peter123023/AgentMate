@@ -191,7 +191,11 @@ const filterSetToAllowedValues = (
   return changed ? next : current;
 };
 
-export function SessionManagerPage({ appId }: { appId: string }) {
+export function SessionManagerPage({
+  appId,
+}: {
+  appId: string;
+}) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { data, isLoading, refetch } = useSessionsQuery();
@@ -854,6 +858,7 @@ export function SessionManagerPage({ appId }: { appId: string }) {
                         value={search}
                         onChange={(event) => setSearch(event.target.value)}
                         placeholder={t("sessionManager.searchPlaceholder")}
+                        aria-label={t("sessionManager.searchPlaceholder")}
                         className="h-8 pl-8 pr-8 text-sm"
                         autoFocus
                         onKeyDown={(e) => {

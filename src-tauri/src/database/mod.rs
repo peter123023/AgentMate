@@ -108,6 +108,17 @@ impl Database {
 
         let conn = Connection::open(&db_path).map_err(|e| AppError::Database(e.to_string()))?;
 
+        // 关键：设置忙等待超时。rusqlite 默认 busy_timeout = 0，任何并发写
+        // （例如上一个实例刚退出、SQLite 仍在释放锁，或后台同步线程同时写入）
+        // 都会立刻返回 SQLITE_BUSY，表现为 "disk I/O error"。等待 5s 重试可消除该竞态。
+        conn.busy_timeout(std::time::Duration::from_secs(5))
+            .map_err(|e| AppError::Database(e.to_string()))?;
+
+        // 启用 WAL 模式：允许读写并发，进一步降低多连接/多线程下的锁冲突。
+        // 注意：WAL 是持久化设置，对新旧库都生效。
+        conn.pragma_update(None, "journal_mode", "WAL")
+            .map_err(|e| AppError::Database(e.to_string()))?;
+
         // 启用外键约束
         conn.execute("PRAGMA foreign_keys = ON;", [])
             .map_err(|e| AppError::Database(e.to_string()))?;

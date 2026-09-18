@@ -1,3 +1,4 @@
+mod agent_monitor;
 mod app_config;
 mod app_store;
 mod auto_launch;
@@ -411,6 +412,14 @@ pub fn run() {
         // 拦截窗口关闭：根据设置决定是否最小化到托盘
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                // agent-notify 提示窗口不受「关闭到托盘/退出」语义管理：
+                // 拦截成 hide 会让它永远销毁不掉、之后一直复用同一个 webview，
+                // 前端的一次性点击闸门（closingRef）会把后续所有弹窗变成点不了
+                // （22:29 用户实测）；minimize_to_tray=false 时更是会在通知
+                // 超时关闭时把整个应用退出。这里必须放行，让它真正销毁。
+                if window.label() == crate::agent_monitor::NOTIFY_WINDOW_LABEL {
+                    return;
+                }
                 // 数据库版本过新的恢复模式下没有托盘可唤回，关闭即退出，避免应用隐身后台
                 let in_db_recovery = crate::init_status::get_init_error()
                     .map(|p| p.kind.as_deref() == Some("db_version_too_new"))
@@ -1328,6 +1337,9 @@ pub fn run() {
                 });
             });
 
+            // Agent 任务完成监控：主窗口不在前台时，在托盘图标处弹出完成提示。
+            agent_monitor::spawn_monitor(app.handle().clone());
+
             // Linux: 禁用 WebKitGTK 硬件加速，防止 EGL 初始化失败导致白屏
             #[cfg(target_os = "linux")]
             {
@@ -1634,6 +1646,10 @@ pub fn run() {
             commands::delete_session,
             commands::delete_sessions,
             commands::launch_session_terminal,
+            // Agent completion notifications
+            agent_monitor::get_pending_agent_completion,
+            agent_monitor::open_agent_completion,
+            agent_monitor::dismiss_agent_completion,
             commands::get_tool_versions,
             commands::run_tool_lifecycle_action,
             commands::probe_tool_installations,

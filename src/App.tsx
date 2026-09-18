@@ -24,11 +24,18 @@ import {
   LayoutDashboard,
   Loader2,
   RefreshCw,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import type { Provider, VisibleApps } from "@/types";
+import type { AgentNotificationSetting, Provider, VisibleApps } from "@/types";
 import type { EnvConflict } from "@/types/env";
-import { proxyKeys, useProvidersQuery, useSettingsQuery } from "@/lib/query";
+import {
+  proxyKeys,
+  useProvidersQuery,
+  useSaveSettingsMutation,
+  useSettingsQuery,
+} from "@/lib/query";
 import {
   piApi,
   providersApi,
@@ -54,18 +61,33 @@ import { isTextEditableTarget } from "@/utils/domUtils";
 import { deepClone } from "@/utils/deepClone";
 import { cn } from "@/lib/utils";
 import {
-  isWindows,
   isLinux,
   DRAG_REGION_ATTR,
   DRAG_REGION_STYLE,
 } from "@/lib/platform";
-import { AppSidebar } from "@/components/AppSidebar";
+import {
+  AppSidebar,
+  ERASE_INTERVAL_MS,
+  SIDEBAR_EXPANDED_WIDTH,
+  TYPE_INTERVAL_MS,
+} from "@/components/AppSidebar";
+import {
+  playTypeClick,
+  tickVibrate,
+  warmupAudioFeedback,
+} from "@/lib/typewriterFeedback";
 import {
   SkillIcon,
   PromptIcon,
   SessionIcon,
 } from "@/components/ContentIcons";
 import { HomeDashboard } from "@/components/home/HomeDashboard";
+import { ToolInstallStatus } from "@/components/providers/ToolInstallStatus";
+import {
+  AgentNotificationSettings,
+  DEFAULT_AGENT_NOTIFICATION,
+} from "@/components/sessions/AgentNotificationSettings";
+import { getProviderNotifyColor } from "@/components/sessions/utils";
 import { ProfileSwitcher } from "@/components/profiles/ProfileSwitcher";
 import { ProviderList } from "@/components/providers/ProviderList";
 import { AddProviderDialog } from "@/components/providers/AddProviderDialog";
@@ -139,7 +161,19 @@ interface SyncStatusUpdatedPayload {
   error?: string;
 }
 
-const DEFAULT_DRAG_BAR_HEIGHT = isWindows() || isLinux() ? 0 : 28; // px
+// macOS 走 tauri.conf.json 的 titleBarStyle:"Overlay" + app.macOSPrivateApi:true
+// （Cargo.toml 需给 tauri 加 "macos-private-api" feature 并重编 Rust 才生效）。
+// 实测（Retina 2x 截图逐像素 + AppleScript 窗口 position 定标）：
+//   webview 铺满全窗，页面原点 = 窗口 y 0；
+//   原生红绿灯悬浮在页面 y≈9~22.5（中心≈15.75）、x≈20~72。
+// 顶部横栏（根容器 flex-col 第一行）高 30：
+//   品牌行（标题 + 收起按钮，无 Logo）绝对定位在横栏内**水平居中**，
+//   垂直居中 → 中心 15 ≈ 红绿灯中心 15.75（同一行）；
+//   底边 border-b（y=30）= 全窗唯一分割线，紧贴红绿灯行底部。
+//   品牌行不参与左/右段 flex 流，inset-0 + justify-center 覆盖整条横栏居中；
+//   容器与标题 pointer-events-none（拖拽穿透下层），macOS 红绿灯在其左，
+//   正常窗口宽度下互不重叠。
+const TOP_BAR_HEIGHT = 30; // px（全平台统一；Windows 系统自带边框不受影响）
 const HEADER_HEIGHT = 64; // px
 
 const STORAGE_KEY = "model-board-last-app";
@@ -207,9 +241,54 @@ function App() {
   }, [currentView]);
 
   const { data: settingsData } = useSettingsQuery();
+  const saveSettingsMutation = useSaveSettingsMutation();
   const useAppWindowControls =
     isLinux() && (settingsData?.useAppWindowControls ?? false);
-  const dragBarHeight = useAppWindowControls ? 32 : DEFAULT_DRAG_BAR_HEIGHT;
+  // 侧边栏当前宽度，用于让顶部横栏的底色分段与左右两栏对齐
+  const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_EXPANDED_WIDTH);
+  // 侧边栏收起状态提升到这里：顶部横栏的品牌行与侧边栏本体需要共享同一状态
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    () => localStorage.getItem("model-board-sidebar-collapsed") === "true",
+  );
+  const toggleSidebarCollapsed = () => {
+    // 打字声由 interval 回调播放（不在手势栈内），需在点击时预热
+    // AudioContext，否则 WebView 自动播放策略可能使其保持 suspended（静音）
+    warmupAudioFeedback();
+    setSidebarCollapsed((v) => {
+      const next = !v;
+      localStorage.setItem("model-board-sidebar-collapsed", String(next));
+      return next;
+    });
+  };
+  // 品牌标题打字机：展开逐字打出 / 收起逐字收回，
+  // 间隔与侧边栏宽度动画（字数 × 同一组间隔）保持一致，两处同步起止。
+  const brandTitle = t("app.title");
+  const [brandVisibleChars, setBrandVisibleChars] = useState(() =>
+    sidebarCollapsed ? 0 : brandTitle.length,
+  );
+  useEffect(() => {
+    const target = sidebarCollapsed ? 0 : brandTitle.length;
+    const timer = window.setInterval(
+      () =>
+        setBrandVisibleChars((prev) => {
+          const next = sidebarCollapsed
+            ? Math.max(target, prev - 1)
+            : Math.min(target, prev + 1);
+          // 打字/擦除逐字音效：与字符推进 1:1（从旧侧边栏实现迁移，勿再丢）
+          if (next !== prev) {
+            playTypeClick();
+            tickVibrate();
+          }
+          if (next === target) window.clearInterval(timer);
+          return next;
+        }),
+      sidebarCollapsed ? ERASE_INTERVAL_MS : TYPE_INTERVAL_MS,
+    );
+    return () => window.clearInterval(timer);
+  }, [sidebarCollapsed, brandTitle]);
+  // 侧边栏栏宽过渡时长：与 AppSidebar 内部算法一致，横栏左段底色随之同步
+  const sidebarWidthTransitionMs =
+    brandTitle.length * (sidebarCollapsed ? ERASE_INTERVAL_MS : TYPE_INTERVAL_MS);
   const visibleApps = useMemo<VisibleApps>(
     () => ({
       ...DEFAULT_VISIBLE_APPS,
@@ -557,8 +636,11 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // settingsData 未加载时跳过，避免用 fallback false 覆盖 Rust 侧已设好的装饰状态
-    if (!settingsData) return;
+    // 仅 Linux 需要：该平台用系统窗口按钮替换自绘控件，通过 setDecorations 切换。
+    // macOS 绝不可调用——窗口由 titleBarStyle:"Overlay" 静态配置，原生红绿灯以悬浮层
+    // 绘制在网页之上，运行期 setDecorations 会破坏 Overlay 模式，导致交通灯按钮从无障碍树中消失。
+    // Windows 的 dragBarHeight 为 0，也没有装饰切换需求。
+    if (!settingsData || !useAppWindowControls) return;
 
     const syncWindowDecorations = async () => {
       try {
@@ -1017,6 +1099,21 @@ function App() {
     }
   };
 
+  // 更新某个 agent 的完成通知设置（开关/声音/颜色），即时持久化
+  const updateAgentNotification = (
+    providerId: string,
+    next: AgentNotificationSetting,
+  ) => {
+    if (!settingsData) return;
+    saveSettingsMutation.mutate({
+      ...settingsData,
+      agentNotifications: {
+        ...(settingsData.agentNotifications ?? {}),
+        [providerId]: next,
+      },
+    });
+  };
+
   const handleWindowToggleMaximize = async () => {
     try {
       const currentWindow = getCurrentWindow();
@@ -1227,14 +1324,42 @@ function App() {
 
   return (
     <div
-      className="flex h-screen overflow-hidden bg-background text-foreground selection:bg-primary/30 pb-4"
-      style={{ overflowX: "hidden", paddingTop: dragBarHeight }}
+      className="flex h-screen flex-col overflow-hidden bg-background text-foreground selection:bg-primary/30"
+      // 纵向：第一行是顶部横栏（含原生红绿灯避让区 + 品牌行），第二行是
+      // 侧边栏 + 主内容。全部处于同一坐标系，避免 fixed/负 margin 带来的偏移。
+      style={{ overflowX: "hidden" } as any}
     >
-      {(dragBarHeight > 0 || useAppWindowControls) && (
+      {/* 横栏处于文档流（根容器 flex-col 第一行），与下方两栏同一坐标系。
+          全窗唯一的贯穿分割线 = 横栏自己的底边 border-b，勿再另加静态线。 */}
+      {/* 横栏：根容器（flex-col）第一行，文档流，与下方两栏同一坐标系。
+          全窗唯一的贯穿分割线 = 横栏自己的底边 border-b，勿再另加静态线。
+          macOS：原生红绿灯悬浮在左段（侧边栏色带）上方，品牌行在右段左端
+          与红绿灯同一行。Tauri 拖拽只认事件目标上的 data-tauri-drag-region。 */}
+      <div
+        className="relative z-[70] flex shrink-0 items-stretch border-b border-border"
+        data-tauri-drag-region
+        style={
+          {
+            WebkitAppRegion: "drag",
+            // 横栏高度：品牌行与红绿灯同一行，底边线紧贴红绿灯行底部
+            height: TOP_BAR_HEIGHT,
+          } as any
+        }
+      >
+        {/* 左段：侧边栏本色空带，宽度与侧边栏一致（同步过渡），红绿灯悬浮其上 */}
         <div
-          className="fixed top-0 left-0 right-0 z-[70] flex items-center justify-end px-2"
+          className="shrink-0 bg-sidebar transition-[width] ease-in-out"
           data-tauri-drag-region
-          style={{ WebkitAppRegion: "drag", height: dragBarHeight } as any}
+          style={{
+            width: sidebarWidth,
+            transitionDuration: `${sidebarWidthTransitionMs}ms`,
+          }}
+        />
+        {/* 右段：主内容本色。窗口控制按钮（Linux 自绘控件）靠右，
+            品牌行见下方绝对定位层（不占 flex 流）。 */}
+        <div
+          className="flex min-w-0 flex-1 items-center justify-end bg-background pr-2"
+          data-tauri-drag-region
         >
           {useAppWindowControls && (
             <div
@@ -1277,12 +1402,41 @@ function App() {
                 <X className="w-4 h-4" />
               </Button>
             </div>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+          {/* 品牌行：绝对定位覆盖整条横栏、**水平居中**（用户指定），
+              与红绿灯同一行（垂直居中，中心 15）；macOS 红绿灯在最左，
+              正常窗口宽度下与居中标题互不重叠。
+              容器与标题均 pointer-events-none → 拖拽穿透到下层色带/右段；
+              仅收起按钮可交互。标题带打字机动画（brandVisibleChars）。 */}
+          <div
+            className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-2"
+          >
+            <span
+              className="pointer-events-none truncate text-base font-bold tracking-tight"
+              aria-label={brandTitle}
+            >
+              {brandTitle.slice(0, brandVisibleChars)}
+            </span>
+            <button
+              type="button"
+              onClick={toggleSidebarCollapsed}
+              title={sidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
+              aria-label={sidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
+              className="pointer-events-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors duration-150 hover:bg-muted/50 hover:text-foreground"
+            >
+              {sidebarCollapsed ? (
+                <ChevronsRight size={16} className="shrink-0" />
+              ) : (
+                <ChevronsLeft size={16} className="shrink-0" />
+              )}
+            </button>
+          </div>
+      </div>
+      {/* 第二行：侧边栏 + 主内容，占满横栏之外的全部高度 */}
+      <div className="flex min-h-0 flex-1">
       <AppSidebar
         activeApp={activeApp}
-        dragBarHeight={dragBarHeight}
         onSwitch={(app) => {
           // 切换 App 时持久化，刷新后 getInitialApp 才能恢复上次的 App
           localStorage.setItem(STORAGE_KEY, app);
@@ -1297,8 +1451,10 @@ function App() {
         settingsActive={currentView === "settings"}
         onOpenHome={() => setCurrentView("home")}
         homeActive={currentView === "home"}
+        collapsed={sidebarCollapsed}
+        onWidthChange={setSidebarWidth}
       />
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col bg-background">
         {showEnvBanner && envConflicts.length > 0 && (
           <EnvWarningBanner
             conflicts={envConflicts}
@@ -1391,14 +1547,7 @@ function App() {
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <RoutingActivationBrand
-                    active={isProxyRunning && isCurrentAppTakeoverActive}
-                    contextKey={activeApp}
-                    ready={
-                      proxyStatus !== undefined && takeoverStatus !== undefined
-                    }
-                  />
-                  {/* 功能入口（skills/prompts/会话/MCP 等）：移到 header 左侧。
+                  {/* 功能入口（skills/prompts/会话/MCP 等）：置于 header 最前。
                       按实际支持能力决定是否渲染整个胶囊——WorkBuddy 目前仅
                       支持会话，胶囊内就只会出现「会话」一项，不会留空灰块 */}
                   {hasFeatureEntries && (
@@ -1574,6 +1723,29 @@ function App() {
                       </AnimatePresence>
                     </div>
                   )}
+                  {/* 安装状态：已安装显示版本，未安装显示安装按钮（失败给手动安装指引）。
+                      与完成通知开关同一排，都是「当前 agent 的全局开关类信息」 */}
+                  <ToolInstallStatus appId={activeApp} />
+                  {/* 完成通知配置：紧跟在「技能/提示词/会话/MCP」这排入口右侧并排 */}
+                  <AgentNotificationSettings
+                    providerId={activeApp}
+                    providerLabel={t(`apps.${activeApp}`)}
+                    providerColor={getProviderNotifyColor(activeApp)}
+                    setting={
+                      settingsData?.agentNotifications?.[activeApp] ??
+                      DEFAULT_AGENT_NOTIFICATION
+                    }
+                    onChange={(next) => updateAgentNotification(activeApp, next)}
+                  />
+                  <RoutingActivationBrand
+                    active={isProxyRunning && isCurrentAppTakeoverActive}
+                    contextKey={activeApp}
+                    appLabel={t(`apps.${activeApp}`)}
+                    takeoverSupported={currentAppUsesProxy}
+                    ready={
+                      proxyStatus !== undefined && takeoverStatus !== undefined
+                    }
+                  />
                   <UpdateBadge
                     onClick={() => {
                       setSettingsDefaultTab("about");
@@ -1883,6 +2055,7 @@ function App() {
 
       <DeepLinkImportDialog />
       <FirstRunNoticeDialog />
+      </div>
     </div>
   );
 }

@@ -132,16 +132,21 @@ vi.mock("@/components/ConfirmDialog", () => ({
     ) : null,
 }));
 
-vi.mock("@/components/AppSidebar", () => ({
-  AppSidebar: ({ activeApp, onSwitch }: any) => (
-    <div data-testid="app-switcher">
-      <span>{activeApp}</span>
-      <button onClick={() => onSwitch("claude")}>switch-claude</button>
-      <button onClick={() => onSwitch("codex")}>switch-codex</button>
-      <button onClick={() => onSwitch("openclaw")}>switch-openclaw</button>
-    </div>
-  ),
-}));
+vi.mock("@/components/AppSidebar", async (importOriginal) => {
+  // 只替换组件本体，保留 SIDEBAR_*_WIDTH 等真实导出（App.tsx 依赖）
+  const actual = await importOriginal<typeof import("@/components/AppSidebar")>();
+  return {
+    ...actual,
+    AppSidebar: ({ activeApp, onSwitch }: any) => (
+      <div data-testid="app-switcher">
+        <span>{activeApp}</span>
+        <button onClick={() => onSwitch("claude")}>switch-claude</button>
+        <button onClick={() => onSwitch("codex")}>switch-codex</button>
+        <button onClick={() => onSwitch("openclaw")}>switch-openclaw</button>
+      </div>
+    ),
+  };
+});
 
 vi.mock("@/components/skills/UnifiedSkillsPanel", async () => {
   const React = await import("react");

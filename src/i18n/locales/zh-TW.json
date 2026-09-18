@@ -9,7 +9,8 @@
     "workspace": "工作區",
     "env": "環境",
     "tools": "工具",
-    "agents": "Agents"
+    "agents": "Agents",
+    "notify": "通知"
   },
   "app": {
     "title": "ModelBoard",
@@ -943,7 +944,24 @@
       "defaultCostMultiplierRequired": "預設倍率不能為空",
       "defaultCostMultiplierInvalid": "預設倍率格式不正確"
     },
-    "saveFailedGeneric": "儲存失敗，請重試"
+    "saveFailedGeneric": "儲存失敗，請重試",
+    "toolInstalledLabel": "已安裝",
+    "toolStatusTitle": "安裝狀態",
+    "toolStatusChecking": "檢測中…",
+    "toolStatusBroken": "已安裝·無法執行",
+    "toolInstallFailedShort": "安裝失敗",
+    "toolStatusInstalling": "安裝中…",
+    "toolStatusUpdating": "升級中…",
+    "toolStatusVersion": "目前版本",
+    "toolStatusRecheck": "重新檢測",
+    "toolStatusRetry": "重試安裝",
+    "toolManualInstallHint": "一鍵安裝未成功，請在終端機執行以下指令手動安裝：",
+    "toolStatusCopyCommand": "複製指令",
+    "toolStatusCopyFailed": "複製失敗",
+    "toolStatusDocs": "安裝文件",
+    "toolStatusInstallDone": "安裝完成",
+    "toolStatusUpdateDone": "升級完成",
+    "toolStatusInstalledButBroken": "已安裝但無法執行"
   },
   "apps": {
     "claude": "Claude",
@@ -980,6 +998,12 @@
     "collapse": "收起側邊欄",
     "expand": "展開側邊欄",
     "pin": "置頂"
+  },
+  "window": {
+    "close": "關閉視窗",
+    "minimize": "最小化",
+    "maximize": "最大化/還原",
+    "fullscreen": "進入/退出全螢幕"
   },
   "pi": {
     "empty": {
@@ -2833,7 +2857,40 @@
     "skillsFailedDescription": "請開啟 Skills 頁面點擊「匯入現有」手動匯入（或重新啟動後再試）。"
   },
   "agents": {
-    "title": "Agent"
+    "title": "Agent",
+    "completionNotice": {
+      "title": "{{provider}} 任務已完成",
+      "subtitle": "{{project}}",
+      "noProject": "無專案",
+      "open": "開啟 {{provider}}",
+      "dismiss": "忽略",
+      "justNow": "剛剛",
+      "minutesAgo": "{{value}} 分鐘前"
+    },
+    "notificationSettings": {
+      "title": "完成通知",
+      "subtitle": "依 Agent 分別設定是否彈通知、提示音與通知顏色",
+      "on": "已開啟",
+      "off": "已關閉",
+      "enable": "任務完成後通知我",
+      "sound": "提示音",
+      "color": "通知顏色",
+      "resetColor": "恢復預設顏色",
+      "sound_none": "靜音",
+      "sound_system": "系統提示音",
+      "sound_chime": "清脆雙音",
+      "sound_bell": "鐘聲",
+      "sound_pop": "短促音",
+      "sound_success": "成功音",
+      "color_default": "跟隨 Agent 品牌色",
+      "color_blue": "藍色",
+      "color_violet": "紫色",
+      "color_cyan": "青色",
+      "color_emerald": "綠色",
+      "color_amber": "琥珀色",
+      "color_rose": "玫紅",
+      "color_slate": "石板灰"
+    }
   },
   "health": {
     "operational": "正常",
@@ -2860,6 +2917,11 @@
   "proxy": {
     "routingStatusActive": "已接管（路由生效中）",
     "routingStatusIdle": "直連模式",
+    "routingStatusActiveTip": "{{app}} 已由本機路由接管",
+    "routingStatusActiveTipDesc": "請求經本機代理轉發，目前供應商由路由決定，故障轉移生效。",
+    "routingStatusIdleTip": "{{app}} 為直連模式",
+    "routingStatusIdleTipDesc": "請求直連供應商，未經過本機代理，路由與故障轉移均不生效。",
+    "routingStatusIdleTipDescUnavailable": "請求直連供應商，未經過本機代理。此應用暫不支援路由接管。",
     "panel": {
       "serviceAddress": "服務位址",
       "addressCopied": "位址已複製",

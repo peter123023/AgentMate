@@ -2,6 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const BURST_LIFETIME_MS = 980;
 
@@ -24,6 +30,10 @@ interface RoutingActivationBrandProps {
   active: boolean;
   contextKey: string;
   ready: boolean;
+  /** 展示名（如「Claude Desktop」），用于 tooltip 文案 */
+  appLabel?: string;
+  /** 该应用是否具备路由接管能力；false 时用「不支持接管」的解释文案 */
+  takeoverSupported?: boolean;
 }
 
 /**
@@ -35,12 +45,41 @@ export function RoutingActivationBrand({
   active,
   contextKey,
   ready,
+  appLabel,
+  takeoverSupported = true,
 }: RoutingActivationBrandProps) {
   const { t } = useTranslation();
   const prefersReducedMotion = useReducedMotion();
   const previousState = useRef({ active, contextKey, ready });
   const [burstSequence, setBurstSequence] = useState(0);
   const [showBurst, setShowBurst] = useState(false);
+
+  // tooltip 需要比组件本身更大的命中区：2.5px 的圆点单靠自己几乎点不中。
+  // 用一个 12px 的 wrapper 承载 hover/focus，圆点视觉尺寸保持不变。
+  const appName = appLabel || t("common.unknown", { defaultValue: "未知" });
+  const statusTip = active
+    ? t("proxy.routingStatusActiveTip", {
+        app: appName,
+        defaultValue: `${appName} 已由本地路由接管`,
+      })
+    : t("proxy.routingStatusIdleTip", {
+        app: appName,
+        defaultValue: `${appName} 为直连模式`,
+      });
+  const statusTipHint = active
+    ? t("proxy.routingStatusActiveTipDesc", {
+        defaultValue:
+          "请求经本地代理转发，当前供应商由路由决定，故障转移生效。",
+      })
+    : takeoverSupported
+      ? t("proxy.routingStatusIdleTipDesc", {
+          defaultValue:
+            "请求直连供应商，未经过本地代理，路由与故障转移均不生效。",
+        })
+      : t("proxy.routingStatusIdleTipDescUnavailable", {
+          defaultValue:
+            "请求直连供应商，未经过本地代理。此应用暂不支持路由接管。",
+        });
 
   useEffect(() => {
     const previous = previousState.current;
@@ -86,47 +125,59 @@ export function RoutingActivationBrand({
         />
       )}
 
-      <motion.span
-        data-testid="routing-activation-status"
-        title={
-          active
-            ? t("proxy.routingStatusActive")
-            : t("proxy.routingStatusIdle")
-        }
-        className={cn(
-          "relative z-10 block h-2.5 w-2.5 rounded-full transition-colors duration-500",
-          active
-            ? "bg-emerald-500 shadow-[0_0_6px_rgba(52,211,153,0.6)]"
-            : "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.4)]",
-        )}
-        animate={
-          showBurst
-            ? {
-                scale: [1, 0.96, 1.075, 1],
-                y: [0, 1, -1.5, 0],
-                filter: [
-                  "drop-shadow(0 0 0 rgba(52, 211, 153, 0))",
-                  "drop-shadow(0 0 7px rgba(52, 211, 153, 0.75))",
-                  "drop-shadow(0 0 3px rgba(52, 211, 153, 0.28))",
-                  "drop-shadow(0 0 0 rgba(52, 211, 153, 0))",
-                ],
-              }
-            : {
-                scale: 1,
-                y: 0,
-                filter: "drop-shadow(0 0 0 rgba(52, 211, 153, 0))",
-              }
-        }
-        transition={
-          showBurst
-            ? {
-                duration: 0.72,
-                times: [0, 0.13, 0.52, 1],
-                ease: [0.16, 1, 0.3, 1],
-              }
-            : { duration: 0.28, ease: [0.22, 1, 0.36, 1] }
-        }
-      />
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span
+              className="relative z-10 inline-flex h-3 w-3 cursor-help items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+              aria-label={`${statusTip}。${statusTipHint}`}
+            >
+              <motion.span
+                data-testid="routing-activation-status"
+                className={cn(
+                  "block h-2.5 w-2.5 rounded-full transition-colors duration-500",
+                  active
+                    ? "bg-emerald-500 shadow-[0_0_6px_rgba(52,211,153,0.6)]"
+                    : "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.4)]",
+                )}
+                animate={
+                  showBurst
+                    ? {
+                        scale: [1, 0.96, 1.075, 1],
+                        y: [0, 1, -1.5, 0],
+                        filter: [
+                          "drop-shadow(0 0 0 rgba(52, 211, 153, 0))",
+                          "drop-shadow(0 0 7px rgba(52, 211, 153, 0.75))",
+                          "drop-shadow(0 0 3px rgba(52, 211, 153, 0.28))",
+                          "drop-shadow(0 0 0 rgba(52, 211, 153, 0))",
+                        ],
+                      }
+                    : {
+                        scale: 1,
+                        y: 0,
+                        filter: "drop-shadow(0 0 0 rgba(52, 211, 153, 0))",
+                      }
+                }
+                transition={
+                  showBurst
+                    ? {
+                        duration: 0.72,
+                        times: [0, 0.13, 0.52, 1],
+                        ease: [0.16, 1, 0.3, 1],
+                      }
+                    : { duration: 0.28, ease: [0.22, 1, 0.36, 1] }
+                }
+              />
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="max-w-xs">
+            <div className="font-medium">{statusTip}</div>
+            <div className="mt-0.5 text-primary-foreground/70">
+              {statusTipHint}
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       {showBurst && (
         <motion.span

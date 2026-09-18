@@ -351,6 +351,48 @@ pub struct CodexOfficialHistoryUnifyMigration {
     pub codex_config_dir: Option<String>,
 }
 
+/// 单个 agent（provider）的完成通知配置。
+///
+/// 全部字段都带默认值：用户只改其中一项时，其余项按默认渲染，
+/// 也保证旧版本 settings.json（没有这个字段）能平滑升级。
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct AgentNotificationSetting {
+    /// 该 agent 任务完成后是否弹通知。默认开启（与既有行为一致）。
+    #[serde(default = "default_true")]
+    pub enabled: bool,
+    /// 提示音："none"（默认）| "system" | "chime" | "bell" | "pop" | "success"
+    #[serde(default)]
+    pub sound: AgentNotificationSound,
+    /// 通知卡主题色覆盖（CSS 颜色字符串，如 "#2563EB"）。缺省用 provider 品牌色。
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub color: Option<String>,
+}
+
+impl Default for AgentNotificationSetting {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            sound: AgentNotificationSound::default(),
+            color: None,
+        }
+    }
+}
+
+/// 提示音选项。实际发声在前端（Web Audio 合成 + 系统音），后端只存选择。
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
+#[serde(rename_all = "camelCase")]
+pub enum AgentNotificationSound {
+    #[default]
+    None,
+    /// 系统提示音（由前端调用系统级音效）
+    System,
+    Chime,
+    Bell,
+    Pop,
+    Success,
+}
+
 /// 应用设置结构
 ///
 /// 存储设备级别设置，保存在本地 `~/.model-board/settings.json`，不随数据库同步。
@@ -513,6 +555,12 @@ pub struct AppSettings {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub preferred_terminal: Option<String>,
 
+    // ===== Agent 完成通知（按 provider 独立配置）=====
+    /// provider_id -> 通知配置。未出现的 provider 走默认（开启、无声音、用品牌色）。
+    /// 用 BTreeMap 保证序列化顺序稳定，便于人工查看 settings.json。
+    #[serde(default, skip_serializing_if = "std::collections::BTreeMap::is_empty")]
+    pub agent_notifications: std::collections::BTreeMap<String, AgentNotificationSetting>,
+
     // ===== 本机自动迁移状态 =====
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub local_migrations: Option<LocalMigrations>,
@@ -585,6 +633,7 @@ impl Default for AppSettings {
             backup_interval_hours: None,
             backup_retain_count: None,
             preferred_terminal: None,
+            agent_notifications: std::collections::BTreeMap::new(),
             local_migrations: None,
         }
     }
@@ -781,6 +830,15 @@ pub fn get_settings() -> AppSettings {
             e.into_inner()
         })
         .clone()
+}
+
+/// 取某个 provider 的通知配置。未配置时返回默认（开启 / 无声音 / 品牌色）。
+pub fn get_agent_notification(provider_id: &str) -> AgentNotificationSetting {
+    get_settings()
+        .agent_notifications
+        .get(provider_id)
+        .cloned()
+        .unwrap_or_default()
 }
 
 pub fn get_settings_for_frontend() -> AppSettings {
